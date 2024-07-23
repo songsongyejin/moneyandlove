@@ -8,7 +8,7 @@ const Navbar: React.FC = () => {
       <div className="absolute left-0 top-0 h-full w-full bg-black bg-opacity-25"></div>
 
       <div className="relative flex w-full items-center justify-between px-4 py-4 text-white">
-        <h2 className="ml-8" style={{ fontFamily: "DNFBitBitv2" }}>
+        <h2 className="ml-8 text-2xl" style={{ fontFamily: "DNFBitBitv2" }}>
           Money & Love
         </h2>
         <nav style={{ fontFamily: "DungGeunMo" }} className="flex space-x-10">
