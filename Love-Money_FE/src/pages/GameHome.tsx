@@ -2,6 +2,7 @@ import React from "react";
 import heartIcon from "../assets/heart_icon.png";
 import friendlistIcon from "../assets/friend_list_icon.png";
 import "../index.css"; // 필요한 CSS 파일 import
+import FreindsSideBar from "../components/FrindesSideBar/FriendsSideBar";
 
 const GameHome: React.FC = () => {
   return (
@@ -9,6 +10,8 @@ const GameHome: React.FC = () => {
       <div className="absolute inset-0 bg-main-bg bg-cover bg-center"></div>
       <div className="absolute inset-0 bg-black opacity-20"></div>
       <div className="relative z-10 flex h-full items-center justify-center">
+        <FreindsSideBar />
+
         <div className="flex flex-col items-center justify-center text-center">
           <h1
             className="text-6xl font-bold text-white text-shadow-custom"
@@ -56,13 +59,6 @@ const GameHome: React.FC = () => {
         </div>
       </div>
       {/* 친구추가 버튼 우하단 고정 */}
-      <button className="fixed bottom-12 right-12 z-50 h-20 w-20 transition duration-300 hover:scale-105 focus:outline-none">
-        <img
-          src={friendlistIcon}
-          alt="Friend List"
-          className="h-full w-full object-contain"
-        />
-      </button>
     </div>
   );
 };

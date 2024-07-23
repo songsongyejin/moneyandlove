@@ -2,7 +2,7 @@ import React from "react";
 import "../index.css"; // 필요한 CSS 파일 import
 import { useRecoilState } from "recoil";
 import { userInfo } from "../atom/store"; // .ts 확장자는 생략 가능
-
+import { Link } from "react-router-dom";
 const Home: React.FC = () => {
   const [user, setUser] = useRecoilState(userInfo);
 
@@ -26,12 +26,13 @@ const Home: React.FC = () => {
           <button className="mt-10 w-72 rounded-md bg-btn-color py-3 font-bold text-white shadow-btn hover:scale-105">
             회원가입
           </button>
-          <button
+          <Link
+            to="/main"
             onClick={handleLogin}
             className="mt-10 w-72 rounded-md bg-btn-color py-3 font-bold text-white shadow-btn hover:scale-105"
           >
             로그인
-          </button>
+          </Link>
         </div>
       </div>
     </div>

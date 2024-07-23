@@ -11,6 +11,7 @@ import {
   useRecoilState,
   useRecoilValue,
 } from "recoil";
+import GameHome from "./pages/GameHome.tsx";
 
 const router = createBrowserRouter([
   {
@@ -19,7 +20,7 @@ const router = createBrowserRouter([
 
     children: [
       { index: true, path: "/", element: <Home /> },
-      // // { path: "products", element: <AllProducts /> },
+      { path: "main", element: <GameHome /> },
       // // { path: "products/new", element: <NewProduct /> },
       // // { path: "products/:id", element: <ProductDetail /> },
       // // { path: "cart", element: <MyCart /> },
