@@ -2,7 +2,6 @@ package com.ssafy.moneyandlove.common.error;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @Builder
