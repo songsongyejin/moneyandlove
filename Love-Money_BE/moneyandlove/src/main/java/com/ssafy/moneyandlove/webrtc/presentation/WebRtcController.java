@@ -21,10 +21,10 @@ import jakarta.annotation.PostConstruct;
 
 @RestController
 public class WebRtcController {
-	@Value("${OPENVIDU_URL}")
+	@Value("${OPENVIDU.URL}")
 	private String OPENVIDU_URL;
 
-	@Value("${OPENVIDU_SECRET}")
+	@Value("${OPENVIDU.SECRET}")
 	private String OPENVIDU_SECRET;
 
 	private OpenVidu openvidu;
