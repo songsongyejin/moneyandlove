@@ -1,9 +1,15 @@
 HELP.md
+application.yml
 .gradle
+.env
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+### DOCKER ###
+docker/db/mysql/data/*
+!docker/db/mysql/data/.gitkeep
 
 ### STS ###
 .apt_generated
