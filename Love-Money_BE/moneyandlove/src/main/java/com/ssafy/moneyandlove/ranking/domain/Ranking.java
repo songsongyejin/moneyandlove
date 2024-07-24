@@ -1,4 +1,4 @@
-package com.ssafy.moneyandlove.rank.domain;
+package com.ssafy.moneyandlove.ranking.domain;
 
 import com.ssafy.moneyandlove.common.TimeBaseEntity;
 import com.ssafy.moneyandlove.user.domain.User;
@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -20,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Rank extends TimeBaseEntity {
+public class Ranking extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

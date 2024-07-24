@@ -1,4 +1,5 @@
 HELP.md
+application.yml
 .gradle
 .env
 build/
