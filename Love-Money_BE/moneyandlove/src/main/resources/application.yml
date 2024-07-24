@@ -1,4 +1,25 @@
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${KAKAO_CLIENT}
+            client-secret: ${KAKAO_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+            client-authentication-method: client_secret_post # kakao는 인증 토큰 발급 요청 메서드가 post이다. (최근 버전에는 작성 방법이 이렇게 바뀌었다.)
+            authorization-grant-type: authorization_code
+            scope: # kakao 개인 정보 동의 항목 설정의 ID 값
+                - profile_nickname
+                - profile_image
+                - account_email
+            client-name: kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: "jdbc:mysql://localhost:3306/moneyandlovedb?autoReconnect=true&useUnicode=true&serverTimezone=Asia/Seoul"
