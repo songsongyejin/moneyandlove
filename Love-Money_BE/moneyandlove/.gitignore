@@ -1,5 +1,6 @@
 HELP.md
 application.yml
+/src/main/resources/application.yml
 .gradle
 .env
 build/
