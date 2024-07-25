@@ -4,6 +4,7 @@ import "../index.css"; // 필요한 CSS 파일 import
 import FriendsSideBar from "../components/FriendsSideBar/FriendsSideBar";
 import FaceVerification from "../components/game/FaceVerification";
 import PositionSelection from "../components/game/PositionSelection";
+import Matching from "../components/game/Matching";
 import { useRecoilValue } from "recoil";
 import { userInfo } from "../atom/store";
 
@@ -11,6 +12,7 @@ const GameHome: React.FC = () => {
   const [showFaceVerification, setShowFaceVerification] = useState(false);
   const [showPositionSelection, setShowPositionSelection] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+  const [showMatching, setShowMatching] = useState(false);
   const user = useRecoilValue(userInfo);
 
   const handleGameStart = () => {
@@ -19,8 +21,19 @@ const GameHome: React.FC = () => {
     // } else {
     //   setShowPositionSelection(true);
     // }
-    // setShowFaceVerification(true);
-    setShowPositionSelection(true);
+    // setShowFaceVerification(true); // 얼굴인증 창부터 띄우기
+    setShowPositionSelection(true); // 얼굴인증 되어서 포지션선택창만 띄우게 일단 설정
+  };
+
+  const handlePositionSelect = (position: string) => {
+    setSelectedPosition(position || null);
+  };
+
+  const handleMatchStart = (position: string) => {
+    console.log("매칭 시작", position);
+    setShowPositionSelection(false);
+    setShowMatching(true);
+    // 여기에 실제 매칭 로직을 추가할 수 있습니다.
   };
 
   const getBackgroundClass = () => {
@@ -100,17 +113,10 @@ const GameHome: React.FC = () => {
             setSelectedPosition(null);
           } // 모달을 닫을 때 선택된 포지션 초기화
         }
-        onPositionSelect={(position) => {
-          setSelectedPosition(position);
-        }}
-        onMatchStart={(position) => {
-          console.log("매칭 시작", position);
-          // 여기에 매칭 시작에 대한 추가 처리 로직
-          // 예: 서버에 매칭 요청 전송, 게임 상태 업데이트 등
-          setShowPositionSelection(false); // 매칭 시작 후 모달 닫기
-          // 매칭 시작 후에도 selectedPosition은 유지되도록함
-        }}
+        onPositionSelect={handlePositionSelect}
+        onMatchStart={handleMatchStart}
       />
+      <Matching isOpen={showMatching} onClose={() => setShowMatching(false)} />
     </div>
   );
 };

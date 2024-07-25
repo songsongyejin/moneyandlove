@@ -25,20 +25,27 @@ const PositionSelection: React.FC<PositionSelectionProps> = ({
   const handleConfirm = () => {
     if (selectedPosition) {
       setIsConfirmed(true);
-      onPositionSelect(selectedPosition); // 부모 컴포넌트에 선택된 포지션 전달
+      onPositionSelect(selectedPosition); // 부모 컴포넌트(GameHome)에 사용자에 의해 선택된 포지션 전달
     }
   };
 
+  //
   const handleMatchStart = () => {
     if (selectedPosition) {
       onMatchStart(selectedPosition);
-      // // 매칭 시작 후 상태 초기화
+      // 매칭 시작 후 상태 초기화
       // setSelectedPosition(null);
       // setIsConfirmed(false);
     }
   };
 
-  // 모달이 닫힐 때 상태 초기화
+  // 포지션 선택 후 매칭 시작 모달에서 뒤로가기
+  const handleBack = () => {
+    setIsConfirmed(false);
+    onPositionSelect("");
+  };
+
+  // 포지션 선택 모달이 닫힐 때 사용자 포지션 상태 초기화
   const handleClose = () => {
     setSelectedPosition(null);
     setIsConfirmed(false);
@@ -88,6 +95,12 @@ const PositionSelection: React.FC<PositionSelectionProps> = ({
               className="rounded bg-green-500 px-6 py-2 text-white hover:bg-green-600"
             >
               매칭 시작
+            </button>
+            <button
+              onClick={handleBack}
+              className="mt-4 rounded bg-red-500 px-6 py-2 text-white hover:bg-red-600"
+            >
+              포지션 다시 선택
             </button>
           </>
         )}
