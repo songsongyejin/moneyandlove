@@ -9,8 +9,15 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
+@SuperBuilder
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends TimeBaseEntity {
 
 	@Id

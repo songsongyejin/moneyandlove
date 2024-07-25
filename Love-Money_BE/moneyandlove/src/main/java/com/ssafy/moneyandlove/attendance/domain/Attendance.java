@@ -27,10 +27,17 @@ public class Attendance extends TimeBaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	private LocalDateTime attendanceDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	public static Attendance of(final User user, final LocalDateTime attendanceDate) {
+		return Attendance.builder()
+			.user(user)
+			.attendanceDate(attendanceDate)
+			.build();
+	}
 }
