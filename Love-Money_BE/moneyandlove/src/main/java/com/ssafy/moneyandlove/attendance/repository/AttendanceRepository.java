@@ -12,6 +12,8 @@ import com.ssafy.moneyandlove.user.domain.User;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
+	boolean existsByUserAndAttendanceDate(User user, LocalDate attendanceDate);
+
 	@Query("SELECT a.attendanceDate FROM Attendance a WHERE a.user = :user AND a.attendanceDate BETWEEN :startDate AND :endDate")
 	List<LocalDate> findAttendancesForWeek(@Param("user") User user,
 		@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);

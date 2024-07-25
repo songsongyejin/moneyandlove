@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.moneyandlove.attendance.application.AttendanceService;
 import com.ssafy.moneyandlove.attendance.dto.DailyAttendance;
+import com.ssafy.moneyandlove.common.annotation.LoginUser;
 import com.ssafy.moneyandlove.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
@@ -23,17 +24,15 @@ public class AttendanceController {
 	private final AttendanceService attendanceService;
 
 	@PostMapping
-	public ResponseEntity<?> checkAttendance() {
+	public ResponseEntity<?> checkAttendance(@LoginUser User loginUser) {
 		LocalDate now = LocalDate.now();
-		User user = User.builder().id(1L).build();
-		attendanceService.addAttendance(user, now);
+		attendanceService.addAttendance(loginUser, now);
 		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping
-	public List<DailyAttendance> findWeeklyAttendance() {
+	public List<DailyAttendance> findWeeklyAttendance(@LoginUser User loginUser) {
 		LocalDate now = LocalDate.now();
-		User user = User.builder().id(1L).build();
-		return attendanceService.findWeeklyAttendance(user, now);
+		return attendanceService.findWeeklyAttendance(loginUser, now);
 	}
 }
