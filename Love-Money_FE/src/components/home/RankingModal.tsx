@@ -39,6 +39,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
   const [rankings, setRankings] = useState<RankItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // 모달이 열릴 때 랭킹 데이터를 로드
   useEffect(() => {
     if (isOpen) {
       setRankings(mockRankings);
@@ -53,7 +54,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
     return (
       <div className="flex h-full w-full flex-col">
         {/* 랭킹 박스 */}
-        <div className="scrollbar-thin scrollbar-webkit flex-1 overflow-y-auto rounded-lg bg-white shadow-inner">
+        <div className="flex-1 overflow-y-auto rounded-lg bg-white shadow-inner scrollbar-thin scrollbar-webkit">
           {rankings.map((item) => (
             <RankingItem
               key={item.rank}
