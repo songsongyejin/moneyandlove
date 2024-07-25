@@ -5,6 +5,7 @@ import RulebookModal from "../home/RulebookModal";
 import RankingModal from "..//home/RankingModal";
 import AttendanceModal from "../home/AttendanceModal";
 import ProfileModal from "../home/ProfileModal";
+import { LiaCoinsSolid } from "react-icons/lia";
 
 const Navbar: React.FC = () => {
   const [modals, setModals] = useState({
@@ -32,7 +33,7 @@ const Navbar: React.FC = () => {
               className="hover:scale-105"
               onClick={() => openModal("rulebook")}
             >
-              룰북
+              게임소개
             </button>
             <button
               className="hover:scale-105"
@@ -47,7 +48,14 @@ const Navbar: React.FC = () => {
               출석체크{" "}
             </button>
             <div className="flex items-center space-x-8">
-              <span>돈 1000p</span>
+              <div className="flex items-center space-x-1">
+                <LiaCoinsSolid
+                  className="text-custom-purple-color"
+                  style={{ fontSize: "36px" }}
+                />{" "}
+                {/* 색상을 원하면 여기에 추가 */}
+                <span>1000p</span>
+              </div>
               <img
                 src={sampleImage}
                 alt="사진"
