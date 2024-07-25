@@ -4,6 +4,7 @@ import { useRecoilState } from "recoil";
 import { userInfo } from "../atom/store"; // .ts 확장자는 생략 가능
 import { Link } from "react-router-dom";
 const Home: React.FC = () => {
+  //유저 로그인 정보
   const [user, setUser] = useRecoilState(userInfo);
 
   const handleLogin = () => {

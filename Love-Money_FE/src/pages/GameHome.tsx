@@ -1,9 +1,16 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import heartIcon from "../assets/heart_icon.png";
 import "../index.css"; // 필요한 CSS 파일 import
 import FriendsSideBar from "../components/FriendsSideBar/FriendsSideBar";
+import { Link } from "react-router-dom";
 
 const GameHome: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/room");
+  };
   return (
     <div className="relative h-screen">
       <div className="absolute inset-0 bg-main-bg bg-cover bg-center"></div>
@@ -37,7 +44,8 @@ const GameHome: React.FC = () => {
               className="absolute -left-16 top-2/3 h-24 w-24 -translate-y-1/2 transform"
             />
             <button
-              className="mt-10 h-16 w-40 rounded-md py-3 font-bold text-white shadow-btn text-stroke-custom"
+              onClick={handleClick}
+              className="rounded-custom mt-10 h-16 w-40 py-3 font-bold text-white shadow-btn"
               style={{
                 borderRadius: "10px 50px 50px 10px",
                 backgroundColor: "#113F63",
