@@ -25,6 +25,8 @@ public class AttendanceService {
 	private final AttendanceRepository attendanceRepository;
 
 	public void addAttendance(User user, LocalDate today) {
+		boolean done = attendanceRepository.existsByUserAndAttendanceDate(user, today);
+		if(done) return;
 		attendanceRepository.save(Attendance.of(user, today));
 	}
 
