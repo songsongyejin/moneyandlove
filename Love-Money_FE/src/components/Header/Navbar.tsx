@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import "../index.css"; // 필요한 CSS 파일 import
-import sampleImage from "../assets/sample.png"; // 이미지 경로에 맞게 수정
+import "../../index.css"; // 필요한 CSS 파일 import
+import sampleImage from "../../assets/sample.png"; // 이미지 경로에 맞게 수정
 import RulebookModal from "../home/RulebookModal";
-import RankingModal from "../home/RankingModal";
+import RankingModal from "..//home/RankingModal";
 import AttendanceModal from "../home/AttendanceModal";
 import ProfileModal from "../home/ProfileModal";
 

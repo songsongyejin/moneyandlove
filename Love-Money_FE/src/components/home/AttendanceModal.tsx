@@ -10,9 +10,6 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [attendanceDays, setAttendanceDays] = useState<AttendanceDay[]>([]);
-  const [currentStreak, setCurrentStreak] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   if (!isOpen) return null;
 
   return (
