@@ -1,8 +1,7 @@
 import React from "react";
 import heartIcon from "../assets/heart_icon.png";
-import friendlistIcon from "../assets/friend_list_icon.png";
 import "../index.css"; // 필요한 CSS 파일 import
-import FreindsSideBar from "../components/FrindesSideBar/FriendsSideBar";
+import FriendsSideBar from "../components/FriendsSideBar/FriendsSideBar";
 
 const GameHome: React.FC = () => {
   return (
@@ -10,7 +9,7 @@ const GameHome: React.FC = () => {
       <div className="absolute inset-0 bg-main-bg bg-cover bg-center"></div>
       <div className="absolute inset-0 bg-black opacity-20"></div>
       <div className="relative z-10 flex h-full items-center justify-center">
-        <FreindsSideBar />
+        <FriendsSideBar />
 
         <div className="flex flex-col items-center justify-center text-center">
           <h1
@@ -31,7 +30,7 @@ const GameHome: React.FC = () => {
           >
             진정한 사랑을 찾는 새로운 러브 심리 게임
           </p>
-          <div className="relative mt-12 inline-block hover:scale-105">
+          <div className="hvr-float-shadow relative mt-12 inline-block">
             <img
               src={heartIcon}
               alt="Heart Icon"
@@ -58,7 +57,6 @@ const GameHome: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* 친구추가 버튼 우하단 고정 */}
     </div>
   );
 };
