@@ -45,6 +45,23 @@ export default {
         ".color-online": {
           color: "rgb(36, 255, 102)",
         },
+        ".scrollbar-thin": {
+          scrollbarWidth: "thin",
+          scrollbarColor: "#8B6CAC transparent",
+        },
+        ".scrollbar-webkit": {
+          "&::-webkit-scrollbar": {
+            width: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#8B6CAC",
+            borderRadius: "20px",
+            border: "3px solid transparent",
+          },
+        },
       };
 
       addUtilities(newUtilities, ["responsive", "hover"]);
