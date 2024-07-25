@@ -1,4 +1,4 @@
-import Navbar from "./components/Navbar.tsx";
+import Navbar from "./components/Header/Navbar.tsx";
 import "./index.css";
 import { Outlet } from "react-router-dom";
 import { userInfo } from "./atom/store.ts";

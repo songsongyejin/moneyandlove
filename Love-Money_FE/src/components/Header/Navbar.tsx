@@ -1,6 +1,5 @@
 import React from "react";
-import "../index.css"; // 필요한 CSS 파일 import
-import sampleImage from "../assets/sample.png"; // 이미지 경로에 맞게 수정
+import sampleImage from "../../assets/sample.png"; // 이미지 경로에 맞게 수정
 
 const Navbar: React.FC = () => {
   return (
