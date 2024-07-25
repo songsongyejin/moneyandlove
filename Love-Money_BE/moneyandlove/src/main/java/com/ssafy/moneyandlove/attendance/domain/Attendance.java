@@ -1,5 +1,6 @@
 package com.ssafy.moneyandlove.attendance.domain;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.ssafy.moneyandlove.common.TimeBaseEntity;
@@ -28,13 +29,13 @@ public class Attendance extends TimeBaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private LocalDateTime attendanceDate;
+	private LocalDate attendanceDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	public static Attendance of(final User user, final LocalDateTime attendanceDate) {
+	public static Attendance of(final User user, final LocalDate attendanceDate) {
 		return Attendance.builder()
 			.user(user)
 			.attendanceDate(attendanceDate)
