@@ -23,7 +23,7 @@ const FriendChatRoom: React.FC<{
           style={{ fontSize: "25px" }}
         ></IonIcon>
       </header>
-      <div className="h-1 bg-white opacity-85"></div>
+      <div className="h-1 bg-white"></div>
     </div>
   );
 };

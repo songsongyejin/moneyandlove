@@ -2,7 +2,6 @@ import React from "react";
 import heartIcon from "../assets/heart_icon.png";
 import "../index.css"; // 필요한 CSS 파일 import
 import FriendsSideBar from "../components/FriendsSideBar/FriendsSideBar";
-import FriendChatRoom from "../components/FriendsSideBar/FriendChatRoom";
 
 const GameHome: React.FC = () => {
   return (

@@ -38,7 +38,7 @@ const FreindsSideBar: React.FC = () => {
     setSelectedFriend(null);
   };
   return (
-    <div className="z-20">
+    <div className="z-20" style={{ fontFamily: "DungGeunMo" }}>
       <nav className={`fNav ${navOpen ? "nav-open" : ""}`}>
         <div className="menu-btn w-8" onClick={handleMenuClick}>
           <div className={`line line--1 ${navOpen ? "line-cross" : ""}`}></div>
