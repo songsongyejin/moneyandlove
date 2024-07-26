@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import io.openvidu.java.client.Session;
 import io.openvidu.java.client.SessionProperties;
 import jakarta.annotation.PostConstruct;
 
+@CrossOrigin("*")
 @RestController
 public class WebRtcController {
 	@Value("${OPENVIDU.URL}")
@@ -38,7 +40,7 @@ public class WebRtcController {
 	 * @param params The Session properties
 	 * @return The Session ID
 	 */
-	@PostMapping("/api/sessions")
+	@PostMapping("/api/video-sessions")
 	public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
 		throws OpenViduJavaClientException, OpenViduHttpException {
 		SessionProperties properties = SessionProperties.fromJson(params).build();
@@ -51,7 +53,7 @@ public class WebRtcController {
 	 * @param params    The Connection properties
 	 * @return The Token associated to the Connection
 	 */
-	@PostMapping("/api/sessions/{sessionId}/connections")
+	@PostMapping("/api/video-sessions/{sessionId}/connections")
 	public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
 		@RequestBody(required = false) Map<String, Object> params)
 		throws OpenViduJavaClientException, OpenViduHttpException {

@@ -14,7 +14,6 @@ services:
       MYSQL_DATABASE: moneyandlovedb
     networks:
       - moneyandlove-network
-
   mongo:
     container_name: moneyandlove-mongo
     image: mongo:latest
@@ -27,3 +26,10 @@ services:
 networks:
   moneyandlove-network:
     driver: bridge
+  openvidu:
+    image: openvidu/openvidu-dev:2.30.0
+    ports:
+      - "4443:4443"
+    environment:
+      OPENVIDU_SECRET: MY_SECRET
+    restart: unless-stopped
