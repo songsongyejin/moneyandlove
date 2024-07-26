@@ -1,7 +1,7 @@
 package com.ssafy.moneyandlove.chat.application;
 
 import com.ssafy.moneyandlove.chat.domain.ChatRoom;
-import com.ssafy.moneyandlove.chat.dto.CreateChatRoomRequest;
+import com.ssafy.moneyandlove.chat.dto.ChatRoomIdRequest;
 import com.ssafy.moneyandlove.chat.dto.CreateChatRoomResponse;
 import com.ssafy.moneyandlove.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +17,9 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
 
-    public CreateChatRoomResponse findByFromUserIdAndToUserId (CreateChatRoomRequest chatRoomRequest){
-        Optional<ChatRoom> byFromUserIdAndToUserId = chatRoomRepository.findByFromUserIdAndToUserId(chatRoomRequest.getFromUserid(), chatRoomRequest.getToUserid());
+    public CreateChatRoomResponse findByFromUserIdAndToUserId (ChatRoomIdRequest chatRoomIdRequest){
+        Optional<ChatRoom> byFromUserIdAndToUserId = chatRoomRepository.findByFromUserIdAndToUserId(chatRoomIdRequest.getFromUserid(), chatRoomIdRequest.getToUserid());
         ChatRoom chatRoom = byFromUserIdAndToUserId.orElseThrow();
-        return CreateChatRoomResponse.of(chatRoom.getRoomId());
+        return CreateChatRoomResponse.from(chatRoom.getRoomId());
     }
 }
