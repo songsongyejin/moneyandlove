@@ -1,4 +1,4 @@
-package com.ssafy.moneyandlove.chatroom.domain;
+package com.ssafy.moneyandlove.chat.domain;
 
 import com.ssafy.moneyandlove.common.TimeBaseEntity;
 import com.ssafy.moneyandlove.user.domain.User;
@@ -26,6 +26,8 @@ public class ChatRoom extends TimeBaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	private String roomId;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "from_user_id")
 	private User fromUser;
@@ -33,4 +35,11 @@ public class ChatRoom extends TimeBaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "to_user_id")
 	private User toUser;
+
+	public static ChatRoom toChatRoom(User fromUser, User toUser) {
+		return ChatRoom.builder()
+			.fromUser(fromUser)
+			.toUser(toUser)
+			.build();
+	}
 }

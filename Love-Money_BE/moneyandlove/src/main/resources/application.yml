@@ -35,7 +35,9 @@ spring:
       ddl-auto: update
     open-in-view: false
     show_sql: true
-
+  data:
+    mongodb:
+      uri: "mongodb://localhost:27017/moneyandlovedb"
   logging.level:
     org.hibernate.SQL: debug
 
