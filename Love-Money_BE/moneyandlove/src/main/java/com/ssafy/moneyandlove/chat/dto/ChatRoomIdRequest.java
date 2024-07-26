@@ -9,7 +9,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CreateChatRoomRequest {
+public class ChatRoomIdRequest {
 
     private Long fromUserid;
     private Long toUserid;
