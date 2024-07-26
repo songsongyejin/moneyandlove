@@ -24,11 +24,11 @@ public class ChattingController {
     private final ChatRoomService chatRoomService;
     private final ChatMessageRepository chatMessageRepository;
 
-    @MessageMapping("/chat/messages/{chatRoomId}")
+    @MessageMapping("/send/{chatRoomId}")
     public void chat(@DestinationVariable String chatRoomId, @Payload ChatMessage chatMessage) {
         log.info("{}", chatMessage);
         chatMessageRepository.save(chatMessage);
-        simpMessagingTemplate.convertAndSend("/receive/chat/room/" + chatRoomId, chatMessage);
+        simpMessagingTemplate.convertAndSend("/chat/receive/" + chatRoomId, chatMessage);
     }
 
     @PostMapping("/room")
