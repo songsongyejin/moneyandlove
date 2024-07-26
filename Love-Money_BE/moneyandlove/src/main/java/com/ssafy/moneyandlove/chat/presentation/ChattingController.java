@@ -2,9 +2,10 @@ package com.ssafy.moneyandlove.chat.presentation;
 
 import com.ssafy.moneyandlove.chat.application.ChatRoomService;
 import com.ssafy.moneyandlove.chat.domain.ChatMessage;
-import com.ssafy.moneyandlove.chat.dto.ChatRoomIdRequest;
-import com.ssafy.moneyandlove.chat.dto.CreateChatRoomResponse;
+import com.ssafy.moneyandlove.chat.dto.ChatRoomIdResponse;
+import com.ssafy.moneyandlove.chat.dto.CreateChatRoomRequest;
 import com.ssafy.moneyandlove.chat.repository.ChatMessageRepository;
+import com.ssafy.moneyandlove.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -23,6 +24,7 @@ public class ChattingController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatRoomService chatRoomService;
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     @MessageMapping("/send/{chatRoomId}")
     public void chat(@DestinationVariable String chatRoomId, @Payload ChatMessage chatMessage) {
@@ -31,9 +33,15 @@ public class ChattingController {
         simpMessagingTemplate.convertAndSend("/chat/receive/" + chatRoomId, chatMessage);
     }
 
+    @GetMapping("/room")
+    public ChatRoomIdResponse getChatRoomId(@RequestParam Long fromUserId, @RequestParam Long toUserId) {
+        log.info("fromUserId {} , toUserId {}", fromUserId, toUserId);
+        return chatRoomService.findByFromUserIdAndToUserId(fromUserId, toUserId);
+    }
+
     @PostMapping("/room")
-    public CreateChatRoomResponse getChatRoomId(@RequestBody ChatRoomIdRequest chatRoomIdRequest) {
-        log.info("{}", chatRoomIdRequest);
-        return chatRoomService.findByFromUserIdAndToUserId(chatRoomIdRequest);
+    public ChatRoomIdResponse createChatRoom(@RequestBody CreateChatRoomRequest createChatRoomRequest) {
+        log.info("{}", createChatRoomRequest);
+        return chatRoomService.save(createChatRoomRequest);
     }
 }
