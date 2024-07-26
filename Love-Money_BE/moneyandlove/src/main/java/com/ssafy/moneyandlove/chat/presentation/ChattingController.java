@@ -2,7 +2,7 @@ package com.ssafy.moneyandlove.chat.presentation;
 
 import com.ssafy.moneyandlove.chat.application.ChatRoomService;
 import com.ssafy.moneyandlove.chat.domain.ChatMessage;
-import com.ssafy.moneyandlove.chat.dto.CreateChatRoomRequest;
+import com.ssafy.moneyandlove.chat.dto.ChatRoomIdRequest;
 import com.ssafy.moneyandlove.chat.dto.CreateChatRoomResponse;
 import com.ssafy.moneyandlove.chat.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +12,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,8 +32,8 @@ public class ChattingController {
     }
 
     @PostMapping("/room")
-    public CreateChatRoomResponse getChatRoomId(@RequestBody CreateChatRoomRequest chatRoomRequest) {
-        log.info("{}", chatRoomRequest);
-        return chatRoomService.findByFromUserIdAndToUserId(chatRoomRequest);
+    public CreateChatRoomResponse getChatRoomId(@RequestBody ChatRoomIdRequest chatRoomIdRequest) {
+        log.info("{}", chatRoomIdRequest);
+        return chatRoomService.findByFromUserIdAndToUserId(chatRoomIdRequest);
     }
 }
