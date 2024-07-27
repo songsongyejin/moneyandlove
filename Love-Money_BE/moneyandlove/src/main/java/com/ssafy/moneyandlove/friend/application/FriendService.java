@@ -30,4 +30,9 @@ public class FriendService {
 		Friend friend = CreateFriendRequest.toFriend(follower, following);
 		friendRepository.save(friend);
 	}
+
+	public User getFriend(Long friendId) {
+		return userRepository.findById(friendId)
+			.orElseThrow(()->new MoneyAndLoveException(ErrorType.FOLLOWER_NOT_FOUND));
+	}
 }

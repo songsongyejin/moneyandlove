@@ -2,15 +2,13 @@ package com.ssafy.moneyandlove.friend.presentation;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.ssafy.moneyandlove.common.annotation.LoginUser;
 import com.ssafy.moneyandlove.friend.application.FriendService;
-import com.ssafy.moneyandlove.friend.domain.Friend;
 import com.ssafy.moneyandlove.friend.dto.CreateFriendRequest;
 import com.ssafy.moneyandlove.user.domain.User;
 
@@ -28,5 +26,12 @@ public class FriendController {
 		friendService.addFriend(createFriendRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
+
+	@GetMapping("{friendId}")
+	public ResponseEntity<User> getFriend(@PathVariable Long friendId) {
+		User friend = friendService.getFriend(friendId);
+		return ResponseEntity.status(HttpStatus.OK).body(friend);
+	}
+
 
 }
