@@ -1,5 +1,6 @@
 package com.ssafy.moneyandlove.friend.presentation;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +25,8 @@ public class FriendController {
 
 	@PostMapping
 	public ResponseEntity<?> createFriend(@RequestBody CreateFriendRequest createFriendRequest) {
-		friendService.addFrined(createFriendRequest);
-		return ResponseEntity.ok().build();
+		friendService.addFriend(createFriendRequest);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 }
