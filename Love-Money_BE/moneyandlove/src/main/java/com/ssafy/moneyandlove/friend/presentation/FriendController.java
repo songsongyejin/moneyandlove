@@ -39,8 +39,8 @@ public class FriendController {
 	}
 
 	@DeleteMapping("{friendId}")
-	public ResponseEntity<?> removeFriend(@PathVariable Long followerId, @LoginUser User followingUser) {
-		friendService.deleteFriend(followerId, followingUser.getId());
+	public ResponseEntity<?> removeFriend(@PathVariable Long friendId, @LoginUser User followingUser) {
+		friendService.deleteFriend(friendId, followingUser.getId());
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
