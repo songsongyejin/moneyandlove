@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { userInfo, UserInfo } from "../../atom/store";
+import { useRecoilState } from "recoil";
 import BaseModal from "./BaseModal";
 import { FaRegCheckCircle } from "react-icons/fa";
 
@@ -39,6 +41,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isCheckedToday, setIsCheckedToday] = useState(false);
   const [currentMonthWeek, setCurrentMonthWeek] = useState<string>("");
+  const [user, setUser] = useRecoilState(userInfo);
 
   useEffect(() => {
     if (isOpen) {
@@ -80,6 +83,15 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
       day.attendanceDate === today ? { ...day, check: true } : day
     );
     setAttendanceDays(updatedDays);
+
+    // 사용자 포인트 업데이트
+    if (user) {
+      const updatedUser: UserInfo = {
+        ...user,
+        points: user.points + 100,
+      };
+      setUser(updatedUser);
+    }
   };
 
   const getDayColor = (day: string) => {
