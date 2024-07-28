@@ -35,4 +35,9 @@ public class FriendService {
 		return userRepository.findById(friendId)
 			.orElseThrow(()->new MoneyAndLoveException(ErrorType.FOLLOWER_NOT_FOUND));
 	}
+
+	public void deleteFriend(Long followerId, Long followingId) {
+		friendRepository.deleteByFollowerIdAndFollowingId(followerId, followingId);
+	}
+
 }
