@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import BaseModal from "../home/BaseModal";
+import moneyIcon from "../../assets/money.svg";
+import loveIcon from "../../assets/love.svg";
 
 interface PositionSelectionProps {
   isOpen: boolean;
@@ -14,7 +16,10 @@ const PositionSelection: React.FC<PositionSelectionProps> = ({
   onPositionSelect,
   onMatchStart,
 }) => {
-  const positions = ["MAFIA", "LOVE"];
+  const positions = [
+    { name: "MONEY", icon: moneyIcon },
+    { name: "LOVE", icon: loveIcon },
+  ];
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
@@ -57,30 +62,47 @@ const PositionSelection: React.FC<PositionSelectionProps> = ({
       <div className="flex flex-col items-center">
         {!isConfirmed ? (
           <>
-            <p className="mb-4">플레이할 포지션을 선택해주세요.</p>
-            <div className="mb-6 flex space-x-4">
+            <p className="mb-8 text-xl" style={{ fontFamily: "DungGeunMo" }}>
+              당신의 플레이 포지션을 선택해주세요!
+            </p>
+            <div className="mb-12 flex space-x-6">
               {positions.map((position) => (
                 <button
-                  key={position}
-                  onClick={() => handlePositionClick(position)}
-                  className={`rounded px-6 py-2 text-white ${
-                    selectedPosition === position
-                      ? "bg-purple-600"
-                      : "bg-purple-400 hover:bg-purple-500"
+                  key={position.name}
+                  onClick={() => handlePositionClick(position.name)}
+                  className={`flex flex-col items-center rounded-lg px-20 py-12 text-black ${
+                    selectedPosition === position.name
+                      ? "bg-custom-purple-color"
+                      : "bg-white hover:bg-custom-purple-color"
                   }`}
                 >
-                  {position}
+                  <img
+                    src={position.icon}
+                    alt={`${position.name} icon`}
+                    className="mb-8 h-16 w-16"
+                  />
+                  <span
+                    style={{
+                      fontFamily: "DNFBitBitv2",
+                      WebkitTextStroke: "0.01px #8B6CAC",
+                    }}
+                  >
+                    {position.name}
+                  </span>
                 </button>
               ))}
             </div>
             <button
               onClick={handleConfirm}
               disabled={!selectedPosition}
-              className={`rounded px-6 py-2 text-white ${
+              className={`active:brightness-90" rounded-lg bg-custom-purple-color px-8 py-3 text-lg text-white transition-all duration-300 ease-in-out hover:brightness-110 ${
                 selectedPosition
-                  ? "bg-blue-500 hover:bg-blue-600"
+                  ? "bg-custom-purple-color hover:bg-purple-950"
                   : "cursor-not-allowed bg-gray-300"
               }`}
+              style={{
+                fontFamily: "DNFBitBitv2",
+              }}
             >
               선택하기
             </button>

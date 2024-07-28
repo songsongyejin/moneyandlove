@@ -6,6 +6,7 @@ import RankingModal from "..//home/RankingModal";
 import AttendanceModal from "../home/AttendanceModal";
 import ProfileModal from "../home/ProfileModal";
 import { LiaCoinsSolid } from "react-icons/lia";
+import { FaPlusCircle, FaCoins } from "react-icons/fa";
 
 const Navbar: React.FC = () => {
   const [modals, setModals] = useState({
@@ -42,10 +43,14 @@ const Navbar: React.FC = () => {
               랭킹
             </button>
             <button
-              className="hover:scale-105"
+              className="flex flex-col items-center hover:scale-105"
               onClick={() => openModal("attendance")}
             >
-              출석체크{" "}
+              <span className="mt-4">출석체크</span>
+              <div className="flex items-center space-x-1">
+                <FaPlusCircle />
+                <FaCoins />
+              </div>
             </button>
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-1">
@@ -54,7 +59,7 @@ const Navbar: React.FC = () => {
                   style={{ fontSize: "36px" }}
                 />{" "}
                 {/* 색상을 원하면 여기에 추가 */}
-                <span>1000p</span>
+                <span className="text-xl">1000p</span>
               </div>
               <img
                 src={sampleImage}

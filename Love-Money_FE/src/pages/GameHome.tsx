@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import heartIcon from "../assets/heart_icon.svg";
+import heartIcon from "../assets/start_heart_icon.svg";
 import "../index.css"; // 필요한 CSS 파일 import
 import FriendsSideBar from "../components/FriendsSideBar/FriendsSideBar";
 import FaceVerification from "../components/game/FaceVerification";
@@ -78,7 +78,7 @@ const GameHome: React.FC = () => {
             />
             <button
               onClick={handleGameStart}
-              className="bg-custom-purple-color mt-10 h-16 w-40 rounded-md py-3 font-bold text-white shadow-btn text-stroke-custom"
+              className="mt-10 h-16 w-40 rounded-md bg-custom-purple-color py-3 font-bold text-white shadow-btn text-stroke-custom"
               style={{
                 borderRadius: "10px 50px 50px 10px",
                 opacity: "var(--sds-size-stroke-border)",
