@@ -23,9 +23,6 @@ services:
       MONGO_INITDB_DATABASE: moneyandlovedb
     networks:
       - moneyandlove-network
-networks:
-  moneyandlove-network:
-    driver: bridge
   openvidu:
     image: openvidu/openvidu-dev:2.30.0
     ports:
@@ -33,3 +30,10 @@ networks:
     environment:
       OPENVIDU_SECRET: MY_SECRET
     restart: unless-stopped
+    networks:
+      - moneyandlove-network
+
+networks:
+  moneyandlove-network:
+    driver: bridge
+
