@@ -1,5 +1,8 @@
 package com.ssafy.moneyandlove.friend.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,4 +43,11 @@ public class FriendService {
 		friendRepository.deleteByFollowerIdAndFollowingId(followerId, followingId);
 	}
 
+	public List<User> getFriendListByFollowing(Long followingId) {
+		User following = userRepository.findById(followingId)
+			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.FOLLOWING_NOT_FOUND));
+		return friendRepository.findByFollowing(following).stream()
+			.map(Friend::getFollower)
+			.collect(Collectors.toList());
+	}
 }

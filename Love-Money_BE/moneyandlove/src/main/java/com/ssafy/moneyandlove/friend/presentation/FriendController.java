@@ -44,4 +44,9 @@ public class FriendController {
 		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 
+	@GetMapping
+	public ResponseEntity<List<User>> getFriendListByFollowing(@LoginUser User followingUser) {
+		List<User> friends = friendService.getFriendListByFollowing(followingUser.getId());
+		return ResponseEntity.ok(friends);
+	}
 }
