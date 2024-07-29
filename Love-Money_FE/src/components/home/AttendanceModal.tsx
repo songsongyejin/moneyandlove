@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { userInfo, UserInfo } from "../../atom/store";
+import { useRecoilState } from "recoil";
 import BaseModal from "./BaseModal";
 import { FaRegCheckCircle } from "react-icons/fa";
 
@@ -8,80 +10,98 @@ interface AttendanceModalProps {
 }
 
 interface AttendanceDay {
-  day: string;
-  date: number;
-  checked: boolean;
-  reward: number;
+  attendanceDate: string;
+  check: boolean;
 }
 
-const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
+const daysOfWeek = ["MON", "TUS", "WED", "THR", "FRI", "SAT", "SUN"];
+
+// API 호출을 시뮬레이션하는 함수
+const mockFetchAttendance = (): Promise<AttendanceDay[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        { attendanceDate: "2024-07-22", check: false },
+        { attendanceDate: "2024-07-23", check: false },
+        { attendanceDate: "2024-07-24", check: false },
+        { attendanceDate: "2024-07-25", check: false },
+        { attendanceDate: "2024-07-26", check: true },
+        { attendanceDate: "2024-07-27", check: false },
+        { attendanceDate: "2024-07-28", check: false },
+      ]);
+    }, 100);
+  });
+};
 
 const AttendanceModal: React.FC<AttendanceModalProps> = ({
   isOpen,
   onClose,
 }) => {
   const [attendanceDays, setAttendanceDays] = useState<AttendanceDay[]>([]);
-  const [currentStreak, setCurrentStreak] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isCheckedToday, setIsCheckedToday] = useState(false);
+  const [currentMonthWeek, setCurrentMonthWeek] = useState<string>("");
+  const [user, setUser] = useRecoilState(userInfo);
 
   useEffect(() => {
     if (isOpen) {
-      const today = new Date();
-      const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay());
+      setIsLoading(true);
+      mockFetchAttendance().then((data) => {
+        setAttendanceDays(data);
+        setIsLoading(false);
+        // 오늘 날짜의 출석 여부 확인
+        const today = new Date().toISOString().split("T")[0];
+        setIsCheckedToday(
+          data.find((day) => day.attendanceDate === today)?.check || false
+        );
 
-      const mockAttendance = daysOfWeek.map((day, index) => {
-        const currentDate = new Date(startOfWeek);
-        currentDate.setDate(startOfWeek.getDate() + index);
-        return {
-          day,
-          date: currentDate.getDate(),
-          checked: currentDate <= today && Math.random() > 0.3, // 오늘 이전 날짜는 랜덤하게 체크
-          reward: (index + 1) * 10,
-        };
+        // 현재 월과 주차 계산
+        setCurrentMonthWeek(getCurrentMonthWeek());
       });
-
-      setAttendanceDays(mockAttendance);
-      setCurrentStreak(calculateStreak(mockAttendance));
-      setIsLoading(false);
     }
   }, [isOpen]);
 
-  const calculateStreak = (days: AttendanceDay[]) => {
-    let streak = 0;
-    for (let i = days.length - 1; i >= 0; i--) {
-      if (days[i].checked) streak++;
-      else break;
-    }
-    return streak;
+  // 현재 월과 주차를 계산하는 함수
+  const getCurrentMonthWeek = (): string => {
+    const now = new Date();
+    const month = now.getMonth() + 1; // getMonth()는 0부터 시작하므로 1을 더합니다.
+    const date = now.getDate();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const weekNumber = Math.ceil((date + firstDayOfMonth.getDay() - 1) / 7);
+
+    return `${month}월 ${weekNumber}주차`;
   };
 
   const handleAttendanceCheck = () => {
-    // 여기에 출석 체크 로직을 구현합니다.
-    // 예: API 호출 후 상태 업데이트
+    // 여기에 출석 체크 API 호출 로직을 구현합니다.
     console.log("출석 체크됨");
-    // 출석 체크 완료 후 상태 업데이트
     setIsCheckedToday(true);
 
     // 오늘의 출석 상태를 업데이트
+    const today = new Date().toISOString().split("T")[0];
     const updatedDays = attendanceDays.map((day) =>
-      day.date === new Date().getDate() ? { ...day, checked: true } : day
+      day.attendanceDate === today ? { ...day, check: true } : day
     );
     setAttendanceDays(updatedDays);
 
-    // 연속 출석 일수 업데이트
-    setCurrentStreak(calculateStreak(updatedDays));
+    // 사용자 포인트 업데이트
+    if (user) {
+      const updatedUser: UserInfo = {
+        ...user,
+        points: user.points + 100,
+      };
+      setUser(updatedUser);
+    }
   };
 
   const getDayColor = (day: string) => {
     switch (day) {
-      case "일":
+      case "SUN":
         return "#F3409D";
-      case "토":
+      case "SAT":
         return "#1A00FF";
       default:
-        return "black";
+        return "#6A5681";
     }
   };
 
@@ -91,33 +111,45 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
     }
     return (
       <div className="flex h-full w-full flex-col">
-        <div className="mb-24 text-center text-xl">
-          <p>현재 연속 출석: {currentStreak}일</p>
+        <div
+          className="mt-4 text-center text-2xl"
+          style={{ fontFamily: "DNFBitBitv2" }}
+        >
+          {currentMonthWeek} 출석현황
         </div>
-        <div className="grid grid-cols-7 gap-2">
-          {attendanceDays.map((day) => (
-            <div
-              key={day.day}
-              className={`flex h-24 flex-col items-center justify-center rounded p-2 ${
-                day.checked ? "bg-custom-purple-color" : "bg-gray-100"
-              }`}
-            >
-              <span
-                style={{
-                  color: getDayColor(day.day),
-                  fontFamily: "DNFBitBitv2",
-                }}
+        <div className="mt-16 flex flex-col border border-gray-200 bg-white">
+          <div className="grid grid-cols-7">
+            {daysOfWeek.map((day) => (
+              <div
+                key={day}
+                className="border-b border-r border-gray-200 p-2 text-center"
               >
-                {day.day}
-              </span>
-              <span>{day.reward}P</span>
-              {day.checked && (
-                <span>
-                  <FaRegCheckCircle style={{ fontSize: "40px" }} />
+                <span
+                  className="font-bold"
+                  style={{
+                    color: getDayColor(day),
+                    fontFamily: "DNFBitBitv2",
+                  }}
+                >
+                  {day}
                 </span>
-              )}
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7">
+            {attendanceDays.map((day) => (
+              <div
+                key={day.attendanceDate}
+                className="flex h-20 flex-col items-center justify-between border-r border-gray-200 p-4"
+              >
+                {day.check && (
+                  <span className="text-custom-purple-color">
+                    <FaRegCheckCircle style={{ fontSize: "48px" }} />
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -138,7 +170,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
       ) : (
         <button
           onClick={handleAttendanceCheck}
-          className="bg-custom-purple-color rounded-lg px-8 py-3 text-lg text-white transition-all duration-300 ease-in-out hover:brightness-110 active:brightness-90"
+          className="rounded-lg bg-custom-purple-color px-8 py-3 text-lg text-white transition-all duration-300 ease-in-out hover:brightness-110 active:brightness-90"
           style={{
             fontFamily: "DNFBitBitv2",
           }}
