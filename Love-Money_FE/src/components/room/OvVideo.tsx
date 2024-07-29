@@ -58,7 +58,7 @@ const OvVideo: React.FC<OpenViduVideoComponentProps> = ({ streamManager }) => {
 
               // Log the expressions to the console
               detections.forEach((detection) => {
-                console.log(detection.expressions);
+                // console.log(detection.expressions);
               });
             }
           }

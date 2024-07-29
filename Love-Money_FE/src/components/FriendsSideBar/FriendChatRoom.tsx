@@ -7,7 +7,7 @@ const FriendChatRoom: React.FC<{
   onChatClose: () => void;
 }> = ({ friend, onChatClose }) => {
   return (
-    <div className="bg-chatRoom-color left-350px absolute bottom-0 z-20 h-96 w-96 font-semibold opacity-85">
+    <div className="bg-chatRoomMain-color absolute bottom-0 left-350px z-20 h-96 w-96 font-semibold opacity-85">
       <header className="flex p-3 text-white">
         <img src={friend.imgUrl} alt="프사" className="h-12" />
         <IonIcon

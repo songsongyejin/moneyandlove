@@ -14,9 +14,11 @@ export default {
       },
       colors: {
         "btn-color": "#8B6CAC",
-        "chatRoom-color": "#160F1D",
+        "chatRoomMain-color": "#160F1D",
         "online-color": "#24ff66",
         "offline-color": "#666666",
+        "chatRoom-color": "#F8F1FD",
+        "chatRoom-high": "#8B6CAC",
         primary: {
           DEFAULT: "#2bca43",
         },
