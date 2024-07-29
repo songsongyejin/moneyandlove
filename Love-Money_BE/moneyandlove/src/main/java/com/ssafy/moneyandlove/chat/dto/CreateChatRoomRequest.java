@@ -11,7 +11,5 @@ import lombok.ToString;
 @ToString
 public class CreateChatRoomRequest {
 
-    private String roomId;
-    private Long fromUserId;
     private Long toUserId;
 }

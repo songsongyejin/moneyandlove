@@ -19,8 +19,6 @@ public class ChatRoom extends TimeBaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String roomId;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "from_user_id")
 	private User fromUser;
@@ -29,9 +27,9 @@ public class ChatRoom extends TimeBaseEntity {
 	@JoinColumn(name = "to_user_id")
 	private User toUser;
 
-	public static ChatRoom of(String roomId, User fromUser, User toUser) {
+	public static ChatRoom of(Long roomId, User fromUser, User toUser) {
 		return ChatRoom.builder()
-				.roomId(roomId)
+				.id(roomId)
 				.fromUser(fromUser)
 				.toUser(toUser)
 				.build();

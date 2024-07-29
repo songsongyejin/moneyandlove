@@ -6,6 +6,8 @@ import com.ssafy.moneyandlove.chat.dto.ChatRoomIdResponse;
 import com.ssafy.moneyandlove.chat.dto.CreateChatRoomRequest;
 import com.ssafy.moneyandlove.chat.repository.ChatMessageRepository;
 import com.ssafy.moneyandlove.chat.repository.ChatRoomRepository;
+import com.ssafy.moneyandlove.common.annotation.LoginUser;
+import com.ssafy.moneyandlove.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -24,7 +26,6 @@ public class ChattingController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ChatRoomService chatRoomService;
     private final ChatMessageRepository chatMessageRepository;
-    private final ChatRoomRepository chatRoomRepository;
 
     @MessageMapping("/send/{chatRoomId}")
     public void chat(@DestinationVariable String chatRoomId, @Payload ChatMessage chatMessage) {
@@ -34,14 +35,14 @@ public class ChattingController {
     }
 
     @GetMapping("/room")
-    public ChatRoomIdResponse getChatRoomId(@RequestParam Long fromUserId, @RequestParam Long toUserId) {
-        log.info("fromUserId {} , toUserId {}", fromUserId, toUserId);
-        return chatRoomService.findByFromUserIdAndToUserId(fromUserId, toUserId);
+    public ChatRoomIdResponse getChatRoomId(@LoginUser User loginUser, @RequestParam Long toUserId) {
+        log.info("fromUserId {} , toUserId {}", loginUser, toUserId);
+        return chatRoomService.findByFromUserIdAndToUserId(loginUser.getId(), toUserId);
     }
 
     @PostMapping("/room")
-    public ChatRoomIdResponse createChatRoom(@RequestBody CreateChatRoomRequest createChatRoomRequest) {
+    public ChatRoomIdResponse createChatRoom(@LoginUser User loginUser, @RequestBody CreateChatRoomRequest createChatRoomRequest) {
         log.info("{}", createChatRoomRequest);
-        return chatRoomService.save(createChatRoomRequest);
+        return chatRoomService.save(loginUser, createChatRoomRequest);
     }
 }

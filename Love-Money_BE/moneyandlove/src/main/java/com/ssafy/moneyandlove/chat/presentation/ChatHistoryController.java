@@ -21,8 +21,8 @@ public class ChatHistoryController {
     private final ChatMessageRepository chatMessageRepository;
 
     @GetMapping("/chat/history")
-    public ResponseEntity<List<ChatMessage>> getChatHistory(@RequestParam String roomId) {
-        log.info(roomId);
+    public ResponseEntity<List<ChatMessage>> getChatHistory(@RequestParam Long roomId) {
+        log.info("{}", roomId);
         List<ChatMessage> messages = chatMessageRepository.findAllByRoomId(roomId);
         return ResponseEntity.ok(messages);
     }

@@ -20,7 +20,7 @@ import com.ssafy.moneyandlove.common.TimeBaseEntity;
 public class ChatMessage {
 
 	@Id
-	private String roomId;
+	private Long roomId;
 	private Long senderId;
 	private String message;
 }

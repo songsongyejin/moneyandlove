@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ChatRoomIdResponse {
 
-    private String roomId;
+    private Long roomId;
 
-    public static ChatRoomIdResponse from(String roomId){
+    public static ChatRoomIdResponse from(Long roomId){
         return ChatRoomIdResponse.builder()
                 .roomId(roomId)
                 .build();
