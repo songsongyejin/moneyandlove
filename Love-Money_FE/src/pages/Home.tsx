@@ -2,13 +2,20 @@ import React from "react";
 import "../index.css"; // 필요한 CSS 파일 import
 import { useRecoilState } from "recoil";
 import { userInfo } from "../atom/store"; // .ts 확장자는 생략 가능
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { mockLogin } from "../utils/mockLogin";
+import kakaoLoginImage from "../assets/kakao_login_large_wide.png";
+
 const Home: React.FC = () => {
   //유저 로그인 정보
   const [user, setUser] = useRecoilState(userInfo);
+  const navigate = useNavigate();
 
   const handleLogin = () => {
-    setUser(true);
+    // setUser(true);
+    const loggedInUser = mockLogin();
+    setUser(loggedInUser);
+    navigate("/main");
   };
 
   return (
@@ -24,16 +31,32 @@ const Home: React.FC = () => {
             Money
             <br />& Love
           </h1>
-          <button className="mt-10 w-72 rounded-md bg-btn-color py-3 font-bold text-white shadow-btn hover:scale-105">
+          {/* <button className="mt-10 w-72 rounded-md bg-btn-color py-3 font-bold text-white shadow-btn hover:scale-105">
             회원가입
-          </button>
-          <Link
+          </button> */}
+          {/* <Link
             to="/main"
             onClick={handleLogin}
             className="mt-10 w-72 rounded-md bg-btn-color py-3 font-bold text-white shadow-btn hover:scale-105"
           >
             로그인
-          </Link>
+          </Link> */}
+          {/* <button
+            onClick={handleLogin}
+            className="mt-10 w-72 rounded-md bg-btn-color py-3 font-bold text-white shadow-btn hover:scale-105"
+          >
+            로그인
+          </button> */}
+          <button
+            onClick={handleLogin}
+            className="mt-20 w-80 shadow-btn transition-transform hover:scale-105"
+          >
+            <img
+              src={kakaoLoginImage}
+              alt="카카오 로그인"
+              className="h-auto w-full"
+            />
+          </button>
         </div>
       </div>
     </div>

@@ -11,14 +11,15 @@ export default {
       },
       backgroundImage: {
         "main-bg": "url('./src/assets/main_bg.png')",
+        "love-bg": "url('./src/assets/love_bg.jpg')",
+        "mafia-bg": "url('./src/assets/mafia_bg.png')",
       },
       colors: {
         "btn-color": "#8B6CAC",
         "chatRoomMain-color": "#160F1D",
         "online-color": "#24ff66",
         "offline-color": "#666666",
-        "chatRoom-color": "#F8F1FD",
-        "chatRoom-high": "#8B6CAC",
+        "custom-purple-color": "#8B6CAC",
         primary: {
           DEFAULT: "#2bca43",
         },

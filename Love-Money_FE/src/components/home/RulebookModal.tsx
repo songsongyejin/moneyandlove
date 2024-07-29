@@ -63,7 +63,8 @@ const RulebookModal: React.FC<RulebookModalProps> = ({ isOpen, onClose }) => {
       footer={footer}
     >
       <div
-        className="p-4 text-center text-black"
+        className="p-4 text-center text-xl text-black"
+        style={{ fontFamily: "DungGeunMo" }}
         dangerouslySetInnerHTML={{ __html: pages[currentPage] }}
       ></div>
     </BaseModal>
