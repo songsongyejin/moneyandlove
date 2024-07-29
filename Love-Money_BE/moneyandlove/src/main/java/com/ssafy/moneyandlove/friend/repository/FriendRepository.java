@@ -9,5 +9,6 @@ import com.ssafy.moneyandlove.user.domain.User;
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
 	void deleteByFollowerIdAndFollowingId(Long followerId, Long followingId);
+	void deleteByFollowingIdAndFollowerId(Long followingId, Long followerId);
 	List<Friend> findByFollowing(User following);
 }

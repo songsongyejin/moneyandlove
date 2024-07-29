@@ -30,8 +30,11 @@ public class FriendService {
 		User following = userRepository.findById(createFriendRequest.getFollowingId())
 			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.FOLLOWING_NOT_FOUND));
 
-		Friend friend = CreateFriendRequest.toFriend(follower, following);
-		friendRepository.save(friend);
+		Friend followingFriend = CreateFriendRequest.toFriend(follower, following);
+		Friend followerFriend = CreateFriendRequest.toFriend(following, follower);
+
+		friendRepository.save(followingFriend);
+		friendRepository.save(followerFriend);
 	}
 
 	public User getFriend(Long friendId) {
@@ -41,6 +44,7 @@ public class FriendService {
 
 	public void deleteFriend(Long followerId, Long followingId) {
 		friendRepository.deleteByFollowerIdAndFollowingId(followerId, followingId);
+		friendRepository.deleteByFollowingIdAndFollowerId(followingId, followerId);
 	}
 
 	public List<User> getFriendListByFollowing(Long followingId) {
