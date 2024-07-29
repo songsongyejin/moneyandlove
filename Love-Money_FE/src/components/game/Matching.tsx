@@ -22,7 +22,16 @@ const Matching: React.FC<MatchingProps> = ({ isOpen, onClose }) => {
         <div className="h-20 w-20 animate-spin rounded-full border-b-2 border-t-2 border-custom-purple-color"></div>
         <button
           onClick={onClose}
-          className="mt-28 rounded-lg bg-fuchsia-700 px-8 py-3 text-lg text-white hover:bg-fuchsia-800"
+          className="mt-8 rounded-lg bg-fuchsia-700 px-8 py-3 text-lg text-white hover:bg-fuchsia-800"
+          style={{
+            fontFamily: "DNFBitBitv2",
+          }}
+        >
+          매칭 확인
+        </button>
+        <button
+          onClick={onClose}
+          className="mt-8 rounded-lg bg-fuchsia-700 px-8 py-3 text-lg text-white hover:bg-fuchsia-800"
           style={{
             fontFamily: "DNFBitBitv2",
           }}

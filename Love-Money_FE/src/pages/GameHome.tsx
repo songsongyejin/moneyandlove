@@ -37,6 +37,8 @@ const GameHome: React.FC = () => {
     handleBackToPositionSelect, // 게임 모드 선택에서 포지션 선택으로 되돌아가는 함수
     handleMatchStart, // 매칭 시작 시 호출되는 함수
     handleMatchingCancel, // 매칭 취소 시 호출되는 함수
+    showMatchComplete,
+    handleMatchComplete,
   } = useGameLogic();
 
   // 선택된 포지션에 따라 배경 클래스를 결정하는 함수

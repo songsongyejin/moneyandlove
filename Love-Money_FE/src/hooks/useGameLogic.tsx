@@ -6,6 +6,7 @@ export const useGameLogic = () => {
   const [showPositionSelection, setShowPositionSelection] = useState(false); // 포지션 선택단계
   const [showGameModeSelection, setShowGameModeSelection] = useState(false); // 게임모드 선택단계
   const [showMatching, setShowMatching] = useState(false); // 매칭단계
+  const [showMatchComplete, setShowMatchComplete] = useState(false);
 
   // 사용자가 선택한 포지션과 게임 모드를 저장하는 상태
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
@@ -50,6 +51,12 @@ export const useGameLogic = () => {
     console.log("매칭 시작", position);
     setShowPositionSelection(false);
     setShowMatching(true);
+
+    // // 1초 후 매칭 완료 상태로 전환 (임의의 시간, 필요에 따라 조정 가능)
+    // setTimeout(() => {
+    //   setShowMatching(false);
+    //   setShowMatchComplete(true);
+    // }, 1000);
   };
 
   // 매칭 취소할 시 호출되는 함수
@@ -58,6 +65,12 @@ export const useGameLogic = () => {
     setSelectedPosition(null);
     setGameMode(null);
     setShowPositionSelection(false);
+  };
+
+  // 매칭 완료 확인 시 호출되는 함수
+  const handleMatchComplete = () => {
+    setShowMatchComplete(false);
+    // 여기에 매칭 완료 후 필요한 로직을 추가할 수 있습니다.
   };
 
   return {
@@ -80,5 +93,8 @@ export const useGameLogic = () => {
     handleBackToPositionSelect,
     handleMatchStart,
     handleMatchingCancel,
+    showMatchComplete,
+    setShowMatchComplete,
+    handleMatchComplete,
   };
 };
