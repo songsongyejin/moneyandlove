@@ -44,14 +44,24 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
             일반 모드
           </button>
           <button
-            onClick={() => handleModeSelect("랭크")}
+            onClick={() => handleModeSelect("러브")}
             className={`w-full rounded-lg px-4 py-2 ${
-              selectedMode === "랭크"
+              selectedMode === "러브"
                 ? "bg-custom-purple-color text-white"
                 : "bg-gray-200"
             }`}
           >
             러브 모드
+          </button>
+          <button
+            onClick={() => handleModeSelect("프리미엄")}
+            className={`w-full rounded-lg px-4 py-2 ${
+              selectedMode === "프리미엄"
+                ? "bg-custom-purple-color text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            프리미엄 모드
           </button>
         </div>
         <div className="flex space-x-4">
