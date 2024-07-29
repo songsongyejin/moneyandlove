@@ -73,7 +73,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
         <div className="flex-1 bg-[#8B6CAC] px-3 pb-3">
           <div className="h-full overflow-y-auto rounded-[10px] bg-[#F0E9F6] p-6">
             {activeTab === "info" && (
-              <div className="flex flex-col items-center">
+              <div
+                className="flex flex-col items-center"
+                style={{ fontFamily: "DungGeunMo" }}
+              >
                 <img
                   src={user?.profileURL}
                   alt="프로필"

@@ -47,24 +47,30 @@ const Navbar: React.FC = () => {
             >
               랭킹
             </button>
-            <button
-              className="flex flex-col items-center hover:scale-105"
+            {/* <button
+              className="hover:scale-105"
               onClick={() => openModal("attendance")}
             >
-              <span className="mt-4">출석체크</span>
-              <div className="flex items-center space-x-1">
-                <FaPlusCircle />
-                <FaCoins />
+              출석체크
+            </button> */}
+            <button
+              className="flex flex-row items-center hover:scale-105"
+              onClick={() => openModal("attendance")}
+            >
+              <span>출석체크</span>
+              <div
+                style={{ fontSize: "15px" }}
+                className="ml-2 flex items-center space-x-1"
+              >
+                <FaPlusCircle className="text-custom-purple-color" />
+                <FaCoins className="text-custom-purple-color" />
               </div>
             </button>
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-1">
-                <LiaCoinsSolid
-                  className="text-custom-purple-color"
-                  style={{ fontSize: "36px" }}
-                />{" "}
+                <LiaCoinsSolid style={{ fontSize: "36px" }} />{" "}
                 {/* 색상을 원하면 여기에 추가 */}
-                <span>{user?.points || 0}p</span>
+                <span className="text-lg">{user?.points || 0}</span>
               </div>
               <img
                 src={user?.profileURL || sampleImage}

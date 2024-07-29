@@ -1,43 +1,47 @@
 import React, { useState } from "react";
+import { useRecoilValue } from "recoil";
+import { userInfo } from "../atom/store";
+import { useGameLogic } from "../hooks/useGameLogic";
+
+// 필요한 아이콘과 CSS 파일을 import
 import heartIcon from "../assets/start_heart_icon.svg";
-import "../index.css"; // 필요한 CSS 파일 import
+import "../index.css";
+
+// 필요한 컴포넌트들을 import
 import FriendsSideBar from "../components/FriendsSideBar/FriendsSideBar";
 import FaceVerification from "../components/game/FaceVerification";
 import PositionSelection from "../components/game/PositionSelection";
+import GameModeSelection from "../components/game/GameModeSelection";
 import Matching from "../components/game/Matching";
-import { useRecoilValue } from "recoil";
-import { userInfo } from "../atom/store";
 
 const GameHome: React.FC = () => {
-  const [showFaceVerification, setShowFaceVerification] = useState(false);
-  const [showPositionSelection, setShowPositionSelection] = useState(false);
-  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
-  const [showMatching, setShowMatching] = useState(false);
+  // Recoil을 사용하여 사용자 정보 상태를 가져옴
   const user = useRecoilValue(userInfo);
 
-  const handleGameStart = () => {
-    // if (!user.isPhotoVerified) {
-    //   setShowFaceVerification(true);
-    // } else {
-    //   setShowPositionSelection(true);
-    // }
-    // setShowFaceVerification(true); // 얼굴인증 창부터 띄우기
-    setShowPositionSelection(true); // 얼굴인증 되어서 포지션선택창만 띄우게 일단 설정
-  };
+  // useGameLogic 훅을 사용하여 게임 로직 관련 상태와 함수들을 가져옴
+  const {
+    showFaceVerification, // 얼굴 인증 모달의 표시 여부
+    setShowFaceVerification,
+    showPositionSelection, // 포지션 선택 모달의 표시 여부
+    setShowPositionSelection,
+    selectedPosition, // 현재 선택된 포지션
+    setSelectedPosition,
+    showGameModeSelection, // 게임 모드 선택 모달의 표시 여부
+    setShowGameModeSelection,
+    showMatching, // 매칭 모달의 표시 여부
+    setShowMatching,
+    handleGameStart, // 게임 시작 버튼 클릭 시 호출되는 함수
+    handleGameModeSelectionClose,
+    handlePositionSelect, // 포지션 선택 시 호출되는 함수
+    handleGameModeSelect, // 게임 모드 선택 시 호출되는 함수
+    handleBackToPositionSelect, // 게임 모드 선택에서 포지션 선택으로 되돌아가는 함수
+    handleMatchStart, // 매칭 시작 시 호출되는 함수
+    handleMatchingCancel, // 매칭 취소 시 호출되는 함수
+  } = useGameLogic();
 
-  const handlePositionSelect = (position: string) => {
-    setSelectedPosition(position || null);
-  };
-
-  const handleMatchStart = (position: string) => {
-    console.log("매칭 시작", position);
-    setShowPositionSelection(false);
-    setShowMatching(true);
-    // 여기에 실제 매칭 로직을 추가할 수 있습니다.
-  };
-
+  // 선택된 포지션에 따라 배경 클래스를 결정하는 함수
   const getBackgroundClass = () => {
-    if (selectedPosition === "MAFIA") return "bg-mafia-bg";
+    if (selectedPosition === "MONEY") return "bg-mafia-bg";
     if (selectedPosition === "LOVE") return "bg-love-bg";
     return "bg-main-bg";
   };
@@ -48,6 +52,7 @@ const GameHome: React.FC = () => {
         className={`absolute inset-0 ${getBackgroundClass()} bg-cover bg-center`}
       ></div>
       <div className="absolute inset-0 bg-black opacity-20"></div>
+      {/* 메인 콘텐츠 영역 */}
       <div className="relative z-10 flex h-full items-center justify-center">
         <FriendsSideBar />
 
@@ -70,6 +75,7 @@ const GameHome: React.FC = () => {
           >
             진정한 사랑을 찾는 새로운 러브 심리 게임
           </p>
+          {/* 게임 시작 버튼 */}
           <div className="hvr-float-shadow relative mt-12 inline-block">
             <img
               src={heartIcon}
@@ -96,6 +102,8 @@ const GameHome: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 얼굴 인증 모달
       <FaceVerification
         isOpen={showFaceVerification}
         onClose={() => setShowFaceVerification(false)}
@@ -103,20 +111,30 @@ const GameHome: React.FC = () => {
           setShowFaceVerification(false);
           setShowPositionSelection(true);
         }}
-      />
+      /> */}
 
+      {/* 포지션 선택 모달 */}
       <PositionSelection
         isOpen={showPositionSelection}
-        onClose={
-          () => {
-            setShowPositionSelection(false);
-            setSelectedPosition(null);
-          } // 모달을 닫을 때 선택된 포지션 초기화
-        }
-        onPositionSelect={handlePositionSelect}
-        onMatchStart={handleMatchStart}
+        onClose={() => {
+          setShowPositionSelection(false);
+          // setSelectedPosition(null);
+        }}
+        selectedPosition={selectedPosition}
+        onPositionSelect={handlePositionSelect} // 포지션이 선택되면, 포지션 선택 시 호출되는 함수 실행
       />
-      <Matching isOpen={showMatching} onClose={() => setShowMatching(false)} />
+
+      {/* 게임 모드 선택 모달 */}
+      <GameModeSelection
+        isOpen={showGameModeSelection}
+        onClose={handleGameModeSelectionClose}
+        onModeSelect={handleGameModeSelect}
+        onBackToPositionSelect={handleBackToPositionSelect}
+        selectedPosition={selectedPosition || ""} // 게임모드 선택 시 현재 포지션 전달
+      />
+
+      {/* 매칭 모달 */}
+      <Matching isOpen={showMatching} onClose={handleMatchingCancel} />
     </div>
   );
 };

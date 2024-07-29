@@ -10,11 +10,22 @@ const Matching: React.FC<MatchingProps> = ({ isOpen, onClose }) => {
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="매칭 중">
       <div className="flex flex-col items-center">
-        <p className="mb-4 text-xl">대전 상대를 찾고 있습니다...</p>
-        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-purple-500"></div>
+        <p
+          className="mb-24 text-2xl"
+          style={{
+            fontFamily: "DNFBitBitv2",
+            WebkitTextStroke: "0.01px #8B6CAC",
+          }}
+        >
+          상대방을 찾고 있습니다
+        </p>
+        <div className="h-20 w-20 animate-spin rounded-full border-b-2 border-t-2 border-custom-purple-color"></div>
         <button
           onClick={onClose}
-          className="mt-6 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+          className="mt-28 rounded-lg bg-fuchsia-700 px-8 py-3 text-lg text-white hover:bg-fuchsia-800"
+          style={{
+            fontFamily: "DNFBitBitv2",
+          }}
         >
           매칭 취소
         </button>

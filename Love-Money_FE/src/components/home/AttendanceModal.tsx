@@ -21,13 +21,13 @@ const mockFetchAttendance = (): Promise<AttendanceDay[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve([
-        { attendanceDate: "2024-07-22", check: false },
-        { attendanceDate: "2024-07-23", check: false },
-        { attendanceDate: "2024-07-24", check: false },
-        { attendanceDate: "2024-07-25", check: false },
-        { attendanceDate: "2024-07-26", check: true },
-        { attendanceDate: "2024-07-27", check: false },
-        { attendanceDate: "2024-07-28", check: false },
+        { attendanceDate: "2024-07-29", check: false },
+        { attendanceDate: "2024-07-30", check: false },
+        { attendanceDate: "2024-07-31", check: false },
+        { attendanceDate: "2024-08-01", check: false },
+        { attendanceDate: "2024-08-02", check: true },
+        { attendanceDate: "2024-08-03", check: false },
+        { attendanceDate: "2024-08-04", check: false },
       ]);
     }, 100);
   });
