@@ -2,6 +2,7 @@ package com.ssafy.moneyandlove.chat.presentation;
 
 import com.ssafy.moneyandlove.chat.application.ChatRoomService;
 import com.ssafy.moneyandlove.chat.domain.ChatMessage;
+import com.ssafy.moneyandlove.chat.dto.ChatMessageRequest;
 import com.ssafy.moneyandlove.chat.dto.ChatRoomIdResponse;
 import com.ssafy.moneyandlove.chat.dto.CreateChatRoomRequest;
 import com.ssafy.moneyandlove.chat.repository.ChatMessageRepository;
@@ -28,15 +29,16 @@ public class ChattingController {
     private final ChatMessageRepository chatMessageRepository;
 
     @MessageMapping("/send/{chatRoomId}")
-    public void chat(@DestinationVariable String chatRoomId, @Payload ChatMessage chatMessage) {
-        log.info("{}", chatMessage);
-        chatMessageRepository.save(chatMessage);
-        simpMessagingTemplate.convertAndSend("/chat/receive/" + chatRoomId, chatMessage);
+    public void chat(@DestinationVariable String chatRoomId, @LoginUser User loginUser, @Payload ChatMessageRequest chatMessageRequest) {
+        log.info("{}", loginUser.getId());
+        ChatMessage chatMessage = chatMessageRepository.save(ChatMessage.of(loginUser.getId(), chatMessageRequest));
+        log.info("{}",chatMessage);
+        simpMessagingTemplate.convertAndSend("/chat/receive/" + chatRoomId, chatMessage.toChatMessageResponse());
     }
 
     @GetMapping("/room")
     public ChatRoomIdResponse getChatRoomId(@LoginUser User loginUser, @RequestParam Long toUserId) {
-        log.info("fromUserId {} , toUserId {}", loginUser, toUserId);
+        log.info("fromUserId {} , toUserId {}", loginUser.getId(), toUserId);
         return chatRoomService.findByFromUserIdAndToUserId(loginUser.getId(), toUserId);
     }
 
