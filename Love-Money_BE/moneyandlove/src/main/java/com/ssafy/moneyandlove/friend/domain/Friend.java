@@ -26,6 +26,7 @@ public class Friend extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name= "friend_id" )
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
