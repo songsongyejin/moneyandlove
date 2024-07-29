@@ -7,6 +7,7 @@ import { mockLogin } from "../utils/mockLogin";
 import kakaoLoginImage from "../assets/kakao_login_large_wide.png";
 
 const Home: React.FC = () => {
+  //유저 로그인 정보
   const [user, setUser] = useRecoilState(userInfo);
   const navigate = useNavigate();
 

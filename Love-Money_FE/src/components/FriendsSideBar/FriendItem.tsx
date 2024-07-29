@@ -18,7 +18,7 @@ const FreindItem: React.FC<{
     >
       {isHovered && (
         <div
-          className={`drop-shadow-custom w-1 rounded ${friend.isOnline ? "bg-online-color" : "bg-offline-color"} `}
+          className={`w-1 rounded drop-shadow-custom ${friend.isOnline ? "bg-btn-color" : "bg-offline-color"} `}
         ></div>
       )}
 

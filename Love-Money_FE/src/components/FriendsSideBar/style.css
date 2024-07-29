@@ -94,7 +94,7 @@ nav .nav-links .link {
 }
 
 .icon {
-  color: rgb(36, 255, 102);
+  color: #8b6cac;
   filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7))
     drop-shadow(0 0 1px rgba(255, 255, 255, 0.7))
     drop-shadow(0 0 1px rgba(255, 255, 255, 0.7));
@@ -106,7 +106,7 @@ nav .nav-links .link {
 
 /* Scrollbar styles */
 .nav-links::-webkit-scrollbar {
-  width: 12px; /* Width of the scrollbar */
+  width: 9px; /* Width of the scrollbar */
 }
 
 .nav-links::-webkit-scrollbar-track {
@@ -114,7 +114,7 @@ nav .nav-links .link {
 }
 
 .nav-links::-webkit-scrollbar-thumb {
-  background-color: #785a28; /* Color of the scrollbar thumb */
+  background-color: #8b6cac; /* Color of the scrollbar thumb */
   border-radius: 5px; /* Rounded corners for the scrollbar thumb */
-  border: 3px solid #785a28; /* Border around the scrollbar thumb */
+  border: 1px solid #8b6cac; /* Border around the scrollbar thumb */
 }

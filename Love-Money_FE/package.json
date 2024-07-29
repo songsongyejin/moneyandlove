@@ -13,8 +13,11 @@
   "dependencies": {
     "@reacticons/ionicons": "^7.1.0",
     "autoprefixer": "^10.4.19",
+    "axios": "^1.7.2",
+    "face-api.js": "^0.22.2",
     "framer-motion": "12.0.0-alpha.0",
     "hover.css": "^2.3.2",
+    "openvidu-browser": "^2.30.1",
     "postcss": "^8.4.39",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
