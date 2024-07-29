@@ -2,14 +2,7 @@ package com.ssafy.moneyandlove.chat.domain;
 
 import com.ssafy.moneyandlove.common.TimeBaseEntity;
 import com.ssafy.moneyandlove.user.domain.User;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +19,6 @@ public class ChatRoom extends TimeBaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String roomId;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "from_user_id")
 	private User fromUser;
@@ -36,10 +27,11 @@ public class ChatRoom extends TimeBaseEntity {
 	@JoinColumn(name = "to_user_id")
 	private User toUser;
 
-	public static ChatRoom toChatRoom(User fromUser, User toUser) {
+	public static ChatRoom of(Long roomId, User fromUser, User toUser) {
 		return ChatRoom.builder()
-			.fromUser(fromUser)
-			.toUser(toUser)
-			.build();
+				.id(roomId)
+				.fromUser(fromUser)
+				.toUser(toUser)
+				.build();
 	}
 }

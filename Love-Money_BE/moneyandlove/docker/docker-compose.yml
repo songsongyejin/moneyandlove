@@ -24,6 +24,7 @@ services:
     networks:
       - moneyandlove-network
   openvidu:
+    container_name: moneyandlove-openvidu
     image: openvidu/openvidu-dev:2.30.0
     ports:
       - "4443:4443"
@@ -32,8 +33,6 @@ services:
     restart: unless-stopped
     networks:
       - moneyandlove-network
-
 networks:
   moneyandlove-network:
     driver: bridge
-
