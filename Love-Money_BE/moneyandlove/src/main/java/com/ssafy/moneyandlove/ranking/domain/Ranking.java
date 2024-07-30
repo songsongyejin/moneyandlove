@@ -32,6 +32,6 @@ public class Ranking extends TimeBaseEntity {
 	private Long rankPoint;
 
 	public void updateRankingPoint(Long rankPoint){
-		this.rankPoint = rankPoint;
+		this.rankPoint += rankPoint;
 	}
 }

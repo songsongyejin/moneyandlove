@@ -36,7 +36,7 @@ public class RankingService {
 	public void updateRankingPoint(Long userId, Long rankPoint) {
 		Ranking ranking = rankingRepository.findByUserId(userId)
 			.orElseThrow(()-> new MoneyAndLoveException(ErrorType.RANKING_NOT_FOUND));
-		ranking.updateRankingPoint(ranking.getRankPoint()+rankPoint);
+		ranking.updateRankingPoint(rankPoint);
 		rankingRepository.save(ranking);
 	}
 
