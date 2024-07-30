@@ -6,7 +6,7 @@ spring:
           kakao:
             client-id: ${KAKAO_CLIENT}
             client-secret: ${KAKAO_SECRET}
-            redirect-uri: "http://localhost:8080/login/oauth2/callback"
+            redirect-uri: "http://localhost:3000/login/oauth2/callback"
             authorization-grant-type: authorization_code
             client-authentication-method: POST
             scope: # kakao 개인 정보 동의 항목 설정의 ID 값
