@@ -23,6 +23,15 @@ const Matching: React.FC<MatchingProps> = ({ isOpen, onClose }) => {
         </p>
         <div className="h-20 w-20 animate-spin rounded-full border-b-2 border-t-2 border-custom-purple-color"></div>
         <button
+          onClick={() => navigate("/whatsittoya")}
+          className="mt-8 rounded-lg bg-fuchsia-700 px-8 py-3 text-lg text-white"
+          style={{
+            fontFamily: "DNFBitBitv2",
+          }}
+        >
+          왓츠잇투야 게임
+        </button>
+        <button
           onClick={() => navigate("/room")}
           className="mt-8 rounded-lg bg-fuchsia-700 px-8 py-3 text-lg text-white hover:bg-fuchsia-800"
           style={{
