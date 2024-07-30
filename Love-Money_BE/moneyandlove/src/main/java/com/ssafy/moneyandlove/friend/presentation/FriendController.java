@@ -28,6 +28,7 @@ public class FriendController {
 
 	@PostMapping
 	public ResponseEntity<?> createFriend(@RequestBody CreateFriendRequest createFriendRequest) {
+		System.out.println("여기");
 		friendService.addFriend(createFriendRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}

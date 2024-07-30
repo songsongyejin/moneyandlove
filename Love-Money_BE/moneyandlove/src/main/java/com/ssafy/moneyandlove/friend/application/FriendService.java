@@ -25,16 +25,20 @@ public class FriendService {
 
 	@Transactional
 	public void addFriend(CreateFriendRequest createFriendRequest) {
-		User follower = userRepository.findById(createFriendRequest.getFollowerId())
+		Long followerId = createFriendRequest.getFollowerId();
+		Long followingId = createFriendRequest.getFollowingId();
+		User follower = userRepository.findById(followerId)
 			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.FOLLOWER_NOT_FOUND));
-		User following = userRepository.findById(createFriendRequest.getFollowingId())
+		User following = userRepository.findById(followingId)
 			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.FOLLOWING_NOT_FOUND));
 
-		Friend followingFriend = CreateFriendRequest.toFriend(follower, following);
-		Friend followerFriend = CreateFriendRequest.toFriend(following, follower);
+		// 중복 검사
+		if (friendRepository.existsByFollowingAndFollower(followingId, followerId)) {
+			throw new MoneyAndLoveException(ErrorType.FRIEND_ALREADY_EXISTS);
+		}
 
-		friendRepository.save(followingFriend);
-		friendRepository.save(followerFriend);
+		Friend friend = CreateFriendRequest.toFriend(following, follower);
+		friendRepository.save(friend);
 	}
 
 	public User getFriend(Long friendId) {
