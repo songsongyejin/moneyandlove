@@ -315,17 +315,17 @@ const Room: React.FC = () => {
             <p>상대방과 화상채팅을 진행하시겠습니까?</p>
           </AgreeFaceChatModal>
           <div
-            className={`${mode == "chat" ? "" : "hidden"} w-96 flex-col rounded-2xl bg-chatRoom-color`}
+            className={`${mode == "chat" ? "" : "hidden"} w-96 flex-col rounded-2xl`}
           >
-            <header className="bg-chatRoom-high h-14 rounded-t-2xl"></header>
-            <div className="h-5/6 overflow-y-auto border border-gray-300 p-2">
+            <header className="bg-chatRoom-high h-14 rounded-t-2xl bg-custom-purple-color"></header>
+            <div className="h-5/6 overflow-y-auto border border-gray-300 bg-chatRoom-color p-2">
               {messages.map((msg, i) => (
                 <div key={i} className="mb-1">
                   <strong>{msg.user}:</strong> {msg.text}
                 </div>
               ))}
             </div>
-            <div className="bg-chatRoom-high flex items-center rounded-b-2xl p-4">
+            <div className="flex items-center rounded-b-2xl bg-custom-purple-color p-4">
               <input
                 type="text"
                 className="flex-grow rounded-lg bg-chatRoom-color p-2"
