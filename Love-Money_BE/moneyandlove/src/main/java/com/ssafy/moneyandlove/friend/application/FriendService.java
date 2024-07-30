@@ -37,7 +37,7 @@ public class FriendService {
 			throw new MoneyAndLoveException(ErrorType.FRIEND_ALREADY_EXISTS);
 		}
 
-		Friend friend = CreateFriendRequest.toFriend(following, follower);
+		Friend friend = CreateFriendRequest.toFriend(follower, following);
 		friendRepository.save(friend);
 	}
 
