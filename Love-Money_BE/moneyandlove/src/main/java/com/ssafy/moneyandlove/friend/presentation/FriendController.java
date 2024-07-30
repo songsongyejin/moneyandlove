@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.moneyandlove.common.annotation.LoginUser;
 import com.ssafy.moneyandlove.friend.application.FriendService;
 import com.ssafy.moneyandlove.friend.dto.CreateFriendRequest;
+import com.ssafy.moneyandlove.friend.dto.FriendInfoResponse;
 import com.ssafy.moneyandlove.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,6 @@ public class FriendController {
 
 	@PostMapping
 	public ResponseEntity<?> createFriend(@RequestBody CreateFriendRequest createFriendRequest) {
-		System.out.println("여기");
 		friendService.addFriend(createFriendRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
@@ -46,8 +46,8 @@ public class FriendController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<User>> getFriendListByFollowing(@LoginUser User followingUser) {
-		List<User> friends = friendService.getFriendListByFollowing(followingUser.getId());
-		return ResponseEntity.ok(friends);
+	public ResponseEntity<List<FriendInfoResponse>> getFriendListByFollowing(@LoginUser User followingUser) {
+		List<FriendInfoResponse> friendList = friendService.getFriendListByFollowing(followingUser.getId());
+		return ResponseEntity.ok(friendList);
 	}
 }
