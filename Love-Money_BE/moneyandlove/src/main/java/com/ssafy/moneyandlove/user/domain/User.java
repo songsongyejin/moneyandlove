@@ -51,4 +51,8 @@ public class User extends TimeBaseEntity {
 			.nickname(nickname)
 			.build();
 	}
+
+	public void changeProfileURL(String profileURL) {
+		this.profileURL = profileURL;
+	}
 }
