@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.ssafy.moneyandlove.common.filter.JwtAuthenticateFilter;
 import com.ssafy.moneyandlove.common.jwt.JwtProvider;
@@ -34,7 +33,8 @@ public class SecurityConfig {
 			.headers(c -> c.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable).disable())
 			.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers(AntPathRequestMatcher.antMatcher("/**")).permitAll() // 다른 모든 요청은 허용
+				.requestMatchers("/chat/**", "/friends/**", "/attendance/**").authenticated()
+				.anyRequest().permitAll()// 다른 모든 요청은 허용
 			)
 			.addFilterBefore(new JwtAuthenticateFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 

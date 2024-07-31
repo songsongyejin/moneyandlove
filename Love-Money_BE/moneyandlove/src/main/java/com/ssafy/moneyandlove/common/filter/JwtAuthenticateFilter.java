@@ -2,10 +2,10 @@ package com.ssafy.moneyandlove.common.filter;
 
 import java.io.IOException;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.ssafy.moneyandlove.common.error.ErrorType;
+import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
 import com.ssafy.moneyandlove.common.jwt.JwtProvider;
 
 import jakarta.servlet.FilterChain;
@@ -27,13 +27,15 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
+		log.info("request is {}", request);
 
 		String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
+		if(authorizationHeader == null){
+			throw new MoneyAndLoveException(ErrorType.USER_NOT_FOUND);
+		}
 		log.info("authorize {}", authorizationHeader);
 		String token = getAccessToken(authorizationHeader);
 		log.info("token is {}", token);
-		Authentication authentication = jwtProvider.getAuthentication(token);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
 		doFilter(request, response, filterChain);
 	}
 
@@ -41,7 +43,6 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 		if (authorizationHeader != null && authorizationHeader.startsWith(TOKEN_PREFIX)) {
 			return authorizationHeader.substring(TOKEN_PREFIX.length());
 		}
-
 		return null;
 	}
 }
