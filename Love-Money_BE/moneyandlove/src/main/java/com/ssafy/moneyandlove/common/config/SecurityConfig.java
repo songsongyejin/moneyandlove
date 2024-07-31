@@ -1,19 +1,17 @@
 package com.ssafy.moneyandlove.common.config;
 
-import com.ssafy.moneyandlove.common.filter.JwtAuthenticateFilter;
-import com.ssafy.moneyandlove.user.service.CustomOAuth2UserService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.ssafy.moneyandlove.common.filter.JwtAuthenticateFilter;
+import com.ssafy.moneyandlove.common.jwt.JwtProvider;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,41 +20,24 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 public class SecurityConfig {
 
-	private final JwtAuthenticateFilter jwtAuthenticateFilter;
-	private final CustomOAuth2UserService customOAuth2UserService;
+	private final JwtProvider jwtProvider;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-			.csrf(AbstractHttpConfigurer::disable) // csrf 비활성화 -> cookie를 사용하지 않으면 꺼도 된다. (cookie를 사용할 경우 httpOnly(XSS 방어), sameSite(CSRF 방어)로 방어해야 한다.)
-			.cors(AbstractHttpConfigurer::disable) // cors 비활성화 -> 프론트와 연결 시 따로 설정 필요
-			.httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 로그인 비활성화
-			.formLogin(AbstractHttpConfigurer::disable) // 기본 login form 비활성화
-			.logout(AbstractHttpConfigurer::disable) // 기본 logout 비활성화
-			.headers(c -> c.frameOptions(
-				HeadersConfigurer.FrameOptionsConfig::disable).disable()) // X-Frame-Options 비활성화
-			.sessionManagement(c ->
-				c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.csrf(AbstractHttpConfigurer::disable)
+			.cors(AbstractHttpConfigurer::disable)
+			.httpBasic(AbstractHttpConfigurer::disable)
+			.formLogin(AbstractHttpConfigurer::disable)
+			.logout(AbstractHttpConfigurer::disable)
+			.headers(c -> c.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable).disable())
+			.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/**").permitAll()
-				.anyRequest().authenticated()
+				.requestMatchers("/chat/**", "/friends/**", "/attendance/**").authenticated()
+				.anyRequest().permitAll()// 다른 모든 요청은 허용
 			)
-			.addFilterBefore(jwtAuthenticateFilter, UsernamePasswordAuthenticationFilter.class)
-			.oauth2Login(oauth2 -> oauth2
-				.userInfoEndpoint(userInfo -> userInfo
-					.userService(customOAuth2UserService)
-				)
-				.defaultSuccessUrl("/loginSuccess")
-				.failureUrl("/loginFailure")
-			);
+			.addFilterBefore(new JwtAuthenticateFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
-	}
-
-	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
-		return web -> web.ignoring()
-			// error endpoint를 열어줘야 함, favicon.ico 추가!
-			.requestMatchers("/error", "/favicon.ico");
 	}
 }

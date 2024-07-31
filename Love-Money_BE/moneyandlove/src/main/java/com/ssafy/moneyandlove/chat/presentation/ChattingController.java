@@ -18,10 +18,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/chat")
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/chat")
-@CrossOrigin(origins = "*")
 public class ChattingController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;

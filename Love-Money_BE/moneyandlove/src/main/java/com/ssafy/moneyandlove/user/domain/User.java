@@ -25,7 +25,8 @@ public class User extends TimeBaseEntity {
 	@Column(name = "user_id")
 	private Long id;
 
-	private String userLoginId;
+	@Column(unique = true, nullable = false)
+	private Long kakaoId;
 
 	@Column(unique = true, nullable = false)
 	private String email;
@@ -44,7 +45,10 @@ public class User extends TimeBaseEntity {
 	@Column(name = "profile_url")
 	private String profileURL;
 
-	public void changeProfileURL(String profileURL) {
-		this.profileURL = profileURL;
+	public static User create(Long id, String nickname) {
+		return User.builder()
+			.id(id)
+			.nickname(nickname)
+			.build();
 	}
 }
