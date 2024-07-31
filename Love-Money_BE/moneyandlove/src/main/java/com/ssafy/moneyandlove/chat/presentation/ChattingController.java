@@ -8,7 +8,6 @@ import com.ssafy.moneyandlove.chat.dto.ChatMessageRequest;
 import com.ssafy.moneyandlove.chat.dto.ChatRoomIdResponse;
 import com.ssafy.moneyandlove.chat.dto.CreateChatRoomRequest;
 import com.ssafy.moneyandlove.chat.repository.ChatMessageRepository;
-import com.ssafy.moneyandlove.chat.repository.ChatRoomRepository;
 import com.ssafy.moneyandlove.common.annotation.LoginUser;
 import com.ssafy.moneyandlove.user.domain.User;
 import lombok.RequiredArgsConstructor;

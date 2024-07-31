@@ -4,7 +4,6 @@ import com.ssafy.moneyandlove.chat.domain.ChatRoom;
 import com.ssafy.moneyandlove.chat.dto.ChatRoomIdResponse;
 import com.ssafy.moneyandlove.chat.dto.CreateChatRoomRequest;
 import com.ssafy.moneyandlove.chat.repository.ChatRoomRepository;
-import com.ssafy.moneyandlove.common.annotation.LoginUser;
 import com.ssafy.moneyandlove.common.error.ErrorType;
 import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
 import com.ssafy.moneyandlove.user.domain.User;
@@ -12,7 +11,6 @@ import com.ssafy.moneyandlove.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
@@ -29,7 +27,7 @@ public class ChatRoomService {
         return ChatRoomIdResponse.from(chatRoom.orElseThrow(() -> new MoneyAndLoveException(ErrorType.CHATROOM_NOT_FOUND)).getId());
     }
 
-    public ChatRoomIdResponse save(@LoginUser User loginUser, CreateChatRoomRequest createChatRoomRequest) {
+    public ChatRoomIdResponse save(User loginUser, CreateChatRoomRequest createChatRoomRequest) {
         Optional<ChatRoom> existingChatRoom = chatRoomRepository.findChatRoomByUsers(loginUser.getId(), createChatRoomRequest.getToUserId());
         if (existingChatRoom.isPresent()) {
             return ChatRoomIdResponse.from(existingChatRoom.orElseThrow().getId());
