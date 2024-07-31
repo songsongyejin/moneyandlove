@@ -19,7 +19,8 @@ const MainGame: React.FC<MainGameProps> = () => {
   ];
 
   return (
-    <div className="flex flex-row">
+    <div className="flex h-screen w-full items-center justify-center">
+      {/* 게임창 */}
       <div className="relative flex h-[620px] w-[900px] flex-col rounded-[20px] bg-[#F0E9F6]">
         {/* 제목 박스 */}
         <div className="absolute -top-5 left-1/2 flex h-[50px] w-[250px] -translate-x-1/2 items-center justify-center rounded-3xl bg-[#8B6CAC]">
@@ -36,13 +37,13 @@ const MainGame: React.FC<MainGameProps> = () => {
         </div>
       </div>
       {/* 게임창 밖의 카드들 */}
-      <div className="flex flex-col">
+      <div className="absolute right-32 top-[38%] flex -translate-y-1/2 transform flex-col space-y-3 rounded-lg bg-white bg-opacity-80 px-10 py-6 shadow-lg">
         {cards.map((card, index) => (
           <div key={card.id} className="cursor-move">
             <img
               src={card.image}
               alt={`Card ${index + 1}`}
-              className="h-20 w-20"
+              className="h-[70px] w-[70px]"
             />
           </div>
         ))}

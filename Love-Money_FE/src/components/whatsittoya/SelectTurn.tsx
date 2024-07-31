@@ -8,20 +8,25 @@ interface SelectTurnProps {
 }
 
 const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected }) => {
+  // 첫번째카드, 두번째카드 각 카드의 뒤집힘 상태를 관리하는 state
   const [isFlippedFirst, setIsFlippedFirst] = useState(false);
   const [isFlippedSecond, setIsFlippedSecond] = useState(false);
+  // 카드가 선택되었는지 여부를 관리하는 state
   const [isCardSelected, setIsCardSelected] = useState(false);
 
+  // 첫 번째 카드 클릭 핸들러
   const handleFlipFirst = () => {
     setIsFlippedFirst(!isFlippedFirst);
     setIsCardSelected(true);
   };
 
+  // 두 번째 카드 클릭 핸들러
   const handleFlipSecond = () => {
     setIsFlippedSecond(!isFlippedSecond);
     setIsCardSelected(true);
   };
 
+  // 카드 선택 후 2초 뒤에 onTurnSelected 함수를 호출하는 효과
   useEffect(() => {
     if (isCardSelected) {
       const timer = setTimeout(() => {
@@ -56,6 +61,7 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected }) => {
             <p className="mb-3 text-xl">게임이 곧 시작됩니다!</p>
             <p className="text-xl">게임의 순서를 위해 카드를 골라주세요</p>
           </div>
+          {/* 카드 선택 영역 */}
           <div className="card-container flex flex-row space-x-20">
             <div
               className={`flip-card cursor-pointer ${isFlippedFirst ? "flipped" : ""}`}
