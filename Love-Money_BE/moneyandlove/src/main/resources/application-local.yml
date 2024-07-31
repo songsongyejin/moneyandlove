@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: "jdbc:mysql://localhost:3306/moneyandlovedb?autoReconnect=true&useUnicode=true&serverTimezone=Asia/Seoul"
+    username: root
+    password: 1234
+  jpa:
+    database: mysql
+    properties:
+      hibernate:
+        storage_engine: innodb
+        format_sql: true
+        use_sql_comments: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show_sql: true
+  data:
+    mongodb:
+      uri: "mongodb://localhost:27017/moneyandlovedb"
+  logging.level:
+    org.hibernate.SQL: debug
+
+OPENVIDU:
+  URL: http://localhost:4443/
+  SECRET: MY_SECRET
+
+jwt:
+  secret: nienteammoneyandlovenienteammoneyandlovenienteammoneyandlovenienteammoneyandlove
+oauth2:
+  client-id: ${KAKAO_CLIENT}
+  client-secret: ${KAKAO_SECRET}
+  redirect-uri: "http://localhost:3000/login/oauth2/callback"
