@@ -14,7 +14,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.ssafy.moneyandlove.common.error.ErrorType;
+import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
+import com.ssafy.moneyandlove.common.jwt.JwtProvider;
 import com.ssafy.moneyandlove.user.domain.User;
+import com.ssafy.moneyandlove.user.dto.JwtResponse;
 import com.ssafy.moneyandlove.user.dto.KakaoAccount;
 import com.ssafy.moneyandlove.user.dto.KakaoToken;
 import com.ssafy.moneyandlove.user.dto.SignUpRequest;
@@ -29,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final JwtProvider jwtProvider;
 
 	@Value("${oauth2.client-id}")
 	private String clientId;
@@ -39,7 +44,7 @@ public class UserService {
 	@Value("${oauth2.redirect-uri}")
 	private String redirectUri;
 
-	public KakaoToken getKakaoAccessToken(String code){
+	public KakaoToken getKakaoAccessToken(String code) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
@@ -54,7 +59,7 @@ public class UserService {
 			new HttpEntity<>(params, headers);
 
 		RestTemplate rt = new RestTemplate();
-		ResponseEntity<String> accessTokenResponse  = rt.exchange(
+		ResponseEntity<String> accessTokenResponse = rt.exchange(
 			"https://kauth.kakao.com/oauth/token",
 			HttpMethod.POST,
 			kakaoTokenRequest,
@@ -108,7 +113,15 @@ public class UserService {
 		return userRepository.findByKakaoId(kakaoAccount.getId()).isPresent();
 	}
 
-	public void save(SignUpRequest signUpRequest){
-		userRepository.save(User.from(signUpRequest));
+	public JwtResponse save(SignUpRequest signUpRequest) {
+		User user = userRepository.save(SignUpRequest.toUser(signUpRequest));
+		return JwtResponse.from(jwtProvider.generateToken(user));
+	}
+
+	public JwtResponse findByKakaoId(KakaoAccount kakaoAccount) {
+		User user = userRepository
+			.findByKakaoId(kakaoAccount.getId())
+			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
+		return JwtResponse.from(jwtProvider.generateToken(user));
 	}
 }

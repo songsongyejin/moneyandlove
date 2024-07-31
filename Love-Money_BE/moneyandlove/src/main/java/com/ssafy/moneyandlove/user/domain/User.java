@@ -1,7 +1,6 @@
 package com.ssafy.moneyandlove.user.domain;
 
 import com.ssafy.moneyandlove.common.TimeBaseEntity;
-import com.ssafy.moneyandlove.user.dto.SignUpRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,21 +44,6 @@ public class User extends TimeBaseEntity {
 
 	@Column(name = "profile_url")
 	private String profileURL;
-
-	public static User from(SignUpRequest signUpRequest){
-		return User.builder()
-			.kakaoId(signUpRequest.getKakaoId())
-			.age(signUpRequest.getAge())
-			.email(signUpRequest.getEmail())
-			.nickname(signUpRequest.getNickname())
-			.gender(signUpRequest.getGender())
-			.gamePoint(signUpRequest.getGamePoint())
-			.gender(signUpRequest.getGender())
-			.region(signUpRequest.getRegion())
-			.age(signUpRequest.getAge())
-			.profileURL(signUpRequest.getProfileURL())
-			.build();
-	}
 
 	public static User create(Long id, String nickname) {
 		return User.builder()

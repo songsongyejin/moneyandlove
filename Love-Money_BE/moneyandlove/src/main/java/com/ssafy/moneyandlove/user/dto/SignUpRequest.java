@@ -1,6 +1,7 @@
 package com.ssafy.moneyandlove.user.dto;
 
 import com.ssafy.moneyandlove.user.domain.Gender;
+import com.ssafy.moneyandlove.user.domain.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,4 +22,19 @@ public class SignUpRequest {
 	private String region;
 	private int age;
 	private String profileURL;
+
+	public static User toUser(SignUpRequest signUpRequest){
+		return User.builder()
+			.kakaoId(signUpRequest.getKakaoId())
+			.age(signUpRequest.getAge())
+			.email(signUpRequest.getEmail())
+			.nickname(signUpRequest.getNickname())
+			.gender(signUpRequest.getGender())
+			.gamePoint(signUpRequest.getGamePoint())
+			.gender(signUpRequest.getGender())
+			.region(signUpRequest.getRegion())
+			.age(signUpRequest.getAge())
+			.profileURL(signUpRequest.getProfileURL())
+			.build();
+	}
 }
