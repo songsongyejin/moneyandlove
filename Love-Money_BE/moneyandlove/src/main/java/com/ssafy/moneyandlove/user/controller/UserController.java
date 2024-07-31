@@ -18,13 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class UserController {
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    @Value("${oauth2.client-id}")
     private String clientId;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+    @Value("${oauth2.client-secret}")
     private String clientSecret;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    @Value("${oauth2.redirect-uri}")
     private String redirectUri;
 
     @GetMapping("/login/oauth2")

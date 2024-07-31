@@ -28,3 +28,14 @@ oauth2:
   client-id: ${KAKAO_CLIENT}
   client-secret: ${KAKAO_SECRET}
   redirect-uri: "http://localhost:3000/login/oauth2/callback"
+
+cloud:
+  aws:
+    region: ap-northeast-2
+    credentials:
+      access-key: ${AWS_ACCESSKEY}
+      secret-key: ${AWS_SECRETKEY}
+  s3:
+    bucket: ${AWS_BUCKET_NAME}
+  stack:
+    auto: false
