@@ -28,4 +28,10 @@ public class Ranking extends TimeBaseEntity {
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	private Long rankPoint;
+
+	public void updateRankingPoint(Long rankPoint){
+		this.rankPoint += rankPoint;
+	}
 }

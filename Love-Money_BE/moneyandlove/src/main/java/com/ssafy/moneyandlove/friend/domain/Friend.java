@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -30,11 +29,11 @@ public class Friend extends TimeBaseEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "follower_id")
-	private User follower;
-
-	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "following_id")
 	private User following;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "follower_id")
+	private User follower;
 
 }
