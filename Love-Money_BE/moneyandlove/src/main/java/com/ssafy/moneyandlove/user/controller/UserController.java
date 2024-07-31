@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.moneyandlove.common.annotation.LoginUser;
 import com.ssafy.moneyandlove.common.jwt.JwtProvider;
+import com.ssafy.moneyandlove.user.domain.User;
 import com.ssafy.moneyandlove.user.dto.KakaoAccount;
 import com.ssafy.moneyandlove.user.dto.KakaoToken;
 import com.ssafy.moneyandlove.user.dto.SignUpRequest;
@@ -42,6 +44,13 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> sign(@RequestBody SignUpRequest signUpRequest){
         userService.save(signUpRequest);
+        return ResponseEntity.ok("ok");
+    }
+
+    @GetMapping("/token")
+    public ResponseEntity<?> checkAuthorize(@LoginUser User user) {
+        log.info("user id {}", user.getId());
+        log.info("user nickname {}", user.getNickname());
         return ResponseEntity.ok("ok");
     }
 }

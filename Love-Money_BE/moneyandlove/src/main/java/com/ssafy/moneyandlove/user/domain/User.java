@@ -60,4 +60,11 @@ public class User extends TimeBaseEntity {
 			.profileURL(signUpRequest.getProfileURL())
 			.build();
 	}
+
+	public static User create(Long id, String nickname) {
+		return User.builder()
+			.id(id)
+			.nickname(nickname)
+			.build();
+	}
 }
