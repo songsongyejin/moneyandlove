@@ -39,7 +39,7 @@ public class ChatRoomService {
                 .orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
         User toUser = userRepository.findById(createChatRoomRequest.getToUserId())
                 .orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
-        ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.builder().fromUser(fromUser).toUser(toUser).build());
+        ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.of(fromUser, toUser));
 
         return ChatRoomIdResponse.from(chatRoom);
     }
