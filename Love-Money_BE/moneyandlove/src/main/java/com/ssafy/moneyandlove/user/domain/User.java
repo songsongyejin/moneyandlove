@@ -44,4 +44,7 @@ public class User extends TimeBaseEntity {
 	@Column(name = "profile_url")
 	private String profileURL;
 
+	public void changeProfileURL(String profileURL) {
+		this.profileURL = profileURL;
+	}
 }

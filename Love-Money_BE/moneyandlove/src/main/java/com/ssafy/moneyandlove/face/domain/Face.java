@@ -32,4 +32,8 @@ public class Face extends TimeBaseEntity {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	public void changeMontageURL(String montageURL) {
+		this.montageURL = montageURL;
+	}
 }
