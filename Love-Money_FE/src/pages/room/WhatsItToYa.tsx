@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SelectTurn from "../../components/whatsittoya/SelectTurn";
-import MainGame from "../../components/whatsittoya/MainGame";
+import MainGame from "../../components/whatsittoya/MainGameTest2";
 
 const WhatsItToYa: React.FC = () => {
   // 메인 게임 화면 표시 여부를 관리하는 state

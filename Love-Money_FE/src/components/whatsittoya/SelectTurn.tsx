@@ -49,17 +49,18 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected }) => {
         </h1>
       </div>
       {/* 턴 선택 영역 */}
-      <div className="mt-20 flex flex-wrap items-center justify-center gap-4">
+      <div className="mt-14 flex flex-wrap items-center justify-center gap-4">
         <div className="flex flex-col items-center justify-center">
+          {/* 설명 영역 */}
           <div
-            className="mx-auto mb-14 flex flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-14 text-center"
+            className="mx-auto mb-16 flex flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-14 text-center"
             style={{
               fontFamily: "DungGeunMo",
               width: "600px",
             }}
           >
-            <p className="mb-3 text-xl">게임이 곧 시작됩니다!</p>
-            <p className="text-xl">게임의 순서를 위해 카드를 골라주세요</p>
+            <p className="mb-3 text-2xl">게임이 곧 시작됩니다!</p>
+            <p className="text-2xl">게임의 순서를 위해 카드를 골라주세요</p>
           </div>
           {/* 카드 선택 영역 */}
           <div className="card-container flex flex-row space-x-20">
