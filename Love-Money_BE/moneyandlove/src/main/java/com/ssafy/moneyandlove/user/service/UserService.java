@@ -58,6 +58,7 @@ public class UserService {
 		HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
 			new HttpEntity<>(params, headers);
 
+		System.out.println("QWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQ");
 		RestTemplate rt = new RestTemplate();
 		ResponseEntity<String> accessTokenResponse = rt.exchange(
 			"https://kauth.kakao.com/oauth/token",
@@ -115,13 +116,13 @@ public class UserService {
 
 	public JwtResponse save(SignUpRequest signUpRequest) {
 		User user = userRepository.save(SignUpRequest.toUser(signUpRequest));
-		return JwtResponse.from(jwtProvider.generateToken(user));
+		return JwtResponse.from(jwtProvider.makeToken(user));
 	}
 
 	public JwtResponse findByKakaoId(KakaoAccount kakaoAccount) {
 		User user = userRepository
 			.findByKakaoId(kakaoAccount.getId())
 			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
-		return JwtResponse.from(jwtProvider.generateToken(user));
+		return JwtResponse.from(jwtProvider.makeToken(user));
 	}
 }
