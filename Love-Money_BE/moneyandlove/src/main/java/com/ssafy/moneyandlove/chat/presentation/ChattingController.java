@@ -1,21 +1,32 @@
 package com.ssafy.moneyandlove.chat.presentation;
 
-import com.ssafy.moneyandlove.chat.application.ChatRoomService;
-import com.ssafy.moneyandlove.chat.domain.ChatMessage;
-import com.ssafy.moneyandlove.chat.dto.ChatMessageRequest;
-import com.ssafy.moneyandlove.chat.dto.ChatRoomIdResponse;
-import com.ssafy.moneyandlove.chat.dto.CreateChatRoomRequest;
-import com.ssafy.moneyandlove.chat.repository.ChatMessageRepository;
-import com.ssafy.moneyandlove.chat.repository.ChatRoomRepository;
-import com.ssafy.moneyandlove.common.annotation.LoginUser;
-import com.ssafy.moneyandlove.user.domain.User;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ssafy.moneyandlove.chat.application.ChatRoomService;
+import com.ssafy.moneyandlove.chat.domain.ChatMessage;
+import com.ssafy.moneyandlove.chat.dto.ChatMessageRequest;
+import com.ssafy.moneyandlove.chat.dto.ChatMessageResponse;
+import com.ssafy.moneyandlove.chat.dto.ChatRoomIdResponse;
+import com.ssafy.moneyandlove.chat.dto.CreateChatRoomRequest;
+import com.ssafy.moneyandlove.chat.repository.ChatMessageRepository;
+import com.ssafy.moneyandlove.common.annotation.LoginUser;
+import com.ssafy.moneyandlove.user.domain.User;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/chat")
@@ -30,20 +41,27 @@ public class ChattingController {
     @MessageMapping("/send/{chatRoomId}")
     public void chat(@DestinationVariable String chatRoomId, @LoginUser User loginUser, @Payload ChatMessageRequest chatMessageRequest) {
         log.info("{}", loginUser.getId());
-        ChatMessage chatMessage = chatMessageRepository.save(ChatMessage.of(loginUser.getId(), chatMessageRequest));
+        ChatMessage chatMessage = chatMessageRepository.save(chatMessageRequest.toChatMessage(loginUser.getId()));
         log.info("{}",chatMessage);
-        simpMessagingTemplate.convertAndSend("/chat/receive/" + chatRoomId, chatMessage.toChatMessageResponse());
+        simpMessagingTemplate.convertAndSend("/chat/receive/" + chatRoomId, ChatMessageResponse.from(chatMessage));
     }
 
     @GetMapping("/room")
-    public ChatRoomIdResponse getChatRoomId(@LoginUser User loginUser, @RequestParam Long toUserId) {
+    public ResponseEntity<ChatRoomIdResponse> getChatRoomId(@LoginUser User loginUser, @RequestParam Long toUserId) {
         log.info("fromUserId {} , toUserId {}", loginUser.getId(), toUserId);
-        return chatRoomService.findByFromUserIdAndToUserId(loginUser.getId(), toUserId);
+        return ResponseEntity.status(HttpStatus.OK).body(chatRoomService.findByFromUserIdAndToUserId(loginUser.getId(), toUserId));
     }
 
     @PostMapping("/room")
-    public ChatRoomIdResponse createChatRoom(@LoginUser User loginUser, @RequestBody CreateChatRoomRequest createChatRoomRequest) {
+    public ResponseEntity<ChatRoomIdResponse> createChatRoom(@LoginUser User loginUser, @RequestBody CreateChatRoomRequest createChatRoomRequest) {
         log.info("{}", createChatRoomRequest);
-        return chatRoomService.save(loginUser, createChatRoomRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomService.save(loginUser, createChatRoomRequest));
+    }
+
+    @GetMapping("/message")
+    public ResponseEntity<List<ChatMessage>> getChatHistory(@RequestParam Long roomId) {
+        log.info("{}", roomId);
+        List<ChatMessage> messages = chatMessageRepository.findAllByRoomId(roomId);
+        return ResponseEntity.status(HttpStatus.OK).body(messages);
     }
 }
