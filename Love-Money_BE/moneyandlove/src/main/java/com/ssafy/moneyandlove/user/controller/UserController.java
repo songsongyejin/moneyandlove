@@ -1,13 +1,14 @@
 package com.ssafy.moneyandlove.user.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.http.*;
-
+import com.ssafy.moneyandlove.common.jwt.JwtProvider;
 import com.ssafy.moneyandlove.user.dto.KakaoAccount;
 import com.ssafy.moneyandlove.user.dto.KakaoToken;
 import com.ssafy.moneyandlove.user.dto.SignUpRequest;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
     private final UserService userService;
+    private final JwtProvider jwtProvider;
 
     @GetMapping("/login/oauth2/callback")
     public ResponseEntity<?> kakaoCallback(@RequestParam("code") String code) {
@@ -37,7 +39,7 @@ public class UserController {
         return null;
     }
 
-    @PostMapping("/sign")
+    @PostMapping
     public ResponseEntity<?> sign(@RequestBody SignUpRequest signUpRequest){
         userService.save(signUpRequest);
         return ResponseEntity.ok("ok");
