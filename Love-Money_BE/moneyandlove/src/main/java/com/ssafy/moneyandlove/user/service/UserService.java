@@ -30,13 +30,13 @@ public class UserService {
 
 	private final UserRepository userRepository;
 
-	@Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+	@Value("${oauth2.client-id}")
 	private String clientId;
 
-	@Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+	@Value("${oauth2.client-secret}")
 	private String clientSecret;
 
-	@Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+	@Value("${oauth2.redirect-uri}")
 	private String redirectUri;
 
 	public KakaoToken getKakaoAccessToken(String code){
