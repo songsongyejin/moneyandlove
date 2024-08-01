@@ -8,7 +8,7 @@ ARG AWS_BUCKET_NAME
 ARG AWS_SECRETKEY
 
 
-COPY Love-Money_BE/moneyandlove/build/libs/moneyandlove-api-0.0.1-SNAPSHOT.jar app.jar
+COPY build/libs/moneyandlove-0.0.1-SNAPSHOT.jar app.jar
 
 ENV PROFILE=${PROFILE}
 ENV KAKAO_CLIENT=${KAKAO_CLIENT}

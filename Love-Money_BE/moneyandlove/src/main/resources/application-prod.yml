@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: "jdbc:mysql://172.26.3.244:3306/moneyandlovedb?autoReconnect=true&useUnicode=true&serverTimezone=Asia/Seoul"
+    url: "jdbc:mysql://i11a405.p.ssafy.io:3306/moneyandlovedb?serverTimezone=Asia/Seoul"
     username: root
     password: 1234
   jpa:
@@ -14,7 +14,7 @@ spring:
     open-in-view: false
   data:
     mongodb:
-      uri: "mongodb://172.26.3.244:27017/moneyandlovedb"
+      uri: "mongodb://i11a405.p.ssafy.io:27017/moneyandlovedb"
   logging.level:
     org.hibernate.SQL: debug
 
