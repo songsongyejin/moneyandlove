@@ -1,125 +1,23 @@
 import React, { useState } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import first from "../../assets/cards/priority_first.svg";
-import second from "../../assets/cards/priority_second.svg";
-import third from "../../assets/cards/priority_third.svg";
-import fourth from "../../assets/cards/priority_fourth.svg";
-import fifth from "../../assets/cards/priority_fifth.svg";
-import { FaHeart } from "react-icons/fa";
+import Card from "./Card";
+import DropZone from "./DropZone";
+import InitialZone from "./InitialZone";
 
-interface MainGameProps {
-  // 필요한 다른 속성들...
+interface CardType {
+  id: string;
+  number: number;
 }
 
-// 카드 객체의 인터페이스 정의
-interface Card {
-  id: string;
-  image: string;
-}
-
-// 드래그 앤 드롭에서 사용할 아이템 타입을 정의
-const ItemTypes = {
-  CARD: "card",
+const initialZones = {
+  initial: [1, 2, 3, 4, 5].map((num) => ({ id: `card-${num}`, number: num })),
+  dropZones: Array.from({ length: 5 }, () => [] as CardType[]),
 };
 
-// 드래그 가능한 카드 컴포넌트
-const DraggableCard: React.FC<Card> = ({ id, image }) => {
-  // useDrag 훅을 사용하여 드래그 가능한 속성 설정
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: ItemTypes.CARD, // 아이템 타입 설정
-    item: { id, image }, // 드래그 시 전달할 데이터
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(), // 드래그 상태 수집
-    }),
-  }));
+const MainGame: React.FC = () => {
+  const [zones, setZones] = useState(initialZones);
 
-  return (
-    <div
-      ref={drag} // 드래그 가능한 ref 설정
-      className="flex h-[70px] w-[70px] cursor-move items-center justify-center"
-      style={{ opacity: isDragging ? 0.5 : 1 }} // 드래그 중일 때 투명도 설정
-    >
-      <img
-        src={image}
-        alt={`Card ${id}`}
-        className="h-full w-full"
-        style={{ backgroundColor: "transparent" }}
-      />
-    </div>
-  );
-};
-
-// 드랍 존 컴포넌트
-const DropZone: React.FC<{
-  id: string;
-  onDrop: (item: Card, targetId: string) => void;
-  droppedImage: string | null;
-}> = ({ id, onDrop, droppedImage }) => {
-  // useDrop 훅을 사용하여 드랍 가능한 속성 설정
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: ItemTypes.CARD, // 드랍 가능한 아이템 타입 설정
-    drop: (item: Card) => onDrop(item, id), // 드랍 시 호출할 함수
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(), // 드랍 존에 아이템이 있는지 상태 수집
-    }),
-  }));
-
-  return (
-    <div
-      ref={drop} // 드래그와 드랍 가능한 ref 설정
-      className="flex items-center justify-center border-2 border-dashed border-gray-500"
-      style={{
-        width: "80px",
-        height: "80px",
-        backgroundColor: isOver ? "lightyellow" : "transparent", // 드랍 존에 아이템이 있을 때 배경색 변경
-      }}
-    >
-      {/* {droppedImage ? (
-        <img
-          src={droppedImage}
-          alt="Dropped Card"
-          className="h-[70px] w-[70px]" // 드랍된 카드 이미지 렌더링
-        />
-      ) : (
-        <FaHeart className="text-gray-500 opacity-15" size={70} /> // 드랍된 카드가 없을 때 아이콘 렌더링
-      )} */}
-      {droppedImage ? (
-        <DraggableCard id={id} image={droppedImage} />
-      ) : (
-        <FaHeart className="text-gray-500 opacity-15" size={70} />
-      )}
-    </div>
-  );
-};
-
-const MainGame: React.FC<MainGameProps> = () => {
-  // 드랍된 카드 상태 관리
-  const [droppedCards, setDroppedCards] = useState<{
-    [key: string]: string | null;
-  }>({
-    word1: null,
-    word2: null,
-    word3: null,
-    word4: null,
-    word5: null,
-  });
-
-  // 우선순위 카드 정의
-  const priorityCards: Card[] = [
-    { id: "card1", image: first },
-    { id: "card2", image: second },
-    { id: "card3", image: third },
-    { id: "card4", image: fourth },
-    { id: "card5", image: fifth },
-  ];
-
-  // 사용 가능한 카드 ID 상태 관리
-  const [availableCardIds, setAvailableCardIds] = useState<Set<string>>(
-    new Set(priorityCards.map((card) => card.id))
-  );
-
-  // 단어카드 정의
   const wordCards = [
     { id: "word1", text: "바다", color: "#2e8bab" },
     { id: "word2", text: "야구", color: "#bb7c7e" },
@@ -128,22 +26,76 @@ const MainGame: React.FC<MainGameProps> = () => {
     { id: "word5", text: "놀이공원", color: "#bd80ba" },
   ];
 
-  // 카드 드랍할 때 호출되는 함수
-  const handleDrop = (item: Card, targetId: string) => {
-    setDroppedCards((prev) => {
-      const newDroppedCards = { ...prev };
-      Object.keys(newDroppedCards).forEach((key) => {
-        if (newDroppedCards[key] === item.image) {
-          newDroppedCards[key] = null; // 이미 드랍한 카드 초기화
-        }
-      });
-      return { ...newDroppedCards, [targetId]: item.image }; // 드랍한 카드 상태 업데이트
-    });
+  // 우선순위 카드들 drop
+  const handleDrop = (zoneIndex: number, item: CardType) => {
+    setZones((prevZones) => {
+      const newDropZones = [...prevZones.dropZones];
+      const initialIndex = prevZones.initial.findIndex(
+        (card) => card.id === item.id
+      );
 
-    setAvailableCardIds((prev) => {
-      const newSet = new Set(prev);
-      newSet.delete(item.id); // 드랍된 카드 사용 불가 상태로 설정
-      return newSet;
+      if (initialIndex !== -1) {
+        // Initial Zone에서 Drop Zone으로 드롭된 경우
+        const targetZone = newDropZones[zoneIndex];
+
+        // 기존 드롭존에 카드가 있는 경우, 초기 위치로 되돌림
+        if (targetZone.length > 0) {
+          const [existingCard] = targetZone.splice(0, 1);
+          prevZones.initial.push(existingCard); // 기존 카드를 초기 위치로 되돌림
+        }
+
+        targetZone.push(item);
+        prevZones.initial.splice(initialIndex, 1);
+      } else {
+        // Drop Zone에서 다른 Drop Zone으로 이동한 경우
+        const fromZoneIndex = newDropZones.findIndex((zone) =>
+          zone.some((card) => card.id === item.id)
+        );
+
+        if (fromZoneIndex !== -1) {
+          const fromZone = newDropZones[fromZoneIndex];
+          const targetZone = newDropZones[zoneIndex];
+
+          const fromCardIndex = fromZone.findIndex(
+            (card) => card.id === item.id
+          );
+          const [movedCard] = fromZone.splice(fromCardIndex, 1);
+
+          // 기존 드롭존에 카드가 있는 경우, 교환
+          if (targetZone.length > 0) {
+            const [existingCard] = targetZone.splice(0, 1);
+            fromZone.push(existingCard);
+          }
+
+          targetZone.push(movedCard);
+        }
+      }
+
+      // 초기 위치 존 정렬
+      const sortedInitial = [...prevZones.initial].sort(
+        (a, b) => a.number - b.number
+      );
+
+      return {
+        initial: sortedInitial,
+        dropZones: newDropZones,
+      };
+    });
+  };
+
+  // 우선순위 카드들 초기화
+  const handleReset = () => {
+    setZones((prevZones) => {
+      const allCards = [...prevZones.initial];
+      prevZones.dropZones.forEach((zone) => {
+        allCards.push(...zone);
+      });
+      // 원래 순서대로 정렬
+      allCards.sort((a, b) => a.number - b.number);
+      return {
+        initial: allCards,
+        dropZones: Array.from({ length: 5 }, () => [] as CardType[]),
+      };
     });
   };
 
@@ -162,30 +114,31 @@ const MainGame: React.FC<MainGameProps> = () => {
             </h1>
           </div>
           {/* 게임 영역 */}
-          <div className="mt-4 flex flex-1 flex-col items-center justify-center">
+          <div className="mt-1 flex flex-1 flex-col items-center justify-center">
             <div className="flex flex-col items-center justify-center">
               {/* 설명 영역 */}
               <div
-                className="mx-auto flex flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-4 text-center"
+                className="animate-fadeIn mx-auto mt-5 flex flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-4 text-center"
                 style={{
                   fontFamily: "DungGeunMo",
-                  width: "700px",
+                  width: "780px",
                 }}
               >
-                <p className="mb-2 text-2xl">당신이 선입니다!</p>
-                <p className="text-2xl">
-                  다섯 개의 단어 카드를 보고 우선순위를 정해주세요
+                <p className="mb-2 text-xl">당신이 선입니다!</p>
+                <p className="text-xl">
+                  {" "}
+                  다섯 개의 단어 카드를 보고 우선순위를 정해주세요{" "}
                 </p>
               </div>
               {/* 다섯 개의 단어 카드 영역 */}
-              <div className="card-container mt-8 flex flex-row space-x-6">
+              <div className="card-container animate-fadeIn mt-8 flex flex-row space-x-12">
                 {wordCards.map((card) => (
                   <div
                     key={card.id}
                     className="border-3 flex flex-col items-center justify-center rounded-xl p-4 shadow-2xl"
                     style={{
                       width: "120px",
-                      height: "160px",
+                      height: "140px",
                       backgroundColor: card.color,
                     }}
                   >
@@ -205,41 +158,34 @@ const MainGame: React.FC<MainGameProps> = () => {
                 ))}
               </div>
               {/* 드래그 앤 드롭 영역 */}
-              <div className="mt-5 flex justify-center space-x-16">
-                {wordCards.map((card) => (
-                  <DropZone
-                    key={card.id}
-                    id={card.id} // 드랍 존의 고유 ID를 설정
-                    onDrop={handleDrop} // 카드가 드랍될 때 호출되는 함수
-                    droppedImage={droppedCards[card.id]} // 드랍된 카드의 이미지를 설정
-                  />
-                ))}
+              <div className="animate-fadeIn mt-8 rounded-lg border-2 border-gray-400 py-4">
+                <div className="flex justify-center space-x-12">
+                  {zones.dropZones.map((zone, index) => (
+                    <DropZone key={index} id={index} onDrop={handleDrop}>
+                      {zone.map((card) => (
+                        <Card key={card.id} id={card.id} number={card.number} />
+                      ))}
+                    </DropZone>
+                  ))}
+                </div>
               </div>
-              {/* 드래그 앤 드롭 영역 */}
-              <div className="mt-5 flex justify-center space-x-16">
-                {priorityCards.map((card) => (
-                  <div
-                    key={card.id}
-                    className="flex items-center justify-center"
-                    style={{ width: "80px", height: "80px" }}
-                  >
-                    <FaHeart className="text-gray-500 opacity-0" size={70} />
-                  </div>
-                ))}
-              </div>
+            </div>
+            {/* 버튼 두개: 초기화 버튼, 선택완료 버튼*/}
+            <div className="animate-fadeIn mt-20">
+              <button
+                onClick={handleReset}
+                className="rounded-lg bg-gray-400 px-6 py-3 text-xl text-white"
+                style={{ fontFamily: "DungGeunMo" }}
+              >
+                Reset
+              </button>
             </div>
             {/* 게임 로직을 여기에 구현 */}
           </div>
         </div>
         {/* 게임창 밖 우선순위 정하는 카드들 영역*/}
-        <div className="absolute right-5 top-[38%] flex -translate-y-1/2 transform flex-col space-y-3 rounded-lg bg-white bg-opacity-80 px-10 py-6 shadow-lg">
-          {priorityCards.map((card) =>
-            availableCardIds.has(card.id) ? (
-              <DraggableCard key={card.id} id={card.id} image={card.image} />
-            ) : (
-              <div key={card.id} className="h-[70px] w-[70px]"></div> // 빈 공간을 유지
-            )
-          )}
+        <div className="animate-fadeIn">
+          <InitialZone id={0} cards={zones.initial} onDrop={handleDrop} />
         </div>
       </div>
     </DndProvider>
