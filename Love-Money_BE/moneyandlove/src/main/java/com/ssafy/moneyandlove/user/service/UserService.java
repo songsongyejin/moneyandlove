@@ -25,8 +25,10 @@ import com.ssafy.moneyandlove.user.dto.KakaoAccount;
 import com.ssafy.moneyandlove.user.dto.KakaoToken;
 import com.ssafy.moneyandlove.user.dto.SignUpRequest;
 import com.ssafy.moneyandlove.user.dto.UserProfileResponse;
+import com.ssafy.moneyandlove.user.dto.UserProfileUpdateRequest;
 import com.ssafy.moneyandlove.user.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -116,6 +118,7 @@ public class UserService {
 		return userRepository.findByKakaoId(kakaoAccount.getId()).isPresent();
 	}
 
+	@Transactional
 	public JwtResponse save(SignUpRequest signUpRequest) {
 		User user = userRepository.save(SignUpRequest.toUser(signUpRequest));
 		return JwtResponse.from(jwtProvider.makeToken(user));
@@ -128,6 +131,7 @@ public class UserService {
 		return JwtResponse.from(jwtProvider.makeToken(user));
 	}
 
+	@Transactional
 	public void withdrawal(User loginUser) {
 		Optional<User> user = userRepository.findById(loginUser.getId());
 		userRepository.delete(user.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND)));
@@ -136,5 +140,13 @@ public class UserService {
 	public UserProfileResponse findById(User loginUser) {
 		Optional<User> user = userRepository.findById(loginUser.getId());
 		return UserProfileResponse.from(user.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND)));
+	}
+
+	@Transactional
+	public void update(User loginUser, UserProfileUpdateRequest userProfileUpdateRequest) {
+		User user = userRepository.findById(loginUser.getId())
+			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
+		user.updateProfile(userProfileUpdateRequest.getNickname(), userProfileUpdateRequest.getRegion(),
+			userProfileUpdateRequest.getProfileURL());
 	}
 }
