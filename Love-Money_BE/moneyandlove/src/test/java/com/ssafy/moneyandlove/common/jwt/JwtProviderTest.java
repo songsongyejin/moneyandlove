@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ssafy.moneyandlove.user.domain.User;
 
-@SpringBootTest
+//@SpringBootTest
 class JwtProviderTest {
 
 	/**
