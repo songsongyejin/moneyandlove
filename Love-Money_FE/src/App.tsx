@@ -5,11 +5,11 @@ import { userInfo } from "./atom/store.ts";
 import { useRecoilState } from "recoil";
 
 function App() {
-  const [user, setUser] = useRecoilState(userInfo);
+  // const [user, setUser] = useRecoilState(userInfo);
 
   return (
     <>
-      {user && <Navbar />}
+      {/* {user && <Navbar />} */}
       <Outlet />
     </>
   );

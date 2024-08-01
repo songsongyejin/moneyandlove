@@ -3,7 +3,7 @@ import "./style.css";
 import sampleImage from "../../assets/sample.png"; // 이미지 경로에 맞게 수정
 import FreindItem from "./FriendItem";
 import FriendChatRoom from "./FriendChatRoom";
-
+import { FiPlusCircle } from "react-icons/fi";
 const FreindsSideBar: React.FC = () => {
   const [navOpen, setNavOpen] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState<friendProfile | null>(
@@ -38,8 +38,13 @@ const FreindsSideBar: React.FC = () => {
     setSelectedFriend(null);
   };
   return (
-    <div className="z-20" style={{ fontFamily: "DungGeunMo" }}>
-      <nav className={`fNav ${navOpen ? "nav-open" : ""}`}>
+    <div style={{ fontFamily: "DungGeunMo" }}>
+      <nav
+        className={`fNav z-50 overflow-hidden ${navOpen ? "nav-open overflow-y-scroll" : ""}`}
+      >
+        <h1 className={`as mt-5 w-full text-center text-3xl text-white`}>
+          친구목록
+        </h1>
         <div className="menu-btn w-8" onClick={handleMenuClick}>
           <div className={`line line--1 ${navOpen ? "line-cross" : ""}`}></div>
           <div
@@ -49,7 +54,7 @@ const FreindsSideBar: React.FC = () => {
         </div>
 
         <ul
-          className={`nav-links ${navOpen ? "fade-in" : ""} overflow-y-scroll font-bold text-white`}
+          className={`nav-links ${navOpen ? "fade-in" : ""} font-bold text-white`}
         >
           {friendsMock &&
             friendsMock.map((friend, index) => (
@@ -59,6 +64,9 @@ const FreindsSideBar: React.FC = () => {
                 onChatStart={handleChatStart}
               />
             ))}
+          <li>
+            <FiPlusCircle className="mx-auto mb-4 cursor-pointer text-center text-6xl text-white hover:scale-110" />
+          </li>
         </ul>
       </nav>
       {selectedFriend && (

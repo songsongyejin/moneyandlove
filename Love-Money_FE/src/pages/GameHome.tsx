@@ -13,6 +13,7 @@ import FaceVerification from "../components/game/FaceVerification";
 import PositionSelection from "../components/game/PositionSelection";
 import GameModeSelection from "../components/game/GameModeSelection";
 import Matching from "../components/game/Matching";
+import Navbar from "../components/Header/Navbar";
 
 const GameHome: React.FC = () => {
   // Recoil을 사용하여 사용자 정보 상태를 가져옴
@@ -50,12 +51,13 @@ const GameHome: React.FC = () => {
 
   return (
     <div className="relative h-screen">
+      <Navbar />
       <div
         className={`absolute inset-0 ${getBackgroundClass()} bg-cover bg-center`}
       ></div>
       <div className="absolute inset-0 bg-black opacity-20"></div>
       {/* 메인 콘텐츠 영역 */}
-      <div className="relative z-10 flex h-full items-center justify-center">
+      <div className="relative flex h-full items-center justify-center">
         <FriendsSideBar />
 
         <div className="flex flex-col items-center justify-center text-center">

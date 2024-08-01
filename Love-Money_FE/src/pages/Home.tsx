@@ -5,6 +5,7 @@ import { userInfo } from "../atom/store"; // .ts 확장자는 생략 가능
 import { Link, useNavigate } from "react-router-dom";
 import { mockLogin } from "../utils/mockLogin";
 import kakaoLoginImage from "../assets/kakao_login_large_wide.png";
+import useFullscreen from "../utils/useFullScreen";
 
 const Home: React.FC = () => {
   //유저 로그인 정보
@@ -16,10 +17,15 @@ const Home: React.FC = () => {
     const loggedInUser = mockLogin();
     setUser(loggedInUser);
     navigate("/main");
+    triggerFull();
   };
+  const onFullS = (isFull: any) => {
+    console.log(isFull ? "We are full" : "We are small");
+  };
+  const { element, triggerFull, exitFull } = useFullscreen(onFullS);
 
   return (
-    <div className="fixed relative h-screen">
+    <div className="fixed relative h-screen" ref={element}>
       <div className="absolute inset-0 bg-main-bg bg-cover bg-center"></div>
       <div className="absolute inset-0 bg-black opacity-20"></div>
       <div className="relative z-10 flex h-full items-center justify-center">
