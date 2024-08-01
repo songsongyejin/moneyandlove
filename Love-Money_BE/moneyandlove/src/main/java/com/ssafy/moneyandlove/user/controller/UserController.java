@@ -32,7 +32,7 @@ public class UserController {
 
 	private final UserService userService;
 
-	@GetMapping
+	@GetMapping("/login")
 	public ResponseEntity<?> kakaoCallback(@RequestParam("code") String code) {
 		log.info("code is {}", code);
 		KakaoToken kakaoAccessToken = userService.getKakaoAccessToken(code);
@@ -45,7 +45,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(SignUpResponse.from(kakaoInfo));
 	}
 
-	@PostMapping
+	@PostMapping("/sign")
 	public ResponseEntity<?> sign(@RequestBody SignUpRequest signUpRequest) {
 		JwtResponse token = userService.save(signUpRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(token);
