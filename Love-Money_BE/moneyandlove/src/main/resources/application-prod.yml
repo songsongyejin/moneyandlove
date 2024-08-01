@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: "jdbc:mysql://moneyandlove-mysql:3306/moneyandlovedb?serverTimezone=Asia/Seoul"
+    url: "jdbc:mysql://moneyandlove-mysql:3306/moneyandlovedb?useSSL=false&serverTimezone=Asia/Seoul"
     username: root
     password: 1234
   jpa:
