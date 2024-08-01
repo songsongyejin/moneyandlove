@@ -59,7 +59,7 @@ const OvVideo: React.FC<OpenViduVideoComponentProps> = ({ streamManager }) => {
                     if (!noFaceDetectedTimeout) {
                       noFaceDetectedTimeout = setTimeout(() => {
                         setWarningMsg(
-                          "얼굴 인식이 되지 않았습니다. 정면을 응시해주세요!!!"
+                          "얼굴 인식이 되지 않았습니다. \n정면을 응시해주세요!!! \n표정이 인식되면 채팅장이 공개됩니다!!!"
                         );
                       }, 1000);
                     }

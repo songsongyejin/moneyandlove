@@ -1,7 +1,7 @@
-import { StreamManager } from "openvidu-browser";
 import React from "react";
 import { FiSend } from "react-icons/fi";
-import chatBot from "../../assets/chatBot.png";
+import aiBot from "../../assets/ai_bot.gif";
+import "./chatBox.css";
 
 // 채팅 박스 컴포넌트
 const ChatBox = ({
@@ -30,8 +30,8 @@ const ChatBox = ({
       style={{ fontFamily: "DungGeunMo" }}
       className={`${mode === "chat" ? "" : "hidden"} w-96 flex-col rounded-2xl`}
     >
-      <img src={chatBot} alt="" className="absolute bottom-5 left-5 w-16" />
-      <div className="absolute bottom-20 left-24 rounded-e-2xl rounded-tl-2xl border-4 border-solid border-custom-purple-color bg-white p-3 text-lg font-semibold text-custom-purple-color">
+      <img src={aiBot} alt="" className="absolute bottom-5 left-5 w-24" />
+      <div className="absolute bottom-20 left-28 rounded-e-2xl rounded-tl-2xl border-4 border-solid border-custom-purple-color bg-white p-3 text-lg font-semibold text-custom-purple-color">
         자신이 러브헌터임을 어필해주세요!
       </div>
       <header className="bg-chatRoom-high h-14 rounded-t-2xl bg-custom-purple-color"></header>
@@ -41,24 +41,23 @@ const ChatBox = ({
           return (
             <div
               key={i}
-              className={`mb-1 flex ${isMyMessage ? "justify-end" : "justify-start"}`}
+              className={`mb-3 flex ${isMyMessage ? "justify-end" : "justify-start"}`}
             >
               {isMyMessage ? (
                 <>
-                  <div
-                    className={`max-w-xs rounded-lg p-2 ${isMyMessage ? "bg-gray-200 text-black" : "bg-chat-color text-black"}`}
-                  >
-                    {msg.text}
-                  </div>
+                  <div className="speech-bubble2 mr-2 p-2">{msg.text}</div>
                   <p className="my-auto text-2xl">{msg.Emoji}</p>
                 </>
               ) : (
                 <>
-                  <p className="my-auto text-2xl">{msg.Emoji}</p>
-                  <div
-                    className={`max-w-xs rounded-lg p-2 ${isMyMessage ? "bg-gray-200 text-black" : "bg-chat-color text-black"}`}
-                  >
-                    <strong>{msg.user}:</strong> {msg.text}
+                  <div>
+                    <p className="ml-10 text-sm"> {msg.user}</p>
+                    <div className="flex">
+                      <p className="my-auto text-2xl">{msg.Emoji}</p>
+                      <div className="speech-bubble ml-2 p-2">
+                        <strong></strong> {msg.text}
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
@@ -66,7 +65,7 @@ const ChatBox = ({
           );
         })}
       </div>
-      <div className="bg-chat-color flex items-center rounded-b-2xl p-4">
+      <div className="flex items-center rounded-b-2xl bg-chat-color p-4">
         <input
           type="text"
           className="flex-grow rounded-s-lg p-2 focus:outline-custom-purple-color"

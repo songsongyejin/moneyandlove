@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@reacticons/ionicons": "^7.1.0",
+    "@tanstack/react-query": "^5.51.16",
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.2",
     "face-api.js": "^0.22.2",
