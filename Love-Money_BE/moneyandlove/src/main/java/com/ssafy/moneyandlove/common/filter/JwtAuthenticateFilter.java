@@ -10,8 +10,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.moneyandlove.common.error.ErrorResponse;
 import com.ssafy.moneyandlove.common.error.ErrorType;
+import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
 import com.ssafy.moneyandlove.common.jwt.JwtProvider;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,15 +35,15 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 
 		String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
 		String token = getAccessToken(authorizationHeader);
-		if(jwtProvider.validateToken(token) != null){
+		try {
+			Claims claims = jwtProvider.validateToken(token);
 			Authentication authentication = jwtProvider.getAuthentication(token);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			log.info("Passing request to next filter in chain for URI: {}", request.getRequestURI());
 			filterChain.doFilter(request, response);
-			log.info("Completed JwtAuthenticateFilter for URI: {}", request.getRequestURI());
-		}
-		else {
-			jwtExceptionHandler(response, ErrorType.TOKEN_NOT_EXIST);
+		} catch (MoneyAndLoveException ex) {
+			jwtExceptionHandler(response, ex.getErrorType());
+		} catch (Exception ex) {
+			jwtExceptionHandler(response, ErrorType.TOKEN_INVALID);
 		}
 	}
 
@@ -53,16 +55,12 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 	}
 
 	// 토큰에 대한 오류가 발생했을 때, 커스터마이징해서 Exception 처리 값을 클라이언트에게 알려준다.
-	public void jwtExceptionHandler(HttpServletResponse response, ErrorType error) {
+	public void jwtExceptionHandler(HttpServletResponse response, ErrorType error) throws IOException {
 		response.setStatus(error.getStatus().value());
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		try {
-			String json = new ObjectMapper().writeValueAsString(ErrorResponse.of(error));
-			response.getWriter().write(json);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
+		String errorResponse = new ObjectMapper().writeValueAsString(ErrorResponse.of(error));
+		response.getWriter().write(errorResponse);
 	}
 
 	@Override
