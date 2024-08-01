@@ -24,6 +24,7 @@ import com.ssafy.moneyandlove.user.dto.JwtResponse;
 import com.ssafy.moneyandlove.user.dto.KakaoAccount;
 import com.ssafy.moneyandlove.user.dto.KakaoToken;
 import com.ssafy.moneyandlove.user.dto.SignUpRequest;
+import com.ssafy.moneyandlove.user.dto.UserProfileResponse;
 import com.ssafy.moneyandlove.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -127,8 +128,13 @@ public class UserService {
 		return JwtResponse.from(jwtProvider.makeToken(user));
 	}
 
-	public void withdrawal(User loginUser){
+	public void withdrawal(User loginUser) {
 		Optional<User> user = userRepository.findById(loginUser.getId());
-		userRepository.delete(user.orElseThrow( () -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND)));
+		userRepository.delete(user.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND)));
+	}
+
+	public UserProfileResponse findById(User loginUser) {
+		Optional<User> user = userRepository.findById(loginUser.getId());
+		return UserProfileResponse.from(user.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND)));
 	}
 }

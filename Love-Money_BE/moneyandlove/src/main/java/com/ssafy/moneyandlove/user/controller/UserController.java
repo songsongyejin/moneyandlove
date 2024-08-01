@@ -53,6 +53,12 @@ public class UserController {
 	public ResponseEntity<?> withdrawal(@LoginUser User loginUser){
 		log.info("userId {}",loginUser.getId());
 		userService.withdrawal(loginUser);
-		return ResponseEntity.ok("탈퇴 완료");
+		return ResponseEntity.status(HttpStatus.OK).body("탈퇴 완료");
+	}
+
+	@GetMapping("/my")
+	public ResponseEntity<?> findById(@LoginUser User loginUser) {
+		log.info("userId {}",loginUser.getId());
+		return ResponseEntity.status(HttpStatus.OK).body(userService.findById(loginUser));
 	}
 }
