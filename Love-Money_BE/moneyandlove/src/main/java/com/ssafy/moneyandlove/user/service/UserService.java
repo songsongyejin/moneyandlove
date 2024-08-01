@@ -58,7 +58,6 @@ public class UserService {
 		HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
 			new HttpEntity<>(params, headers);
 
-		System.out.println("QWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQ");
 		RestTemplate rt = new RestTemplate();
 		ResponseEntity<String> accessTokenResponse = rt.exchange(
 			"https://kauth.kakao.com/oauth/token",
