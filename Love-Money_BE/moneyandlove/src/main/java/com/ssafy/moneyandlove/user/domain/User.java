@@ -55,4 +55,10 @@ public class User extends TimeBaseEntity {
 	public void changeProfileURL(String profileURL) {
 		this.profileURL = profileURL;
 	}
+
+	public void updateProfile(String nickname, String region, String profileURL){
+		this.nickname = nickname;
+		this.region = region;
+		this.profileURL = profileURL;
+	}
 }

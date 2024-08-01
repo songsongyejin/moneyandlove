@@ -1,5 +1,7 @@
 package com.ssafy.moneyandlove.user.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,13 +19,17 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ssafy.moneyandlove.common.error.ErrorType;
 import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
 import com.ssafy.moneyandlove.common.jwt.JwtProvider;
+import com.ssafy.moneyandlove.ranking.application.RankingService;
 import com.ssafy.moneyandlove.user.domain.User;
 import com.ssafy.moneyandlove.user.dto.JwtResponse;
 import com.ssafy.moneyandlove.user.dto.KakaoAccount;
 import com.ssafy.moneyandlove.user.dto.KakaoToken;
 import com.ssafy.moneyandlove.user.dto.SignUpRequest;
+import com.ssafy.moneyandlove.user.dto.UserProfileResponse;
+import com.ssafy.moneyandlove.user.dto.UserProfileUpdateRequest;
 import com.ssafy.moneyandlove.user.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final RankingService rankingService;
 	private final JwtProvider jwtProvider;
 
 	@Value("${oauth2.client-id}")
@@ -58,7 +65,6 @@ public class UserService {
 		HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
 			new HttpEntity<>(params, headers);
 
-		System.out.println("QWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQQWEQWEQ");
 		RestTemplate rt = new RestTemplate();
 		ResponseEntity<String> accessTokenResponse = rt.exchange(
 			"https://kauth.kakao.com/oauth/token",
@@ -114,8 +120,10 @@ public class UserService {
 		return userRepository.findByKakaoId(kakaoAccount.getId()).isPresent();
 	}
 
+	@Transactional
 	public JwtResponse save(SignUpRequest signUpRequest) {
 		User user = userRepository.save(SignUpRequest.toUser(signUpRequest));
+		rankingService.createRanking(user.getId());
 		return JwtResponse.from(jwtProvider.makeToken(user));
 	}
 
@@ -124,5 +132,24 @@ public class UserService {
 			.findByKakaoId(kakaoAccount.getId())
 			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
 		return JwtResponse.from(jwtProvider.makeToken(user));
+	}
+
+	@Transactional
+	public void withdrawal(User loginUser) {
+		Optional<User> user = userRepository.findById(loginUser.getId());
+		userRepository.delete(user.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND)));
+	}
+
+	public UserProfileResponse findById(User loginUser) {
+		Optional<User> user = userRepository.findById(loginUser.getId());
+		return UserProfileResponse.from(user.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND)));
+	}
+
+	@Transactional
+	public void update(User loginUser, UserProfileUpdateRequest userProfileUpdateRequest) {
+		User user = userRepository.findById(loginUser.getId())
+			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
+		user.updateProfile(userProfileUpdateRequest.getNickname(), userProfileUpdateRequest.getRegion(),
+			userProfileUpdateRequest.getProfileURL());
 	}
 }
