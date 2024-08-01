@@ -19,6 +19,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ssafy.moneyandlove.common.error.ErrorType;
 import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
 import com.ssafy.moneyandlove.common.jwt.JwtProvider;
+import com.ssafy.moneyandlove.ranking.application.RankingService;
 import com.ssafy.moneyandlove.user.domain.User;
 import com.ssafy.moneyandlove.user.dto.JwtResponse;
 import com.ssafy.moneyandlove.user.dto.KakaoAccount;
@@ -38,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final RankingService rankingService;
 	private final JwtProvider jwtProvider;
 
 	@Value("${oauth2.client-id}")
@@ -121,6 +123,7 @@ public class UserService {
 	@Transactional
 	public JwtResponse save(SignUpRequest signUpRequest) {
 		User user = userRepository.save(SignUpRequest.toUser(signUpRequest));
+		rankingService.createRanking(user.getId());
 		return JwtResponse.from(jwtProvider.makeToken(user));
 	}
 
