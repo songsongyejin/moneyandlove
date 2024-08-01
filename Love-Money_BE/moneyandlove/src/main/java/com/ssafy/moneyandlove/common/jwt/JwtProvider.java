@@ -44,7 +44,7 @@ public class JwtProvider {
 		return Jwts.builder()
 			.setHeaderParam(Header.TYPE, Header.JWT_TYPE)
 			.setIssuedAt(now)
-			.setExpiration(new Date(now.getTime() + Duration.ofMinutes(1).toMillis()))
+			.setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
 			.setSubject(user.getEmail())
 			.claim("id", user.getId())
 			.claim("nickname", user.getNickname())

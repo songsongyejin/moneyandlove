@@ -21,7 +21,7 @@ public enum ErrorType {
 	FACE_NOT_FOUND(HttpStatus.NOT_FOUND, "E200", "사용자의 이미지 정보를 조회할 수 없습니다.", LogLevel.DEBUG),
 	TOKEN_NOT_EXIST(HttpStatus.UNAUTHORIZED,"T401", "토큰이 없습니다.",LogLevel.DEBUG),
 	TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"T402", "토큰이 만료됐습니다.",LogLevel.DEBUG),
-	TOKEN_INVALID(HttpStatus.UNAUTHORIZED,"T403", "인증된 토큰이 아닙니다.",LogLevel.DEBUG);
+	TOKEN_INVALID(HttpStatus.FORBIDDEN,"T403", "인증된 토큰이 아닙니다.",LogLevel.DEBUG);
 
 	private final HttpStatus status;
 
