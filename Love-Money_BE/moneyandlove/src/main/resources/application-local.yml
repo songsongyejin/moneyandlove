@@ -18,6 +18,9 @@ spring:
   data:
     mongodb:
       uri: "mongodb://localhost:27017/moneyandlovedb"
+    redis:
+      host: moneyandlove-redis
+      port: 6379
   logging.level:
     org.hibernate.SQL: debug
 
