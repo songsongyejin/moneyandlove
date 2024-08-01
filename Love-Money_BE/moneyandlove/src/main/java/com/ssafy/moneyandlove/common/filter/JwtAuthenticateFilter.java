@@ -1,6 +1,7 @@
 package com.ssafy.moneyandlove.common.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,5 +63,12 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
+	}
+
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+		String[] excludePath = {"/health", "/user/sign", "/user/login"};
+		String path = request.getRequestURI();
+		return Arrays.stream(excludePath).anyMatch(path::startsWith);
 	}
 }

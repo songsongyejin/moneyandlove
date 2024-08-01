@@ -33,8 +33,9 @@ public class SecurityConfig {
 			.headers(c -> c.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable).disable())
 			.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/health", "/user/login", "/user/sign").permitAll() // '/user' 경로와 그 하위 경로는 허용
 				.requestMatchers("/chat/**", "/friends/**", "/attendance/**").authenticated()
-				.anyRequest().permitAll()// 다른 모든 요청은 허용
+				.anyRequest().authenticated() // 다른 모든 요청은 인증 요구
 			)
 			.addFilterBefore(new JwtAuthenticateFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
