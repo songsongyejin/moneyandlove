@@ -1,5 +1,7 @@
 package com.ssafy.moneyandlove.user.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -123,5 +125,10 @@ public class UserService {
 			.findByKakaoId(kakaoAccount.getId())
 			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
 		return JwtResponse.from(jwtProvider.makeToken(user));
+	}
+
+	public void withdrawal(User loginUser){
+		Optional<User> user = userRepository.findById(loginUser.getId());
+		userRepository.delete(user.orElseThrow( () -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND)));
 	}
 }
