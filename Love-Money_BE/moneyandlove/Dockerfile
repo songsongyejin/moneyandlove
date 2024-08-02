@@ -1,4 +1,4 @@
-FROM amazoncorretto:17
+FROM openjdk:17-slim
 
 ARG PROFILE
 ARG KAKAO_CLIENT
