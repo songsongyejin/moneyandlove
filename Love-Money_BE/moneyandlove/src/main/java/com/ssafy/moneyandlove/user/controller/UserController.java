@@ -42,7 +42,7 @@ public class UserController {
 		if (userService.isSigned(kakaoInfo)) {
 			return ResponseEntity.status(HttpStatus.OK).body(userService.findByKakaoId(kakaoInfo));
 		}
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(SignUpResponse.from(kakaoInfo));
+		return ResponseEntity.status(HttpStatus.OK).body(SignUpResponse.from(kakaoInfo));
 	}
 
 	@PostMapping
