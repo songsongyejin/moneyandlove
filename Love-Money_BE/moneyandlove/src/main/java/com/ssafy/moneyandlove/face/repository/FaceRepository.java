@@ -15,4 +15,7 @@ public interface FaceRepository extends JpaRepository<Face, Long> {
 
 	@Query(value = "SELECT f FROM Face f ORDER BY f.faceScore DESC")
 	List<Face> findAllOrderByFaceScoreDesc();
+
+	@Query("SELECT f.user.id FROM Face f ORDER BY f.faceScore DESC")
+	List<Long> findAllUserIdsOrderByFaceScoreDesc();
 }

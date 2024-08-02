@@ -1,5 +1,6 @@
 package com.ssafy.moneyandlove.matching.presentation;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,8 +20,9 @@ public class MatchingController {
 	private final MatchingService matchingService;
 
 	@PostMapping
-	public void match(@RequestBody MatchingUserRequest matchingUserRequest) {
+	public ResponseEntity<?> match(@RequestBody MatchingUserRequest matchingUserRequest) {
 		matchingService.match(matchingUserRequest);
+		return ResponseEntity.ok().build();
 	}
 
 }

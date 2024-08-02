@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.moneyandlove.common.error.ErrorType;
 import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
-import com.ssafy.moneyandlove.face.domain.Face;
 import com.ssafy.moneyandlove.face.repository.FaceRepository;
 import com.ssafy.moneyandlove.matching.dto.MatchingUserRequest;
 
@@ -26,7 +25,6 @@ public class MatchingService {
 	private final FaceRepository faceRepository;
 	private static final String MATCHING_QUEUE = "matchingQueue";
 	private static final String TOP_30_PERCENT_FACES_CACHE = "top30PercentFaces";
-	private List<Face> top30PercentFaces;
 
 	public void match(MatchingUserRequest matchingUserRequest) {
 		addToQueue(matchingUserRequest);
@@ -66,13 +64,13 @@ public class MatchingService {
 	}
 
 	@Cacheable(value = TOP_30_PERCENT_FACES_CACHE)
-	public List<Face> getTop30PercentFaces() {
-		List<Face> allFaces = faceRepository.findAllOrderByFaceScoreDesc();
-		int top30Index = (int) (allFaces.size() * 0.3);
+	public Set<Long> getTop30PercentFaceUserIds() {
+		List<Long> allUserIds = faceRepository.findAllUserIdsOrderByFaceScoreDesc();
+		int top30Index = (int) (allUserIds.size() * 0.3);
 		if (top30Index == 0) {
 			top30Index = 1;
 		}
-		return allFaces.subList(0, top30Index);
+		return allUserIds.subList(0, top30Index).stream().collect(Collectors.toSet());
 	}
 
 	public void addToQueue(MatchingUserRequest matchingUserRequest) {
@@ -85,7 +83,7 @@ public class MatchingService {
 	public MatchingUserRequest randomMatch(MatchingUserRequest matchingUserRequest) {
 		ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
 		Set<Object> candidates = zSetOps.range(MATCHING_QUEUE, 0, -1);
-		return findValidCandidate(matchingUserRequest, candidates, "random");
+		return findValidCandidate(matchingUserRequest, candidates);
 	}
 
 	public MatchingUserRequest lovePositionMatch(MatchingUserRequest matchingUserRequest) {
@@ -98,7 +96,7 @@ public class MatchingService {
 			.filter(candidate -> "love".equals(candidate.getPosition()))
 			.collect(Collectors.toSet());
 
-		return findValidCandidate(matchingUserRequest, loveCandidates, "love");
+		return findValidCandidate(matchingUserRequest, loveCandidates);
 	}
 
 	public MatchingUserRequest top30PercentMatch(MatchingUserRequest matchingUserRequest) {
@@ -106,43 +104,55 @@ public class MatchingService {
 		Set<Object> candidates = zSetOps.rangeByScore(MATCHING_QUEUE, 0, Double.MAX_VALUE);
 
 		// Get the top 30% faces
-		List<Face> top30PercentFaces = getTop30PercentFaces();
+		Set<Long> top30PercentUserIds = getTop30PercentFaceUserIds();
 
 		// Filter candidates who are in the top 30% faces
 		Set<Object> top30Candidates = candidates.stream()
 			.map(obj -> (MatchingUserRequest) obj)
-			.filter(candidate -> top30PercentFaces.stream()
-				.anyMatch(face -> face.getUser().getId().equals(candidate.getUserId())))
+			.filter(candidate -> top30PercentUserIds.contains(candidate.getUserId()))
 			.collect(Collectors.toSet());
 
-		return findValidCandidate(matchingUserRequest, top30Candidates, "top30");
+		return findValidCandidate(matchingUserRequest, top30Candidates);
 
 	}
 
-	private MatchingUserRequest findValidCandidate(MatchingUserRequest user, Set<Object> candidates, String matchType) {
+	private MatchingUserRequest findValidCandidate(MatchingUserRequest matchingUserRequest, Set<Object> candidates) {
 		for (Object candidateObj : candidates) {
 			MatchingUserRequest candidate = (MatchingUserRequest) candidateObj;
-			if (isValidMatch(user, candidate, matchType) && isValidMatch(candidate, user, matchType)) {
+			if (isValidMatch(matchingUserRequest, candidate)) {
 				redisTemplate.opsForZSet().remove(MATCHING_QUEUE, candidate);
+				redisTemplate.opsForZSet().remove(MATCHING_QUEUE, matchingUserRequest); //user도 지워야 함
 				return candidate;
 			}
 		}
 		return null;
 	}
 
-	private boolean isValidMatch(MatchingUserRequest matchingUserRequest, MatchingUserRequest candidate, String matchType) {
-		// 양방향 조건 검사: 서로의 조건에 부합하는지 확인
+	private boolean isValidMatch(MatchingUserRequest matchingUserRequest, MatchingUserRequest candidate) {
+		// Bidirectional condition check
+		// 1. 여성<-->남성인지 체크
+		// 2. 이전에 매칭되었던 사람인지 체크
+		// 3. 상대방의 조건에 내가 부합하는지 체크
 
-		//여성 남성의 조건에 맞는지 검사
+		String userMatchingType = matchingUserRequest.getMatchType();
+		String candidateMatchingType = candidate.getMatchType();
+		String userPosition = matchingUserRequest.getPosition();
+		String candidatePosition = candidate.getPosition();
+
 		if (!candidate.getGender().equals(matchingUserRequest.getGender())) {
-			if ("random".equals(matchType)) {
-				return true;
-			} else if ("love".equals(matchType)) {
-				return "love".equals(matchingUserRequest.getPosition()) && "love".equals(candidate.getPosition());
-			} else if ("top30".equals(matchType)) {
-				// 상위 30% 매칭 조건은 이미 별도로 처리되므로 여기서는 true를 반환
-				return true;
+			/*
+			* 이전에 매칭되었던 사람인지 체크하는 로직
+			* */
+
+			if(candidateMatchingType.equals("love")&&userPosition.equals("money")) {
+				return false;
+			}else if(candidateMatchingType.equals("top30")){
+				Set<Long> top30PercentUserIds = getTop30PercentFaceUserIds();
+				int initialSize = top30PercentUserIds.size();
+				top30PercentUserIds.add(matchingUserRequest.getUserId());  // Set에 사용자 ID 추가
+				return initialSize == top30PercentUserIds.size();  // 크기 변화가 없으면 중복됨
 			}
+			return true;
 		}
 		return false;
 	}
