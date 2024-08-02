@@ -23,7 +23,7 @@ jwt:
 oauth2:
   client-id: ${KAKAO_CLIENT}
   client-secret: ${KAKAO_SECRET}
-  redirect-uri: "http://localhost:3000/login/oauth2/callback"
+  redirect-uri: "http://localhost:5173/login/oauth2/callback"
 
 cloud:
   aws:
