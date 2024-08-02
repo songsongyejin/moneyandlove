@@ -23,9 +23,6 @@ spring:
     port: 6379
   cache:
     type: redis
-    redis:
-      time-to-live: 600000  # 캐시 TTL 설정 (밀리초)
-      cache-null-values: false
   logging.level:
     org.hibernate.SQL: debug
 
