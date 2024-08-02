@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,5 +119,13 @@ public class FaceService {
 		}
 		user.changeProfileURL(parts[0]);
 		userRepository.save(user);
+	}
+
+	@CacheEvict(value = "top30PercentFaces", allEntries = true)
+	public void updateFaceScore(Long userId, int newScore) {
+		Face face = faceRepository.findFaceByUserId(userId)
+			.orElseThrow(()->new MoneyAndLoveException(ErrorType.FACE_NOT_FOUND));
+		face.changeFaceScore(newScore);
+		faceRepository.save(face);
 	}
 }
