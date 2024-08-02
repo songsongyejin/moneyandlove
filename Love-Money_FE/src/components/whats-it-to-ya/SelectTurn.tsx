@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import cardBack from "../../assets/cards/card_back.svg";
-import cardFirstTurn from "../../assets/cards/card_first_turn.svg";
-import cardSecondTurn from "../../assets/cards/card_second_turn.svg";
+import cardFirstTurn from "../../assets/cards/first_turn_card.png";
+import cardSecondTurn from "../../assets/cards/second_turn_card.png";
 
 interface SelectTurnProps {
   onTurnSelected: (cardIndex: number) => void;
@@ -84,7 +84,7 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected }) => {
                   <img
                     src={cardFirstTurn}
                     alt="첫 번째 카드 앞면"
-                    className="h-[228px] w-[165px] object-contain"
+                    className="h-[228px] w-[165px] rounded-lg object-contain"
                   />
                 </div>
               </div>
@@ -108,7 +108,7 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected }) => {
                   <img
                     src={cardSecondTurn}
                     alt="두 번째 카드 앞면"
-                    className="h-[228px] w-[165px] object-contain"
+                    className="h-[228px] w-[165px] rounded-lg object-contain"
                   />
                 </div>
               </div>

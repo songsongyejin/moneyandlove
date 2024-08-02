@@ -10,12 +10,16 @@ interface CardType {
   number: number;
 }
 
+interface FirstPlayerPlayProps {
+  onFinalize: (dropZones: CardType[][]) => void;
+}
+
 const initialZones = {
   initial: [1, 2, 3, 4, 5].map((num) => ({ id: `card-${num}`, number: num })),
   dropZones: Array.from({ length: 5 }, () => [] as CardType[]),
 };
 
-const FirstPlayerPlay: React.FC = () => {
+const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({ onFinalize }) => {
   const [zones, setZones] = useState(initialZones);
 
   const wordCards = [
@@ -116,6 +120,9 @@ const FirstPlayerPlay: React.FC = () => {
     );
     console.log("최종 선택한 카드:", selectedCards);
     console.log("최종 선택한 카드:", selectedCards.flat());
+
+    // 선택이 완료되면 부모 컴포넌트로 드롭존 상태를 전달
+    onFinalize(zones.dropZones);
   };
 
   return (
