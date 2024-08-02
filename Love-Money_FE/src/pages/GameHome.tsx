@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { userInfo } from "../atom/store";
 import { useGameLogic } from "../hooks/useGameLogic";
@@ -18,7 +18,10 @@ import Navbar from "../components/Header/Navbar";
 const GameHome: React.FC = () => {
   // Recoil을 사용하여 사용자 정보 상태를 가져옴
   const user = useRecoilValue(userInfo);
-
+  useEffect(() => {
+    // 배경 이미지가 제대로 로드되는지 확인하기 위해 콘솔 로그 추가
+    console.log("Main component mounted, background image should be loaded");
+  }, []);
   // useGameLogic 훅을 사용하여 게임 로직 관련 상태와 함수들을 가져옴
   const {
     showFaceVerification, // 얼굴 인증 모달의 표시 여부
@@ -48,7 +51,6 @@ const GameHome: React.FC = () => {
     if (selectedPosition === "LOVE") return "bg-love-bg";
     return "bg-main-bg";
   };
-
   return (
     <div className="relative h-screen">
       <Navbar />

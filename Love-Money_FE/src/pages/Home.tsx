@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { mockLogin } from "../utils/mockLogin";
 import kakaoLoginImage from "../assets/kakao_login_large_wide.png";
 import useFullscreen from "../utils/useFullScreen";
+import { KAKAO_AUTH_URL } from "../utils/OAuth";
 
 const Home: React.FC = () => {
   //유저 로그인 정보
@@ -19,6 +20,7 @@ const Home: React.FC = () => {
     navigate("/main");
     triggerFull();
   };
+
   const onFullS = (isFull: any) => {
     console.log(isFull ? "We are full" : "We are small");
   };
@@ -53,8 +55,9 @@ const Home: React.FC = () => {
           >
             로그인
           </button> */}
-          <button
-            onClick={handleLogin}
+          <a
+            // onClick={handleLogin}
+            href={KAKAO_AUTH_URL}
             className="mt-20 w-80 shadow-btn transition-transform hover:scale-105"
           >
             <img
@@ -62,7 +65,7 @@ const Home: React.FC = () => {
               alt="카카오 로그인"
               className="h-auto w-full"
             />
-          </button>
+          </a>
         </div>
       </div>
     </div>

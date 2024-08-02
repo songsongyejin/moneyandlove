@@ -20,6 +20,8 @@ import {
 } from "@tanstack/react-query";
 import GameHome from "./pages/GameHome.tsx";
 import Room from "./pages/room/Room.tsx";
+import LoginHandler from "./pages/login/LoginHandler.tsx";
+import SignUpPage from "./pages/signUp/SignUpPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +34,11 @@ const router = createBrowserRouter([
       { index: true, path: "/", element: <Home /> },
       { path: "main", element: <GameHome /> },
       { path: "room", element: <Room /> },
-      // // { path: "products/:id", element: <ProductDetail /> },
+      {
+        path: "login/oauth2/callback",
+        element: <LoginHandler />,
+      },
+      { path: "signUp", element: <SignUpPage /> },
       // // { path: "cart", element: <MyCart /> },
     ],
   },
