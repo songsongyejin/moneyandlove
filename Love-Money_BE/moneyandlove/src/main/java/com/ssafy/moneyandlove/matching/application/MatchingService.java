@@ -9,6 +9,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.moneyandlove.face.domain.Face;
+import com.ssafy.moneyandlove.face.repository.FaceRepository;
 import com.ssafy.moneyandlove.matching.dto.MatchingUserRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -18,8 +20,9 @@ import lombok.RequiredArgsConstructor;
 public class MatchingService {
 
 	private final RedisTemplate<String, Object> redisTemplate;
-
+	private final FaceRepository faceRepository;
 	private static final String MATCHING_QUEUE = "matchingQueue";
+	private List<Face> top30PercentFaces;
 
 	public void match(MatchingUserRequest matchingUserRequest) {
 		addToQueue(matchingUserRequest);
@@ -43,7 +46,7 @@ public class MatchingService {
 			}
 
 			if (matchedUser != null) {
-				System.out.println("Matched with user: " + matchedUser.getId());
+				System.out.println("Matched with user: " + matchedUser.getUserId());
 				// isValidMatch(matchingUserRequest, matchedUser);
 				return;
 			}
@@ -87,32 +90,38 @@ public class MatchingService {
 		ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
 		Set<Object> candidates = zSetOps.rangeByScore(MATCHING_QUEUE, 0, Double.MAX_VALUE);
 
-		List<MatchingUserRequest> validCandidates = candidates.stream()
-			.map(obj -> (MatchingUserRequest) obj)
-			.sorted((u1, u2) -> Integer.compare(u2.getFaceScore(), u1.getFaceScore()))
-			.collect(Collectors.toList());
-		// List<MatchingUserRequest> validCandidates = candidates.stream()
-		// 	.map(obj -> (MatchingUserRequest) obj)
-		// 	.filter(candidate -> !candidate.getGender().equals(matchingUserRequest.getGender()))
-		// 	.sorted((u1, u2) -> Integer.compare(u2.getFaceScore(), u1.getFaceScore()))
-		// 	.collect(Collectors.toList());
-
-		int top30Index = (int) (validCandidates.size() * 0.3);
+		// Get all faces ordered by faceScore in descending order
+		List<Face> allFaces = faceRepository.findAllOrderByFaceScoreDesc();
+		int top30Index = (int) (allFaces.size() * 0.3);
 		if (top30Index == 0) {
 			top30Index = 1;
 		}
 
-		int min = 0;
-		int max = top30Index;
+		// Get the top 30% faces
+		top30PercentFaces = allFaces.subList(0, top30Index);
 
-		int randomValue = (int)(Math.random() * (max - min + 1)) + min;
-		// List<MatchingUserRequest> top30PercentCandidates = validCandidates.subList(0, top30Index);
-		// if (!top30PercentCandidates.isEmpty()) {
-		// 	MatchingUserRequest matchedUser = top30PercentCandidates.get(0);
-		// 	zSetOps.remove(MATCHING_QUEUE, matchedUser);
-		// }
-		MatchingUserRequest matchedUser = validCandidates.get(randomValue);
-		if(isValidMatch(matchingUserRequest, matchedUser, "top30")) return matchedUser;
+		// Filter candidates who are in the top 30% faces
+		List<MatchingUserRequest> validCandidates = candidates.stream()
+			.map(obj -> (MatchingUserRequest) obj)
+			.filter(candidate -> top30PercentFaces.stream()
+				.anyMatch(face -> face.getUser().getId().equals(candidate.getUserId())))
+			.collect(Collectors.toList());
+
+		// If there are no valid candidates, return null
+		if (validCandidates.isEmpty()) {
+			return null;
+		}
+
+		// Select a random valid candidate
+		int min = 0;
+		int max = validCandidates.size() - 1;
+		int randomIndex = (int) (Math.random() * (max - min + 1)) + min;
+
+		MatchingUserRequest matchedUser = validCandidates.get(randomIndex);
+
+		if (isValidMatch(matchingUserRequest, matchedUser, "top30")) {
+			return matchedUser;
+		}
 		return null;
 	}
 

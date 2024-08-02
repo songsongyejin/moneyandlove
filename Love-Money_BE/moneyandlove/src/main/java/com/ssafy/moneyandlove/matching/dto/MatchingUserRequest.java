@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class MatchingUserRequest implements Serializable {
-	private Long id;
+	private Long userId;
 	private String gender;
 	private int faceScore;
 	private String position;
