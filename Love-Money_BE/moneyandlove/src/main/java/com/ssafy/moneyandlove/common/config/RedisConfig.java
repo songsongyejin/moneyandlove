@@ -1,4 +1,4 @@
-package com.ssafy.moneyandlove.config;
+package com.ssafy.moneyandlove.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
