@@ -13,6 +13,7 @@ public class SignUpResponse {
 
 	private Long kakaoId;
 	private String profileURL;
+	private boolean isSigned;
 
 	public static SignUpResponse from(KakaoAccount kakaoAccount){
 		return SignUpResponse.builder()
