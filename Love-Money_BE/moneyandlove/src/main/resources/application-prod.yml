@@ -2,8 +2,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: "jdbc:mysql://172.26.3.244:3306/moneyandlovedb?serverTimezone=Asia/Seoul"
-    username: root
-    password: 1234
+    username: myteam
+    password: ssafy
   jpa:
     database: mysql
     properties:
