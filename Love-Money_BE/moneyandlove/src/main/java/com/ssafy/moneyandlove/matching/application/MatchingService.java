@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,12 @@ public class MatchingService {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final FaceRepository faceRepository;
 	private static final String MATCHING_QUEUE = "matchingQueue";
+	private static final String TOP_30_PERCENT_FACES_CACHE = "top30PercentFaces";
 	private List<Face> top30PercentFaces;
 
 	public void match(MatchingUserRequest matchingUserRequest) {
 		addToQueue(matchingUserRequest);
+
 		//5분동안 매칭 대기
 		long endTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
 
@@ -62,6 +65,16 @@ public class MatchingService {
 		System.out.println("No match found within 3 minutes.");
 	}
 
+	@Cacheable(value = TOP_30_PERCENT_FACES_CACHE)
+	public List<Face> getTop30PercentFaces() {
+		List<Face> allFaces = faceRepository.findAllOrderByFaceScoreDesc();
+		int top30Index = (int) (allFaces.size() * 0.3);
+		if (top30Index == 0) {
+			top30Index = 1;
+		}
+		return allFaces.subList(0, top30Index);
+	}
+
 	public void addToQueue(MatchingUserRequest matchingUserRequest) {
 		ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
 
@@ -92,39 +105,18 @@ public class MatchingService {
 		ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
 		Set<Object> candidates = zSetOps.rangeByScore(MATCHING_QUEUE, 0, Double.MAX_VALUE);
 
-		// Get all faces ordered by faceScore in descending order
-		List<Face> allFaces = faceRepository.findAllOrderByFaceScoreDesc();
-		int top30Index = (int) (allFaces.size() * 0.3);
-		if (top30Index == 0) {
-			top30Index = 1;
-		}
-
 		// Get the top 30% faces
-		top30PercentFaces = allFaces.subList(0, top30Index);
+		List<Face> top30PercentFaces = getTop30PercentFaces();
 
 		// Filter candidates who are in the top 30% faces
-		List<MatchingUserRequest> validCandidates = candidates.stream()
+		Set<Object> top30Candidates = candidates.stream()
 			.map(obj -> (MatchingUserRequest) obj)
 			.filter(candidate -> top30PercentFaces.stream()
 				.anyMatch(face -> face.getUser().getId().equals(candidate.getUserId())))
-			.collect(Collectors.toList());
+			.collect(Collectors.toSet());
 
-		// If there are no valid candidates, return null
-		if (validCandidates.isEmpty()) {
-			return null;
-		}
+		return findValidCandidate(matchingUserRequest, top30Candidates, "top30");
 
-		// Select a random valid candidate
-		int min = 0;
-		int max = validCandidates.size() - 1;
-		int randomIndex = (int) (Math.random() * (max - min + 1)) + min;
-
-		MatchingUserRequest matchedUser = validCandidates.get(randomIndex);
-
-		if (isValidMatch(matchingUserRequest, matchedUser, "top30")) {
-			return matchedUser;
-		}
-		return null;
 	}
 
 	private MatchingUserRequest findValidCandidate(MatchingUserRequest user, Set<Object> candidates, String matchType) {
