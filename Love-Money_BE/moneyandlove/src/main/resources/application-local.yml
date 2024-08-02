@@ -18,9 +18,14 @@ spring:
   data:
     mongodb:
       uri: "mongodb://localhost:27017/moneyandlovedb"
+  redis:
+    host: moneyandlove-redis
+    port: 6379
+  cache:
+    type: redis
     redis:
-      host: moneyandlove-redis
-      port: 6379
+      time-to-live: 600000  # 캐시 TTL 설정 (밀리초)
+      cache-null-values: false
   logging.level:
     org.hibernate.SQL: debug
 
