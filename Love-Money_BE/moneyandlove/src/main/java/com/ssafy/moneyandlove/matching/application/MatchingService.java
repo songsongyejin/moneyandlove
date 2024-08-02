@@ -9,6 +9,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.moneyandlove.common.error.ErrorType;
+import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
 import com.ssafy.moneyandlove.face.domain.Face;
 import com.ssafy.moneyandlove.face.repository.FaceRepository;
 import com.ssafy.moneyandlove.matching.dto.MatchingUserRequest;
@@ -26,7 +28,7 @@ public class MatchingService {
 
 	public void match(MatchingUserRequest matchingUserRequest) {
 		addToQueue(matchingUserRequest);
-
+		//5분동안 매칭 대기
 		long endTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
 
 		while (System.currentTimeMillis() < endTime) {
@@ -42,7 +44,7 @@ public class MatchingService {
 					matchedUser = top30PercentMatch(matchingUserRequest);
 					break;
 				default:
-					throw new IllegalArgumentException("Invalid match type");
+					throw new MoneyAndLoveException(ErrorType.MATCHING_TYPE_NOT_SUPPORTED);
 			}
 
 			if (matchedUser != null) {
