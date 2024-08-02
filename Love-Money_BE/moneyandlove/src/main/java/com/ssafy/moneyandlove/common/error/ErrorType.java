@@ -19,7 +19,9 @@ public enum ErrorType {
 	RANKING_NOT_FOUND(HttpStatus.NOT_FOUND, "E101", "사용자의 랭킹 정보를 조회할 수 없습니다.", LogLevel.DEBUG),
 	FRIEND_ALREADY_EXISTS(HttpStatus.CONFLICT, "E303", "이미 존재하는 친구입니다.", LogLevel.DEBUG),
 	FACE_NOT_FOUND(HttpStatus.NOT_FOUND, "E200", "사용자의 이미지 정보를 조회할 수 없습니다.", LogLevel.DEBUG),
-	TOKEN_NOT_EXIST(HttpStatus.UNAUTHORIZED,"T401", "토큰이 없습니다",LogLevel.DEBUG);
+	TOKEN_NOT_EXIST(HttpStatus.UNAUTHORIZED,"T401", "토큰이 없습니다.",LogLevel.DEBUG),
+	TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED,"T402", "토큰이 만료됐습니다.",LogLevel.DEBUG),
+	TOKEN_INVALID(HttpStatus.FORBIDDEN,"T403", "인증된 토큰이 아닙니다.",LogLevel.DEBUG);
 
 	private final HttpStatus status;
 
