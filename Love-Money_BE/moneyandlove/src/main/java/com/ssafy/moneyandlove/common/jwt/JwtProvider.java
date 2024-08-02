@@ -62,7 +62,7 @@ public class JwtProvider {
 			throw new MoneyAndLoveException(ErrorType.TOKEN_INVALID);
 		} catch (ExpiredJwtException e) {
 			throw new MoneyAndLoveException(ErrorType.TOKEN_EXPIRED);
-		} catch (IllegalArgumentException e) {
+		} catch (Exception e) {
 			throw new MoneyAndLoveException(ErrorType.TOKEN_NOT_EXIST);
 		}
 	}
