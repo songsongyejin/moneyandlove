@@ -1,6 +1,6 @@
 import React from "react";
 import { useDrop } from "react-dnd";
-import Card from "./Card";
+import Card from "./PriorityCard";
 
 interface InitialZoneProps {
   id: number;

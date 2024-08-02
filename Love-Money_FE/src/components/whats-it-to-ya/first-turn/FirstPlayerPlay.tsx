@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { FaHeart } from "react-icons/fa";
-import Card from "./Card";
-import DropZone from "./DropZone";
-import InitialZone from "./InitialZone";
+import Card from "../game-elements/PriorityCard";
+import DropZone from "../game-elements/DropZone";
+import InitialZone from "../game-elements/InitialZone";
 
 interface CardType {
   id: string;
@@ -16,15 +15,15 @@ const initialZones = {
   dropZones: Array.from({ length: 5 }, () => [] as CardType[]),
 };
 
-const MainGame: React.FC = () => {
+const FirstPlayerPlay: React.FC = () => {
   const [zones, setZones] = useState(initialZones);
 
   const wordCards = [
-    { id: "word1", text: "바다", color: "#2e8bab" },
-    { id: "word2", text: "야구", color: "#bb7c7e" },
-    { id: "word3", text: "맥주", color: "#bd9a5a" },
-    { id: "word4", text: "피아노", color: "#58a279" },
-    { id: "word5", text: "놀이공원", color: "#bd80ba" },
+    { id: "word1", text: "바다", bgColor: "#88cce1", textColor: "#2e8bab" },
+    { id: "word2", text: "야구", bgColor: "#ffbdbd", textColor: "#bb7c7e" },
+    { id: "word3", text: "맥주", bgColor: "#FFDE59", textColor: "#bd9a5a" },
+    { id: "word4", text: "피아노", bgColor: "#9edaae", textColor: "#58a279" },
+    { id: "word5", text: "놀이공원", bgColor: "#f5b9f3", textColor: "#bd80ba" },
   ];
 
   // 우선순위 카드들 drop
@@ -100,6 +99,25 @@ const MainGame: React.FC = () => {
     });
   };
 
+  // 최종 선택 완료
+  const handleFinalize = () => {
+    const totalCardsInDropZones = zones.dropZones.reduce(
+      (sum, zone) => sum + zone.length,
+      0
+    );
+
+    if (totalCardsInDropZones < 5) {
+      alert("모든 우선순위를 정해주세요");
+      return;
+    }
+
+    const selectedCards = zones.dropZones.map((zone) =>
+      zone.map((card) => card.number)
+    );
+    console.log("최종 선택한 카드:", selectedCards);
+    console.log("최종 선택한 카드:", selectedCards.flat());
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex h-screen w-full items-center justify-center">
@@ -119,71 +137,91 @@ const MainGame: React.FC = () => {
             <div className="flex flex-col items-center justify-center">
               {/* 설명 영역 */}
               <div
-                className="mx-auto flex flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-4 text-center"
+                className="mx-auto mt-5 flex animate-fadeIn flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-4 text-center"
                 style={{
                   fontFamily: "DungGeunMo",
                   width: "780px",
                 }}
               >
-                <p className="mb-2 text-xl">
-                  당신이 선입니다! 다섯 개의 단어 카드를 보고 우선순위를
-                  정해주세요
+                <p className="mb-2 text-xl">당신이 선입니다!</p>
+                <p className="text-xl">
+                  {" "}
+                  다섯 개의 단어 카드를 보고 당신의 우선순위를 정해주세요{" "}
                 </p>
-                <p className="text-xl"> (카드 밑에 하트를 놓아주세요) </p>
               </div>
               {/* 다섯 개의 단어 카드 영역 */}
-              <div className="card-container mt-8 flex flex-row space-x-12">
+              <div className="card-container mt-8 flex animate-fadeIn flex-row space-x-8">
                 {wordCards.map((card) => (
                   <div
                     key={card.id}
-                    className="border-3 flex flex-col items-center justify-center rounded-xl p-4 shadow-2xl"
+                    className="border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
                     style={{
-                      width: "120px",
-                      height: "140px",
-                      backgroundColor: card.color,
+                      width: "135px",
+                      height: "180px",
+                      backgroundColor: card.bgColor,
                     }}
                   >
-                    <p
-                      className="text-sm"
-                      style={{ fontFamily: "DungGeunMo", color: "white" }}
-                    >
-                      MONEY&LOVE
-                    </p>
-                    <p
-                      className="mb-14 mt-11 text-xl text-white"
-                      style={{ fontFamily: "DungGeunMo" }}
-                    >
-                      {card.text}
-                    </p>
+                    {/* 상단 영역 */}
+                    <div className="h-12 w-full rounded-xl rounded-b-none"></div>
+                    {/* 본문 영역 */}
+                    <div className="flex w-full flex-1 flex-col items-center justify-center bg-white">
+                      <p
+                        className="text-2xl"
+                        style={{
+                          fontFamily: "DungGeunMo",
+                          color: card.textColor,
+                        }}
+                      >
+                        {card.text}
+                      </p>
+                    </div>
+
+                    {/* 하단 영역 */}
+                    <div className="flex h-12 w-full items-center justify-center rounded-xl rounded-t-none">
+                      <p
+                        className="text-base"
+                        style={{ fontFamily: "DungGeunMo", color: "white" }}
+                      >
+                        MONEY & LOVE
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
               {/* 드래그 앤 드롭 영역 */}
-              <div className="flex justify-center space-x-12">
-                {zones.dropZones.map((zone, index) => (
-                  <DropZone key={index} id={index} onDrop={handleDrop}>
-                    {zone.map((card) => (
-                      <Card key={card.id} id={card.id} number={card.number} />
-                    ))}
-                  </DropZone>
-                ))}
+              <div className="mt-2 animate-fadeIn rounded-lg py-4">
+                <div className="flex justify-center space-x-11">
+                  {zones.dropZones.map((zone, index) => (
+                    <DropZone key={index} id={index} onDrop={handleDrop}>
+                      {zone.map((card) => (
+                        <Card key={card.id} id={card.id} number={card.number} />
+                      ))}
+                    </DropZone>
+                  ))}
+                </div>
               </div>
             </div>
             {/* 버튼 두개: 초기화 버튼, 선택완료 버튼*/}
-            <div className="mt-20">
+            <div className="mb-2 mt-10 flex animate-fadeIn space-x-10">
               <button
                 onClick={handleReset}
-                className="rounded-lg bg-gray-400 px-6 py-3 text-xl text-white"
+                className="rounded-lg bg-gray-400 px-6 py-3 text-2xl text-white"
                 style={{ fontFamily: "DungGeunMo" }}
               >
                 Reset
               </button>
+              <button
+                onClick={handleFinalize}
+                className="rounded-lg bg-custom-purple-color px-4 py-3 text-xl text-white"
+                style={{ fontFamily: "DungGeunMo" }}
+              >
+                선택완료
+              </button>
             </div>
-            {/* 게임 로직을 여기에 구현 */}
           </div>
         </div>
         {/* 게임창 밖 우선순위 정하는 카드들 영역*/}
-        <div>
+        <div className="animate-fadeIn">
           <InitialZone id={0} cards={zones.initial} onDrop={handleDrop} />
         </div>
       </div>
@@ -191,4 +229,4 @@ const MainGame: React.FC = () => {
   );
 };
 
-export default MainGame;
+export default FirstPlayerPlay;

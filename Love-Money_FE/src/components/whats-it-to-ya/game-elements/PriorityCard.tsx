@@ -1,10 +1,10 @@
 import React from "react";
 import { useDrag } from "react-dnd";
-import first from "../../assets/cards/priority_first.svg";
-import second from "../../assets/cards/priority_second.svg";
-import third from "../../assets/cards/priority_third.svg";
-import fourth from "../../assets/cards/priority_fourth.svg";
-import fifth from "../../assets/cards/priority_fifth.svg";
+import first from "../../../assets/cards/priority_first.svg";
+import second from "../../../assets/cards/priority_second.svg";
+import third from "../../../assets/cards/priority_third.svg";
+import fourth from "../../../assets/cards/priority_fourth.svg";
+import fifth from "../../../assets/cards/priority_fifth.svg";
 
 interface CardProps {
   id: string;
