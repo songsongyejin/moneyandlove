@@ -2,6 +2,8 @@ package com.ssafy.moneyandlove.matching.application;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,23 @@ public class MatchingService {
 	private static final String MATCHING_QUEUE = "matchingQueue";
 	private static final String TOP_30_PERCENT_FACES_CACHE = "top30PercentFaces";
 
+	private final ExecutorService executorService = Executors.newCachedThreadPool();
+
+	public void startMatching(MatchingUserRequest matchingUserRequest) {
+		executorService.submit(() -> match(matchingUserRequest));
+	}
+
+	public void stop() {
+		executorService.shutdown();
+		try {
+			if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+				executorService.shutdownNow();
+			}
+		} catch (InterruptedException e) {
+			executorService.shutdownNow();
+		}
+	}
+
 	public void match(MatchingUserRequest matchingUserRequest) {
 		addToQueue(matchingUserRequest);
 
@@ -49,18 +68,21 @@ public class MatchingService {
 			}
 
 			if (matchedUser != null) {
+				//successMatch
 				System.out.println("Matched with user: " + matchedUser.getUserId());
-				// isValidMatch(matchingUserRequest, matchedUser);
 				return;
 			}
 			try {
 				Thread.sleep(5000); // 5초 대기
 			} catch (InterruptedException e) {
+				// 현재 스레드의 인터럽트 상태를 복구하고 메서드를 종료
 				Thread.currentThread().interrupt();
-				return;
+				break;
 			}
 		}
-		System.out.println("No match found within 3 minutes.");
+		// No match found within 5 minutes.
+		//deleteFromQue
+		redisTemplate.opsForZSet().remove(MATCHING_QUEUE, matchingUserRequest);
 	}
 
 	@Cacheable(value = TOP_30_PERCENT_FACES_CACHE)
@@ -92,9 +114,9 @@ public class MatchingService {
 
 		// Filter candidates to find those who selected the love position
 		Set<Object> loveCandidates = candidates.stream()
-			.map(obj -> (MatchingUserRequest) obj)
-			.filter(candidate -> "love".equals(candidate.getPosition()))
-			.collect(Collectors.toSet());
+				.map(obj -> (MatchingUserRequest) obj)
+				.filter(candidate -> "love".equals(candidate.getPosition()))
+				.collect(Collectors.toSet());
 
 		return findValidCandidate(matchingUserRequest, loveCandidates);
 	}

@@ -20,8 +20,9 @@ public class MatchingController {
 	private final MatchingService matchingService;
 
 	@PostMapping
-	public ResponseEntity<?> match(@RequestBody MatchingUserRequest matchingUserRequest) {
-		matchingService.match(matchingUserRequest);
+	public ResponseEntity<?> match(@RequestBody MatchingUserRequest matchingUserRequest, @PathVariable Long userId) {
+		matchingUserRequest.putUserId(userId);
+		matchingService.startMatching(matchingUserRequest);
 		return ResponseEntity.ok().build();
 	}
 
