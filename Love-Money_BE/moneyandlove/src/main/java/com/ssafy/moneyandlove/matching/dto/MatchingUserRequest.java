@@ -13,4 +13,8 @@ public class MatchingUserRequest implements Serializable {
 	private int faceScore;
 	private String position;
 	private String matchType;
+
+    public void putUserId(Long userId) {
+		this.userId = userId;
+    }
 }

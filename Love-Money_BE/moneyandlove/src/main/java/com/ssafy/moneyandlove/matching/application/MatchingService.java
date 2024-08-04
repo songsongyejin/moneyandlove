@@ -1,5 +1,6 @@
 package com.ssafy.moneyandlove.matching.application;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -92,7 +93,7 @@ public class MatchingService {
 		if (top30Index == 0) {
 			top30Index = 1;
 		}
-		return allUserIds.subList(0, top30Index).stream().collect(Collectors.toSet());
+		return allUserIds.subList(0, top30Index).stream().collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	public void addToQueue(MatchingUserRequest matchingUserRequest) {
@@ -116,14 +117,14 @@ public class MatchingService {
 		Set<Object> loveCandidates = candidates.stream()
 				.map(obj -> (MatchingUserRequest) obj)
 				.filter(candidate -> "love".equals(candidate.getPosition()))
-				.collect(Collectors.toSet());
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 
 		return findValidCandidate(matchingUserRequest, loveCandidates);
 	}
 
 	public MatchingUserRequest top30PercentMatch(MatchingUserRequest matchingUserRequest) {
 		ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
-		Set<Object> candidates = zSetOps.rangeByScore(MATCHING_QUEUE, 0, Double.MAX_VALUE);
+		Set<Object> candidates = zSetOps.range(MATCHING_QUEUE, 0, -1);
 
 		// Get the top 30% faces
 		Set<Long> top30PercentUserIds = getTop30PercentFaceUserIds();
@@ -132,7 +133,7 @@ public class MatchingService {
 		Set<Object> top30Candidates = candidates.stream()
 			.map(obj -> (MatchingUserRequest) obj)
 			.filter(candidate -> top30PercentUserIds.contains(candidate.getUserId()))
-			.collect(Collectors.toSet());
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 
 		return findValidCandidate(matchingUserRequest, top30Candidates);
 
@@ -170,9 +171,7 @@ public class MatchingService {
 				return false;
 			}else if(candidateMatchingType.equals("top30")){
 				Set<Long> top30PercentUserIds = getTop30PercentFaceUserIds();
-				int initialSize = top30PercentUserIds.size();
-				top30PercentUserIds.add(matchingUserRequest.getUserId());  // Set에 사용자 ID 추가
-				return initialSize == top30PercentUserIds.size();  // 크기 변화가 없으면 중복됨
+				return top30PercentUserIds.contains(matchingUserRequest.getUserId());
 			}
 			return true;
 		}
