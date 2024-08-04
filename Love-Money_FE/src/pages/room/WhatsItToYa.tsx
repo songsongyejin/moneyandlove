@@ -20,15 +20,16 @@ const WhatsItToYa: React.FC = () => {
   const [selectedTurn, setSelectedTurn] = useState<null | number>(null);
   // 게임 단계 관리 state
   const [gamePhase, setGamePhase] = useState("SELECT_TURN");
-  // 드롭존 상태
+  // 플레이어1의 드롭존 상태
   const [player1DropZones, setplayer1DropZones] = useState<CardType[][]>(
     Array.from({ length: 5 }, () => [])
   );
+
   // const [player2GuessZones, setPlayer2GuessZones] = useState<CardType[][]>(
   //   Array.from({ length: 5 }, () => [])
   // );
 
-  // 예측 데이터를 하드코딩하여 테스트
+  // 플레이어 2의 예측 데이터를 하드코딩하여 테스트
   const mockPlayer2GuessZones: CardType[][] = [
     [{ id: "card-1", number: 1 }],
     [{ id: "card-2", number: 2 }],
@@ -36,6 +37,9 @@ const WhatsItToYa: React.FC = () => {
     [{ id: "card-4", number: 4 }],
     [{ id: "card-5", number: 5 }],
   ];
+
+  // 서버에서 데이터를 받은 것처럼 시뮬레이션하는 상태
+  const [dataReceived, setDataReceived] = useState(false);
 
   // 3초 후 Intro 화면을 숨기고 SelectTurn 화면을 표시
   useEffect(() => {
@@ -64,16 +68,33 @@ const WhatsItToYa: React.FC = () => {
     setGamePhase("FIRST_PLAYER_WAIT");
   };
 
+  // 서버에서 데이터를 받은 것처럼 상태를 변경
+  useEffect(() => {
+    if (gamePhase === "FIRST_PLAYER_WAIT") {
+      const dataFetchTimer = setTimeout(() => {
+        setDataReceived(true); // 데이터 수신 완료로 상태 변경
+      }, 5000); // 5초 후 데이터 수신 시뮬레이션
+
+      return () => clearTimeout(dataFetchTimer);
+    }
+  }, [gamePhase]);
+
+  useEffect(() => {
+    if (dataReceived) {
+      setGamePhase("FIRST_TURN_SCORE");
+    }
+  }, [dataReceived]);
+
   // // Second Player가 예측을 완료한 후 호출되는 함수
   // const handleSecondPlayerFinalize = (newGuessZones: CardType[][]) => {
   //   setPlayer2GuessZones(newGuessZones);
   //   setGamePhase("FIRST_TURN_SCORE");
   // };
 
-  // 바로 점수 계산 단계로 이동하여 테스트
-  const handleGoToScore = () => {
-    setGamePhase("FIRST_TURN_SCORE");
-  };
+  // // 바로 점수 계산 단계로 이동하여 테스트
+  // const handleGoToScore = () => {
+  //   setGamePhase("FIRST_TURN_SCORE");
+  // };
 
   return (
     <DndProvider backend={HTML5Backend}>
