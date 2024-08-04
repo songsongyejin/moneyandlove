@@ -1,12 +1,12 @@
 package com.ssafy.moneyandlove.face.application;
 
 import java.net.URL;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +36,8 @@ public class FaceService {
 	private final FaceRepository faceRepository;
 
 	private final UserRepository userRepository;
+
+	private static final String TOP_30_PERCENT_FACES_CACHE = "top30PercentFaces";
 
 	public Map<String, String> getPresignedUrl(String prefix, String fileName, Long userId) {
 		if (!prefix.isEmpty()) {
@@ -121,6 +123,16 @@ public class FaceService {
 		userRepository.save(user);
 	}
 
+	@Cacheable(value = TOP_30_PERCENT_FACES_CACHE)
+	public Set<Long> getTop30PercentFaceUserIds() {
+		List<Long> allUserIds = faceRepository.findAllUserIdsOrderByFaceScoreDesc();
+		int top30Index = (int) (allUserIds.size() * 0.3);
+		if (top30Index == 0) {
+			top30Index = 1;
+		}
+		return allUserIds.subList(0, top30Index).stream().collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
 	@CacheEvict(value = "top30PercentFaces", allEntries = true)
 	public void updateFaceScore(Long userId, int newScore) {
 		Face face = faceRepository.findFaceByUserId(userId)
@@ -128,4 +140,9 @@ public class FaceService {
 		face.changeFaceScore(newScore);
 		faceRepository.save(face);
 	}
+
+	public Integer getFaceScoreByUserId(Long userId) {
+		return faceRepository.findFaceScoreByUserId(userId);
+	}
+
 }

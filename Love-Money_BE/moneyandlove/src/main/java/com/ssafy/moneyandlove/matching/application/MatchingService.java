@@ -1,14 +1,16 @@
 package com.ssafy.moneyandlove.matching.application;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.springframework.cache.annotation.Cacheable;
+import com.ssafy.moneyandlove.face.application.FaceService;
+import com.ssafy.moneyandlove.matching.dto.MatchingUserResponse;
+import com.ssafy.moneyandlove.user.service.UserService;
+import jakarta.annotation.PreDestroy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -25,16 +27,20 @@ import lombok.RequiredArgsConstructor;
 public class MatchingService {
 
 	private final RedisTemplate<String, Object> redisTemplate;
-	private final FaceRepository faceRepository;
+	private final FaceService faceService;
+	private final UserService userService;
 	private static final String MATCHING_QUEUE = "matchingQueue";
-	private static final String TOP_30_PERCENT_FACES_CACHE = "top30PercentFaces";
 
 	private final ExecutorService executorService = Executors.newCachedThreadPool();
 
-	public void startMatching(MatchingUserRequest matchingUserRequest) {
-		executorService.submit(() -> match(matchingUserRequest));
+	public Future<Map<String, Object>> startMatching(MatchingUserRequest matchingUserRequest) {
+		Long userId = matchingUserRequest.getUserId();
+		matchingUserRequest.putGenderFromUser(userService.getGender(userId));
+		matchingUserRequest.putFaceScoreFromFace(faceService.getFaceScoreByUserId(userId));
+		return executorService.submit(() -> match(matchingUserRequest));
 	}
 
+	@PreDestroy
 	public void stop() {
 		executorService.shutdown();
 		try {
@@ -46,7 +52,9 @@ public class MatchingService {
 		}
 	}
 
-	public void match(MatchingUserRequest matchingUserRequest) {
+	public Map<String, Object> match(MatchingUserRequest matchingUserRequest) {
+		Map<String, Object> response = new HashMap<>();
+
 		addToQueue(matchingUserRequest);
 
 		//5분동안 매칭 대기
@@ -70,8 +78,12 @@ public class MatchingService {
 
 			if (matchedUser != null) {
 				//successMatch
-				System.out.println("Matched with user: " + matchedUser.getUserId());
-				return;
+				MatchingUserResponse fromUser = userService.getUserDetails(matchingUserRequest.getUserId(), matchingUserRequest.getPosition(), matchingUserRequest.getMatchType());
+				MatchingUserResponse toUser = userService.getUserDetails(matchedUser.getUserId(), matchedUser.getPosition(), matchedUser.getMatchType());
+				response.put("status", "success");
+				response.put("fromUser", fromUser);
+				response.put("toUser", toUser);
+				return response;
 			}
 			try {
 				Thread.sleep(5000); // 5초 대기
@@ -84,17 +96,9 @@ public class MatchingService {
 		// No match found within 5 minutes.
 		//deleteFromQue
 		redisTemplate.opsForZSet().remove(MATCHING_QUEUE, matchingUserRequest);
-	}
-
-	@Cacheable(value = TOP_30_PERCENT_FACES_CACHE)
-	public Set<Long> getTop30PercentFaceUserIds() {
-		List<Long> allUserIds = faceRepository.findAllUserIdsOrderByFaceScoreDesc();
-		int top30Index = (int) (allUserIds.size() * 0.3);
-		if (top30Index == 0) {
-			top30Index = 1;
-		}
-		return allUserIds.subList(0, top30Index).stream().collect(Collectors.toCollection(LinkedHashSet::new));
-	}
+		response.put("status", "timeout");
+		return response;
+    }
 
 	public void addToQueue(MatchingUserRequest matchingUserRequest) {
 		ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
@@ -127,7 +131,7 @@ public class MatchingService {
 		Set<Object> candidates = zSetOps.range(MATCHING_QUEUE, 0, -1);
 
 		// Get the top 30% faces
-		Set<Long> top30PercentUserIds = getTop30PercentFaceUserIds();
+		Set<Long> top30PercentUserIds = faceService.getTop30PercentFaceUserIds();
 
 		// Filter candidates who are in the top 30% faces
 		Set<Object> top30Candidates = candidates.stream()
@@ -170,7 +174,7 @@ public class MatchingService {
 			if(candidateMatchingType.equals("love")&&userPosition.equals("money")) {
 				return false;
 			}else if(candidateMatchingType.equals("top30")){
-				Set<Long> top30PercentUserIds = getTop30PercentFaceUserIds();
+				Set<Long> top30PercentUserIds = faceService.getTop30PercentFaceUserIds();
 				return top30PercentUserIds.contains(matchingUserRequest.getUserId());
 			}
 			return true;
