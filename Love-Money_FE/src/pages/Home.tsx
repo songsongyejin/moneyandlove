@@ -5,6 +5,8 @@ import { userInfo } from "../atom/store"; // .ts 확장자는 생략 가능
 import { Link, useNavigate } from "react-router-dom";
 import { mockLogin } from "../utils/mockLogin";
 import kakaoLoginImage from "../assets/kakao_login_large_wide.png";
+import useFullscreen from "../utils/useFullScreen";
+import { KAKAO_AUTH_URL } from "../utils/OAuth";
 
 const Home: React.FC = () => {
   //유저 로그인 정보
@@ -16,10 +18,16 @@ const Home: React.FC = () => {
     const loggedInUser = mockLogin();
     setUser(loggedInUser);
     navigate("/main");
+    triggerFull();
   };
 
+  const onFullS = (isFull: any) => {
+    console.log(isFull ? "We are full" : "We are small");
+  };
+  const { element, triggerFull, exitFull } = useFullscreen(onFullS);
+
   return (
-    <div className="fixed relative h-screen">
+    <div className="fixed relative h-screen" ref={element}>
       <div className="absolute inset-0 bg-main-bg bg-cover bg-center"></div>
       <div className="absolute inset-0 bg-black opacity-20"></div>
       <div className="relative z-10 flex h-full items-center justify-center">
@@ -47,8 +55,9 @@ const Home: React.FC = () => {
           >
             로그인
           </button> */}
-          <button
-            onClick={handleLogin}
+          <a
+            // onClick={handleLogin}
+            href={KAKAO_AUTH_URL}
             className="mt-20 w-80 shadow-btn transition-transform hover:scale-105"
           >
             <img
@@ -56,7 +65,7 @@ const Home: React.FC = () => {
               alt="카카오 로그인"
               className="h-auto w-full"
             />
-          </button>
+          </a>
         </div>
       </div>
     </div>

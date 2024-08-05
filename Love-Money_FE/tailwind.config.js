@@ -21,6 +21,7 @@ export default {
         "offline-color": "#666666",
         "custom-purple-color": "#8B6CAC",
         "chatRoom-color": "#F8F1FD",
+        "chat-color": "#D1C4DE",
         primary: {
           DEFAULT: "#2bca43",
         },

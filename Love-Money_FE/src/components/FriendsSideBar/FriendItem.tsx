@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import "./style.css";
 import IonIcon from "@reacticons/ionicons";
 
-type friendProfile = { nickName: string; isOnline: boolean; imgUrl: string };
+type friendProfile = {
+  folloserId: number;
+  nickname: string;
+  age: number;
+  gender: string;
+  img: string;
+};
 
 const FreindItem: React.FC<{
   friend: friendProfile;
@@ -18,17 +24,17 @@ const FreindItem: React.FC<{
     >
       {isHovered && (
         <div
-          className={`w-1 rounded drop-shadow-custom ${friend.isOnline ? "bg-btn-color" : "bg-offline-color"} `}
+          className={`w-1 rounded drop-shadow-custom ${friend ? "bg-btn-color" : "bg-offline-color"} `}
         ></div>
       )}
 
-      <img src={friend.imgUrl} alt="프사" className="ml-5 h-16" />
+      <img src={friend.img} alt="프사" className="ml-5 h-16 rounded-full" />
       <IonIcon
         name="fitness-outline"
         size="large"
-        className={`${friend.isOnline ? "icon" : "offline_icon"} -ml-4 mr-16`}
+        className={`${friend ? "icon" : "offline_icon"} -ml-4 mr-16`}
       ></IonIcon>
-      <h3 className="my-auto text-xl">{friend.nickName}</h3>
+      <h3 className="my-auto text-xl">{friend.nickname}</h3>
     </li>
   );
 };

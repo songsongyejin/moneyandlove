@@ -1,5 +1,4 @@
 .fNav {
-  overflow: hidden;
   position: absolute;
   top: 0;
   left: 0;
@@ -9,7 +8,9 @@
   transition: all 800ms cubic-bezier(0.8, 0, 0.33, 1);
   border-radius: 0% 0% 100% 50%;
 }
-
+.as {
+  transition: all 900ms cubic-bezier(0.9, 0, 0.33, 1);
+}
 nav.nav-open {
   transform: translateX(0px);
   border-radius: 0% 0% 0% 0%;
@@ -69,9 +70,8 @@ nav .menu-btn .line.line--3.line-cross {
 nav .nav-links {
   position: absolute;
   left: 0;
-  top: 110px;
+  top: 15%;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   transform: translateX(-100px);
@@ -105,15 +105,15 @@ nav .nav-links .link {
 }
 
 /* Scrollbar styles */
-.nav-links::-webkit-scrollbar {
+.fNav::-webkit-scrollbar {
   width: 9px; /* Width of the scrollbar */
 }
 
-.nav-links::-webkit-scrollbar-track {
+.fNav::-webkit-scrollbar-track {
   background: rgba(0, 5, 18, 0); /* Color of the track */
 }
 
-.nav-links::-webkit-scrollbar-thumb {
+.fNav::-webkit-scrollbar-thumb {
   background-color: #8b6cac; /* Color of the scrollbar thumb */
   border-radius: 5px; /* Rounded corners for the scrollbar thumb */
   border: 1px solid #8b6cac; /* Border around the scrollbar thumb */
