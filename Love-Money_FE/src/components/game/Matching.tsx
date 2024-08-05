@@ -22,15 +22,26 @@ const Matching: React.FC<MatchingProps> = ({ isOpen, onClose }) => {
           상대방을 찾고 있습니다
         </p>
         <div className="h-20 w-20 animate-spin rounded-full border-b-2 border-t-2 border-custom-purple-color"></div>
-        <button
-          onClick={() => navigate("/room")}
-          className="mt-8 rounded-lg bg-fuchsia-700 px-8 py-3 text-lg text-white hover:bg-fuchsia-800"
-          style={{
-            fontFamily: "DNFBitBitv2",
-          }}
-        >
-          매칭 확인
-        </button>
+        <div className="flex flex-row space-x-4">
+          <button
+            onClick={() => navigate("/room")}
+            className="mt-8 rounded-lg bg-fuchsia-700 px-8 py-3 text-lg text-white hover:bg-fuchsia-800"
+            style={{
+              fontFamily: "DNFBitBitv2",
+            }}
+          >
+            매칭 확인
+          </button>
+          <button
+            onClick={() => navigate("/whatsittoya")}
+            className="mt-8 rounded-lg bg-custom-purple-color px-8 py-3 text-lg text-white"
+            style={{
+              fontFamily: "DNFBitBitv2",
+            }}
+          >
+            왓츠잇투야 게임시작
+          </button>
+        </div>
         <button
           onClick={onClose}
           className="mt-8 rounded-lg bg-fuchsia-700 px-8 py-3 text-lg text-white hover:bg-fuchsia-800"
