@@ -2,6 +2,8 @@ package com.ssafy.moneyandlove.user.service;
 
 import java.util.Optional;
 
+import com.ssafy.moneyandlove.matching.dto.MatchingUserResponse;
+import com.ssafy.moneyandlove.user.domain.Gender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -151,5 +153,13 @@ public class UserService {
 			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
 		user.updateProfile(userProfileUpdateRequest.getNickname(), userProfileUpdateRequest.getRegion(),
 			userProfileUpdateRequest.getProfileURL());
+	}
+
+	public MatchingUserResponse getUserDetails(Long userId, String firstPosition, String matchType) {
+		return userRepository.findUserDetailsById(userId, firstPosition, matchType);
+	}
+
+	public Gender getGender(Long userId){
+		return userRepository.findGenderByUserId(userId);
 	}
 }

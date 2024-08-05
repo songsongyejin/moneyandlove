@@ -33,6 +33,13 @@ services:
     restart: unless-stopped
     networks:
       - moneyandlove-network
+  redis:
+    container_name: moneyandlove-redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - moneyandlove-network
 networks:
   moneyandlove-network:
     driver: bridge

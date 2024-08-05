@@ -36,4 +36,6 @@ public class Face extends TimeBaseEntity {
 	public void changeMontageURL(String montageURL) {
 		this.montageURL = montageURL;
 	}
+
+	public void changeFaceScore(int newScore) { this.faceScore = newScore; }
 }
