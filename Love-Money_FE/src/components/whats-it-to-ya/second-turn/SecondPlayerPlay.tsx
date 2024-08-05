@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import Card from "../game-elements/PriorityCard";
+import Card from "../game-elements/PriorityCard2";
 import DropZone from "../game-elements/DropZone";
-import InitialZone from "../game-elements/InitialZone";
+import InitialZone from "../game-elements/InitialZone2";
 import { useWordCards } from "../../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
 import "../game-elements/WordCardsComponent.css";
 
@@ -12,7 +12,7 @@ interface CardType {
   number: number;
 }
 
-interface FirstPlayerPlayProps {
+interface SecondPlayerPlayProps {
   onFinalize: (dropZones: CardType[][]) => void;
 }
 
@@ -21,7 +21,7 @@ const initialZones = {
   dropZones: Array.from({ length: 5 }, () => [] as CardType[]),
 };
 
-const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({ onFinalize }) => {
+const SecondPlayerPlay: React.FC<SecondPlayerPlayProps> = ({ onFinalize }) => {
   const [zones, setZones] = useState(initialZones);
   const { wordCards, loading, error } = useWordCards();
   // const wordCards = [
@@ -152,7 +152,7 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({ onFinalize }) => {
                   width: "780px",
                 }}
               >
-                <p className="mb-2 text-xl">당신이 선입니다!</p>
+                <p className="mb-2 text-xl">당신의 차례입니다.</p>
                 <p className="text-xl">
                   {" "}
                   다섯 개의 단어 카드를 보고 당신의 우선순위를 정해주세요{" "}
@@ -241,4 +241,4 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({ onFinalize }) => {
   );
 };
 
-export default FirstPlayerPlay;
+export default SecondPlayerPlay;

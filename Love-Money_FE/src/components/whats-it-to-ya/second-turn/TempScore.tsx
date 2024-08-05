@@ -3,7 +3,7 @@ import Card from "../game-elements/PriorityCard";
 import Card2 from "../game-elements/PriorityCard2";
 import { useWordCards } from "../../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
 
-// FirstTurnScore
+// SecondTurnScore
 
 interface CardType {
   id: string;
@@ -11,15 +11,15 @@ interface CardType {
 }
 
 interface ScoreProps {
-  player1DropZones: CardType[][];
-  player2GuessZones: CardType[][];
+  player1GuessZones: CardType[][];
+  player2DropZones: CardType[][];
   onScoreCalculated: (score: number) => void;
   onNextPhase: () => void;
 }
 
 const Score: React.FC<ScoreProps> = ({
-  player1DropZones,
-  player2GuessZones,
+  player1GuessZones,
+  player2DropZones,
   onScoreCalculated,
   onNextPhase,
 }) => {
@@ -29,10 +29,10 @@ const Score: React.FC<ScoreProps> = ({
   const calculateScore = () => {
     let score = 0;
 
-    for (let i = 0; i < player1DropZones.length; i++) {
+    for (let i = 0; i < player2DropZones.length; i++) {
       // 각 드랍존에는 한 장의 카드만 있음
-      const player1Card = player1DropZones[i][0];
-      const player2Card = player2GuessZones[i][0];
+      const player1Card = player1GuessZones[i][0];
+      const player2Card = player2DropZones[i][0];
 
       if (
         player1Card &&
@@ -49,7 +49,7 @@ const Score: React.FC<ScoreProps> = ({
   useEffect(() => {
     const score = calculateScore();
     onScoreCalculated(score); // 점수를 콜백 함수로 전달
-  }, [player1DropZones, player2GuessZones, onScoreCalculated]);
+  }, [player1GuessZones, player2DropZones, onScoreCalculated]);
 
   const score = calculateScore();
 
@@ -116,13 +116,13 @@ const Score: React.FC<ScoreProps> = ({
                 className="mb-3 text-2xl"
                 style={{ fontFamily: "DungGeunMo" }}
               >
-                Player 1의 선택
+                Player 2의 선택
               </h2>
               <div className="flex" style={{ gap: "5.5rem" }}>
-                {player1DropZones.map((zone, index) => (
+                {player2DropZones.map((zone, index) => (
                   <div key={index} className="flex flex-col items-center">
                     {zone.map((card) => (
-                      <Card key={card.id} id={card.id} number={card.number} />
+                      <Card2 key={card.id} id={card.id} number={card.number} />
                     ))}
                   </div>
                 ))}
@@ -135,13 +135,13 @@ const Score: React.FC<ScoreProps> = ({
                 className="mb-3 text-2xl"
                 style={{ fontFamily: "DungGeunMo" }}
               >
-                Player 2의 예측
+                Player 1의 예측
               </h2>
               <div className="flex" style={{ gap: "5.5rem" }}>
-                {player2GuessZones.map((zone, index) => (
+                {player1GuessZones.map((zone, index) => (
                   <div key={index} className="flex flex-col items-center">
                     {zone.map((card) => (
-                      <Card2 key={card.id} id={card.id} number={card.number} />
+                      <Card key={card.id} id={card.id} number={card.number} />
                     ))}
                   </div>
                 ))}

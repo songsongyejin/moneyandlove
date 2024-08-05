@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Card from "../game-elements/PriorityCard";
 import Card2 from "../game-elements/PriorityCard2";
 import { useWordCards } from "../../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
@@ -13,11 +13,15 @@ interface CardType {
 interface ScoreProps {
   player1DropZones: CardType[][];
   player2GuessZones: CardType[][];
+  onScoreCalculated: (score: number) => void;
+  onNextPhase: () => void;
 }
 
 const TempScore: React.FC<ScoreProps> = ({
   player1DropZones,
   player2GuessZones,
+  onScoreCalculated,
+  onNextPhase,
 }) => {
   const { wordCards, loading, error } = useWordCards();
 
@@ -41,6 +45,11 @@ const TempScore: React.FC<ScoreProps> = ({
 
     return score;
   };
+  // 점수 계산 후 부모 컴포넌트로 전달
+  useEffect(() => {
+    const score = calculateScore();
+    onScoreCalculated(score); // 점수를 콜백 함수로 전달
+  }, [player1DropZones, player2GuessZones, onScoreCalculated]);
 
   const score = calculateScore();
 
@@ -148,6 +157,16 @@ const TempScore: React.FC<ScoreProps> = ({
             <div className="mt-2 text-5xl font-bold text-custom-purple-color">
               {score}
             </div>
+          </div>
+          {/* 다음으로 넘어가는 버튼 */}
+          <div className="mt-1">
+            <button
+              onClick={onNextPhase}
+              className="rounded-lg bg-custom-purple-color px-6 py-3 text-2xl text-white"
+              style={{ fontFamily: "DungGeunMo" }}
+            >
+              다음 단계
+            </button>
           </div>
         </div>
       </div>
