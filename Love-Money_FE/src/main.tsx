@@ -11,9 +11,19 @@ import {
   useRecoilState,
   useRecoilValue,
 } from "recoil";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import GameHome from "./pages/GameHome.tsx";
 import Room from "./pages/room/Room.tsx";
-import WhatsItToYa from "./pages/room/WhatsItToYa.tsx";
+import LoginHandler from "./pages/login/LoginHandler.tsx";
+import SignUpPage from "./pages/signUp/SignUpPage.tsx";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -24,16 +34,21 @@ const router = createBrowserRouter([
       { index: true, path: "/", element: <Home /> },
       { path: "main", element: <GameHome /> },
       { path: "room", element: <Room /> },
-      { path: "whatsittoya", element: <WhatsItToYa /> },
-      // // { path: "products/:id", element: <ProductDetail /> },
+      {
+        path: "login/oauth2/callback",
+        element: <LoginHandler />,
+      },
+      { path: "signUp", element: <SignUpPage /> },
       // // { path: "cart", element: <MyCart /> },
     ],
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RecoilRoot>
-      <RouterProvider router={router} />
-    </RecoilRoot>
+    <QueryClientProvider client={queryClient}>
+      <RecoilRoot>
+        <RouterProvider router={router} />
+      </RecoilRoot>
+    </QueryClientProvider>
   </React.StrictMode>
 );
