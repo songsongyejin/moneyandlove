@@ -1,5 +1,6 @@
 import React from "react";
 import Card from "../game-elements/PriorityCard";
+import Card2 from "../game-elements/PriorityCard2";
 
 // FirstTurnScore
 
@@ -134,7 +135,7 @@ const TempScore: React.FC<ScoreProps> = ({
                 {player2GuessZones.map((zone, index) => (
                   <div key={index} className="flex flex-col items-center">
                     {zone.map((card) => (
-                      <Card key={card.id} id={card.id} number={card.number} />
+                      <Card2 key={card.id} id={card.id} number={card.number} />
                     ))}
                   </div>
                 ))}

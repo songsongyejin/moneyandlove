@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import Card from "../game-elements/PriorityCard";
+import Card from "../game-elements/PriorityCard2";
 import DropZone from "../game-elements/DropZone";
-import InitialZone from "../game-elements/InitialZone";
+import InitialZone from "../game-elements/InitialZone2";
 import backCard from "../../../assets/cards/pink_heart_card_back.png";
 
 interface CardType {
