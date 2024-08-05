@@ -34,8 +34,10 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 		String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
 		String token = getAccessToken(authorizationHeader);
+		log.info("uri: {} JWT : {}",request.getRequestURI(),token);
 		try {
 			Claims claims = jwtProvider.validateToken(token);
+			log.info("loginUser: {}", claims.get("id"));
 			Authentication authentication = jwtProvider.getAuthentication(token);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			filterChain.doFilter(request, response);
@@ -64,7 +66,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		String[] excludePath = {"/health", "/user/sign", "/user/login"};
+		String[] excludePath = {"/health", "/user/sign", "/user/login", "/websocket"};
 		String path = request.getRequestURI();
 		return Arrays.stream(excludePath).anyMatch(path::startsWith);
 	}
