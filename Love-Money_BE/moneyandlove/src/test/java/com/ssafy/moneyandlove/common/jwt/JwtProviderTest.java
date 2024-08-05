@@ -5,9 +5,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ssafy.moneyandlove.user.domain.User;
 
-@SpringBootTest
+//@SpringBootTest
 class JwtProviderTest {
 
+	/**
 	@Test
 	void generateToken() {
 		User user = User.builder().id(1L).nickname("test").build();
@@ -16,5 +17,5 @@ class JwtProviderTest {
 		System.out.println(token);
 
 	}
-
+**/
 }

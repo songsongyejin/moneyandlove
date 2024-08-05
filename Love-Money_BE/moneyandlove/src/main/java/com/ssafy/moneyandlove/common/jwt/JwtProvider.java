@@ -13,11 +13,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.moneyandlove.common.error.ErrorType;
+import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
 import com.ssafy.moneyandlove.user.domain.User;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +44,7 @@ public class JwtProvider {
 		return Jwts.builder()
 			.setHeaderParam(Header.TYPE, Header.JWT_TYPE)
 			.setIssuedAt(now)
-			.setExpiration(new Date(now.getTime() + Duration.ofHours(2).toMillis()))
+			.setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
 			.setSubject(user.getEmail())
 			.claim("id", user.getId())
 			.claim("nickname", user.getNickname())
@@ -54,8 +58,12 @@ public class JwtProvider {
 				.setSigningKey(secret)
 				.parseClaimsJws(token)
 				.getBody();
+		} catch (SecurityException | MalformedJwtException e) {
+			throw new MoneyAndLoveException(ErrorType.TOKEN_INVALID);
+		} catch (ExpiredJwtException e) {
+			throw new MoneyAndLoveException(ErrorType.TOKEN_EXPIRED);
 		} catch (Exception e) {
-			return null;
+			throw new MoneyAndLoveException(ErrorType.TOKEN_NOT_EXIST);
 		}
 	}
 

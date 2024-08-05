@@ -126,14 +126,14 @@ public class UserService {
 	public JwtResponse save(SignUpRequest signUpRequest) {
 		User user = userRepository.save(SignUpRequest.toUser(signUpRequest));
 		rankingService.createRanking(user.getId());
-		return JwtResponse.from(jwtProvider.makeToken(user));
+		return JwtResponse.from(jwtProvider.makeToken(user), true);
 	}
 
 	public JwtResponse findByKakaoId(KakaoAccount kakaoAccount) {
 		User user = userRepository
 			.findByKakaoId(kakaoAccount.getId())
 			.orElseThrow(() -> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
-		return JwtResponse.from(jwtProvider.makeToken(user));
+		return JwtResponse.from(jwtProvider.makeToken(user), true);
 	}
 
 	@Transactional
