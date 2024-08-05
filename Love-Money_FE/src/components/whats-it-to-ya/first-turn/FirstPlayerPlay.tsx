@@ -4,6 +4,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import Card from "../game-elements/PriorityCard";
 import DropZone from "../game-elements/DropZone";
 import InitialZone from "../game-elements/InitialZone";
+import "./WordCardsComponent.css";
 
 interface CardType {
   id: string;
@@ -144,7 +145,7 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({ onFinalize }) => {
             <div className="flex flex-col items-center justify-center">
               {/* 설명 영역 */}
               <div
-                className="mx-auto mt-5 flex animate-fadeIn flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-4 text-center"
+                className="mx-auto mt-5 flex flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-4 text-center"
                 style={{
                   fontFamily: "DungGeunMo",
                   width: "780px",
@@ -157,15 +158,16 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({ onFinalize }) => {
                 </p>
               </div>
               {/* 다섯 개의 단어 카드 영역 */}
-              <div className="card-container mt-8 flex animate-fadeIn flex-row space-x-8">
-                {wordCards.map((card) => (
+              <div className="card-container mt-8 flex flex-row space-x-8">
+                {wordCards.map((card, index) => (
                   <div
                     key={card.id}
-                    className="border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
+                    className="card border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
                     style={{
                       width: "135px",
                       height: "180px",
                       backgroundColor: card.bgColor,
+                      animationDelay: `${index * 0.1}s`, // Stagger the animation
                     }}
                   >
                     {/* 상단 영역 */}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import cardBack from "../../assets/cards/card_back.svg";
 import cardFirstTurn from "../../assets/cards/first_turn_card.png";
 import cardSecondTurn from "../../assets/cards/second_turn_card.png";
+import table from "../../assets/cards/table.jpg";
 
 interface SelectTurnProps {
   onTurnSelected: (cardIndex: number) => void;
@@ -39,7 +40,16 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected }) => {
   // isCardSelected, onTurnSelected, flippedCard의 변경을 감지하여 해당 로직이 필요할 때만 실행되도록 함
 
   return (
-    <div className="relative flex h-[620px] w-[900px] flex-col rounded-[20px] bg-[#F0E9F6]">
+    <div
+      className="relative flex h-[620px] w-[900px] flex-col rounded-[20px] bg-[#F0E9F6]"
+      //   style={{
+      //     backgroundImage: `url(${table})`,
+      //     backgroundSize: "cover", // 전체를 커버하게 설정
+      //     backgroundPosition: "center", // 이미지를 가운데에 위치
+      //     backgroundRepeat: "no-repeat", // 이미지 반복 금지
+      //   }
+      // }
+    >
       {/* 제목 박스 */}
       <div className="absolute -top-5 left-1/2 flex h-[50px] w-[250px] -translate-x-1/2 items-center justify-center rounded-3xl bg-[#8B6CAC]">
         <h1

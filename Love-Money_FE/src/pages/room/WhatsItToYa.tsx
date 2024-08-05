@@ -129,7 +129,7 @@ const WhatsItToYa: React.FC = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      // 배경 이미지와 레이아웃을 설정하는 컨테이너
+      {/* // 배경 이미지와 레이아웃을 설정하는 컨테이너 */}
       <div className="absolute inset-0 bg-main-bg bg-cover bg-center">
         {/* 반투명한 검은색 오버레이 */}
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>

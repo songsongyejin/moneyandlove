@@ -1,0 +1,16 @@
+/* WordCardComponent.css */
+
+@keyframes dealAnimation {
+  0% {
+    transform: translateY(-50px) scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.card-container .card {
+  animation: dealAnimation 0.6s ease-out forwards;
+}
