@@ -65,7 +65,8 @@ public class WebRtcController {
 		}
 		ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
 		Connection connection = session.createConnection(properties);
-		return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
+		System.out.println(connection.getToken());
+		return new ResponseEntity<>(connection.getToken().replace("localhost", "i11a405.p.ssafy.io"), HttpStatus.OK);
 	}
 
 }
