@@ -1,6 +1,7 @@
 package com.ssafy.moneyandlove.matching.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.ssafy.moneyandlove.user.domain.Gender;
 import lombok.Getter;
@@ -23,5 +24,18 @@ public class MatchingUserRequest implements Serializable {
 	}
 	public void putFaceScoreFromFace(int faceScore) {
 		this.faceScore = faceScore;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		MatchingUserRequest that = (MatchingUserRequest) o;
+		return userId.equals(that.userId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(userId);
 	}
 }

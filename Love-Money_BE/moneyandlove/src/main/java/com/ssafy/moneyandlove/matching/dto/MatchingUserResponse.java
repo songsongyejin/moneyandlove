@@ -7,7 +7,6 @@ import lombok.ToString;
 
 @ToString
 @Getter
-@Builder
 public class MatchingUserResponse {
     private Long userId;
     private String nickname;
@@ -16,6 +15,10 @@ public class MatchingUserResponse {
     private String gender;
     private String firstPosition;
     private String matchingMode;
+
+    public MatchingUserResponse() {
+        // 기본 생성자
+    }
 
     public MatchingUserResponse(Long userId, String nickname, String profileURL, Integer age, Gender gender, String firstPosition, String matchingMode) {
         this.userId = userId;
