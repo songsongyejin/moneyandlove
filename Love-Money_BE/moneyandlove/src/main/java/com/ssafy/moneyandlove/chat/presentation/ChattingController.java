@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,8 +59,8 @@ public class ChattingController {
         return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomService.save(loginUser, createChatRoomRequest));
     }
 
-    @GetMapping("/message")
-    public ResponseEntity<List<ChatMessage>> getChatHistory(@RequestParam Long roomId) {
+    @GetMapping("room/{roomId}/message")
+    public ResponseEntity<List<ChatMessage>> getChatHistory(@PathVariable Long roomId) {
         log.info("{}", roomId);
         List<ChatMessage> messages = chatMessageRepository.findAllByRoomId(roomId);
         return ResponseEntity.status(HttpStatus.OK).body(messages);
