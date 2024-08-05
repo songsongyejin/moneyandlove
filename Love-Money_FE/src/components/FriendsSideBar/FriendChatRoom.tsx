@@ -2,10 +2,16 @@ import React, { useState } from "react";
 import IonIcon from "@reacticons/ionicons";
 import { FiSend } from "react-icons/fi";
 
-type FriendProfile = { nickName: string; isOnline: boolean; imgUrl: string };
+type friendProfile = {
+  folloserId: number;
+  nickname: string;
+  age: number;
+  gender: string;
+  img: string;
+};
 
 const FriendChatRoom: React.FC<{
-  friend: FriendProfile;
+  friend: friendProfile;
   onChatClose: () => void;
 }> = ({ friend, onChatClose }) => {
   const [newMessage, setNewMessage] = useState("");
@@ -13,13 +19,13 @@ const FriendChatRoom: React.FC<{
   return (
     <div className="absolute bottom-0 left-350px z-20 flex h-96 w-96 flex-col bg-chatRoomMain-color font-semibold opacity-85">
       <header className="flex p-3 text-white">
-        <img src={friend.imgUrl} alt="프사" className="h-12" />
+        <img src={friend.img} alt="프사" className="h-12 rounded-full" />
         <IonIcon
           name="fitness-outline"
           size="large"
-          className={`${friend.isOnline ? "icon" : ""} -ml-4 mr-5`}
+          className={`${friend ? "icon" : ""} -ml-4 mr-5`}
         ></IonIcon>
-        <h3 className="my-auto">{friend.nickName}</h3>
+        <h3 className="my-auto">{friend.nickname}</h3>
         <IonIcon
           name="close-outline"
           className="ml-auto cursor-pointer"

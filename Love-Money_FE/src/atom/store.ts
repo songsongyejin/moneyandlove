@@ -13,6 +13,12 @@ export const userInfo = atom<UserInfo | null>({
   default: null,
 });
 
+//유저 token
+export const userToken = atom<string | null>({
+  key: "token",
+  default: null,
+});
+
 //최대 감정 값
 export const maxExpressionState = atom<string>({
   key: "maxExpressionState",

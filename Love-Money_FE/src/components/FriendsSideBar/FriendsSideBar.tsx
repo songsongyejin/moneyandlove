@@ -4,27 +4,34 @@ import sampleImage from "../../assets/sample.png"; // 이미지 경로에 맞게
 import FreindItem from "./FriendItem";
 import FriendChatRoom from "./FriendChatRoom";
 import { FiPlusCircle } from "react-icons/fi";
+import { userToken } from "../../atom/store";
+import { useRecoilValue } from "recoil";
+import { useQuery } from "@tanstack/react-query";
+import { fetchFriendsListData } from "../../utils/friends";
 const FreindsSideBar: React.FC = () => {
   const [navOpen, setNavOpen] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState<friendProfile | null>(
     null
   );
+  const token = useRecoilValue(userToken);
+  const {
+    data: friendsList,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["friendsList", token],
+    queryFn: () => fetchFriendsListData(token as string),
+    enabled: !!token,
+  });
+  console.log(friendsList);
   //친구 목록에 띄울 친구 객체 타입
-  type friendProfile = { nickName: string; isOnline: boolean; imgUrl: string };
-
-  //친구 mock data
-  const friendsMock: friendProfile[] = [
-    { nickName: "짱지환", isOnline: true, imgUrl: sampleImage },
-    { nickName: "갓지환", isOnline: false, imgUrl: sampleImage },
-    { nickName: "황지환", isOnline: false, imgUrl: sampleImage },
-    { nickName: "뉴지환", isOnline: true, imgUrl: sampleImage },
-    { nickName: "네오지환", isOnline: true, imgUrl: sampleImage },
-    { nickName: "빅지환", isOnline: true, imgUrl: sampleImage },
-    { nickName: "대지환", isOnline: true, imgUrl: sampleImage },
-    { nickName: "신지환", isOnline: true, imgUrl: sampleImage },
-    { nickName: "대황지환", isOnline: true, imgUrl: sampleImage },
-    { nickName: "상지환", isOnline: true, imgUrl: sampleImage },
-  ];
+  type friendProfile = {
+    folloserId: number;
+    nickname: string;
+    age: number;
+    gender: string;
+    img: string;
+  };
 
   const handleMenuClick = () => {
     setNavOpen(!navOpen);
@@ -56,8 +63,8 @@ const FreindsSideBar: React.FC = () => {
         <ul
           className={`nav-links ${navOpen ? "fade-in" : ""} font-bold text-white`}
         >
-          {friendsMock &&
-            friendsMock.map((friend, index) => (
+          {friendsList &&
+            friendsList.map((friend: friendProfile, index: number) => (
               <FreindItem
                 key={index}
                 friend={friend}

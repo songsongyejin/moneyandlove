@@ -100,6 +100,7 @@ const Room: React.FC = () => {
 
     try {
       const token = await getToken();
+      console.log(token);
       await session.connect(token, { clientData: myUserName });
 
       const publisher = await OV.initPublisherAsync(undefined, {

@@ -2,7 +2,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-
+import mainBg from "../../assets/main_bg.png";
+import { userToken } from "../../atom/store";
+import { useRecoilState } from "recoil";
 const fetchKakaoLogin = async (code: string | null) => {
   if (!code) throw new Error("No code provided");
   const res = await axios({
@@ -10,13 +12,13 @@ const fetchKakaoLogin = async (code: string | null) => {
     url: `http://i11a405.p.ssafy.io:8080/user/login?code=${code}`,
     headers: {
       "Content-Type": "application/json;charset=utf-8",
-      "Access-Control-Allow-Origin": "*",
     },
   });
   return res.data;
 };
 
 const LoginHandler: React.FC = () => {
+  const [token, setToken] = useRecoilState(userToken);
   const navigate = useNavigate();
   const code = new URL(window.location.href).searchParams.get("code");
   const { data, error, isLoading } = useQuery({
@@ -27,6 +29,7 @@ const LoginHandler: React.FC = () => {
       console.log(data);
       if (data) {
         if (data.signed) {
+          setToken(data.token);
           navigate("/main");
         } else {
           navigate("/signUp", { state: { data } });
@@ -42,13 +45,19 @@ const LoginHandler: React.FC = () => {
   }, [error]);
 
   return (
-    <div className="LoginHandler">
-      <div className="notice">
-        <p>로그인 중입니다.</p>
-        <p>잠시만 기다려주세요.</p>
-        <div className="spinner"></div>
-        {error && <p>Error: {error.message}</p>}
-        {isLoading && <p>Loading...</p>}
+    <div className="LoginHandler relative flex h-screen w-screen items-center justify-center bg-gray-100">
+      <img
+        src={mainBg}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="notice z-10 rounded bg-white bg-opacity-80 p-6 text-center shadow-md">
+        <p className="text-lg font-semibold">로그인 중입니다.</p>
+        <p className="mb-4">잠시만 기다려주세요.</p>
+        {isLoading && (
+          <div className="spinner mx-auto h-12 w-12 animate-spin rounded-full border-t-4 border-blue-500"></div>
+        )}
+        {error && <p className="mt-4 text-red-500">Error: {error.message}</p>}
       </div>
     </div>
   );

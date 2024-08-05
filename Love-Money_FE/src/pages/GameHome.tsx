@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { userInfo } from "../atom/store";
 import { useGameLogic } from "../hooks/useGameLogic";
-
+import { userToken } from "../atom/store";
 // 필요한 아이콘과 CSS 파일을 import
 import heartIcon from "../assets/start_heart_icon.svg";
 import "../index.css";
+import mainBg from "../assets/main_bg.png";
+import mainBgMoney from "../assets/mafia_bg.png";
+import mainBgLove from "../assets/love_bg.jpg";
 
 // 필요한 컴포넌트들을 import
 import FriendsSideBar from "../components/FriendsSideBar/FriendsSideBar";
@@ -14,14 +16,19 @@ import PositionSelection from "../components/game/PositionSelection";
 import GameModeSelection from "../components/game/GameModeSelection";
 import Matching from "../components/game/Matching";
 import Navbar from "../components/Header/Navbar";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUserData } from "../utils/user";
 
 const GameHome: React.FC = () => {
   // Recoil을 사용하여 사용자 정보 상태를 가져옴
-  const user = useRecoilValue(userInfo);
-  useEffect(() => {
-    // 배경 이미지가 제대로 로드되는지 확인하기 위해 콘솔 로그 추가
-    console.log("Main component mounted, background image should be loaded");
-  }, []);
+  const token = useRecoilValue(userToken);
+  console.log(token);
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["userData", token],
+    queryFn: () => fetchUserData(token as string),
+    enabled: !!token,
+  });
+
   // useGameLogic 훅을 사용하여 게임 로직 관련 상태와 함수들을 가져옴
   const {
     showFaceVerification, // 얼굴 인증 모달의 표시 여부
@@ -47,16 +54,22 @@ const GameHome: React.FC = () => {
 
   // 선택된 포지션에 따라 배경 클래스를 결정하는 함수
   const getBackgroundClass = () => {
-    if (selectedPosition === "MONEY") return "bg-mafia-bg";
-    if (selectedPosition === "LOVE") return "bg-love-bg";
-    return "bg-main-bg";
+    if (selectedPosition === "MONEY") return mainBgLove;
+    if (selectedPosition === "LOVE") return mainBgLove;
+    return mainBg;
   };
   return (
     <div className="relative h-screen">
       <Navbar />
-      <div
+      {/* <div
         className={`absolute inset-0 ${getBackgroundClass()} bg-cover bg-center`}
-      ></div>
+        style={{ backgroundImage: `url(${imageUrl})` }}
+      ></div> */}
+      <img
+        src={getBackgroundClass()}
+        alt=""
+        className={`absolute inset-0 h-screen w-screen bg-cover bg-center`}
+      />
       <div className="absolute inset-0 bg-black opacity-20"></div>
       {/* 메인 콘텐츠 영역 */}
       <div className="relative flex h-full items-center justify-center">
