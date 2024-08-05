@@ -1,7 +1,5 @@
 package com.ssafy.moneyandlove.common.config;
 
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,8 +36,7 @@ public class SecurityConfig {
 			.headers(c -> c.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable).disable())
 			.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/health", "/user/login", "/user/sign").permitAll() // '/user' 경로와 그 하위 경로는 허용
-				.requestMatchers("/chat/**", "/friends/**", "/attendance/**").authenticated()
+				.requestMatchers("/health", "/user/login", "/user/sign", "/websocket/**").permitAll()
 				.anyRequest().authenticated() // 다른 모든 요청은 인증 요구
 			)
 			.addFilterBefore(new JwtAuthenticateFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
