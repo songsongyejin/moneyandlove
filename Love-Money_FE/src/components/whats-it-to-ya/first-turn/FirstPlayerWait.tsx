@@ -1,5 +1,6 @@
 import React from "react";
 import Card from "../game-elements/PriorityCard";
+import { useWordCards } from "../../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
 
 interface CardType {
   id: string;
@@ -10,15 +11,8 @@ interface FirstPlayerWaitProps {
   dropZones: CardType[][];
 }
 
-const wordCards = [
-  { id: "word1", text: "바다", bgColor: "#88cce1", textColor: "#2e8bab" },
-  { id: "word2", text: "야구", bgColor: "#ffbdbd", textColor: "#bb7c7e" },
-  { id: "word3", text: "맥주", bgColor: "#FFDE59", textColor: "#bd9a5a" },
-  { id: "word4", text: "피아노", bgColor: "#9edaae", textColor: "#58a279" },
-  { id: "word5", text: "놀이공원", bgColor: "#f5b9f3", textColor: "#bd80ba" },
-];
-
 const FirstPlayerWait: React.FC<FirstPlayerWaitProps> = ({ dropZones }) => {
+  const { wordCards, loading, error } = useWordCards();
   return (
     <div className="flex h-screen w-full items-center justify-center">
       {/* 게임창 */}
@@ -49,44 +43,46 @@ const FirstPlayerWait: React.FC<FirstPlayerWaitProps> = ({ dropZones }) => {
               <p className="text-xl"> 잠시만 기다려주세요 </p>
             </div>
             {/* 다섯 개의 단어 카드 영역 */}
-            <div className="card-container mt-8 flex flex-row space-x-8">
-              {wordCards.map((card) => (
-                <div
-                  key={card.id}
-                  className="border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
-                  style={{
-                    width: "135px",
-                    height: "180px",
-                    backgroundColor: card.bgColor,
-                  }}
-                >
-                  {/* 상단 영역 */}
-                  <div className="h-12 w-full rounded-xl rounded-b-none"></div>
-                  {/* 본문 영역 */}
-                  <div className="flex w-full flex-1 flex-col items-center justify-center bg-white">
-                    <p
-                      className="text-2xl"
-                      style={{
-                        fontFamily: "DungGeunMo",
-                        color: card.textColor,
-                      }}
-                    >
-                      {card.text}
-                    </p>
-                  </div>
+            {!loading && !error && (
+              <div className="card-container mt-8 flex flex-row space-x-8">
+                {wordCards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
+                    style={{
+                      width: "135px",
+                      height: "180px",
+                      backgroundColor: card.bgColor,
+                    }}
+                  >
+                    {/* 상단 영역 */}
+                    <div className="h-12 w-full rounded-xl rounded-b-none"></div>
+                    {/* 본문 영역 */}
+                    <div className="flex w-full flex-1 flex-col items-center justify-center bg-white">
+                      <p
+                        className="text-2xl"
+                        style={{
+                          fontFamily: "DungGeunMo",
+                          color: card.textColor,
+                        }}
+                      >
+                        {card.word}
+                      </p>
+                    </div>
 
-                  {/* 하단 영역 */}
-                  <div className="flex h-12 w-full items-center justify-center rounded-xl rounded-t-none">
-                    <p
-                      className="text-base"
-                      style={{ fontFamily: "DungGeunMo", color: "white" }}
-                    >
-                      MONEY & LOVE
-                    </p>
+                    {/* 하단 영역 */}
+                    <div className="flex h-12 w-full items-center justify-center rounded-xl rounded-t-none">
+                      <p
+                        className="text-base"
+                        style={{ fontFamily: "DungGeunMo", color: "white" }}
+                      >
+                        MONEY & LOVE
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
             <div className="mt-8 flex" style={{ gap: "5.5rem" }}>
               {dropZones.map((zone, index) => (
                 <div key={index}>
