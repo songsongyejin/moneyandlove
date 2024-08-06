@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import React, { useEffect, useRef, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useGameLogic } from "../hooks/useGameLogic";
-import { userToken } from "../atom/store";
+import { userInfo, userToken } from "../atom/store";
 // 필요한 아이콘과 CSS 파일을 import
 import heartIcon from "../assets/start_heart_icon.svg";
 import "../index.css";
@@ -18,17 +18,36 @@ import Matching from "../components/game/Matching";
 import Navbar from "../components/Header/Navbar";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserData } from "../utils/user";
-
+import { connectHandler, disconnectHandler, sendHandler } from "../utils/Chat";
 const GameHome: React.FC = () => {
   // Recoil을 사용하여 사용자 정보 상태를 가져옴
   const token = useRecoilValue(userToken);
-  console.log(token);
+  const [user, setUser] = useRecoilState(userInfo);
+
   const { data, error, isLoading } = useQuery({
     queryKey: ["userData", token],
     queryFn: () => fetchUserData(token as string),
     enabled: !!token,
   });
+  useEffect(() => {
+    if (data) {
+      setUser(data);
+    }
+  }, [data, setUser]);
 
+  //Chat Socket 통신
+
+  const [message, setMessage] = useState<any>(null);
+
+  useEffect(() => {
+    if (token) {
+      connectHandler(token, setMessage);
+    }
+
+    return () => {
+      disconnectHandler();
+    };
+  }, [token]);
   // useGameLogic 훅을 사용하여 게임 로직 관련 상태와 함수들을 가져옴
   const {
     showFaceVerification, // 얼굴 인증 모달의 표시 여부
@@ -85,6 +104,12 @@ const GameHome: React.FC = () => {
           >
             사랑하고 의심하라 !
           </h1>
+          <button
+            onClick={sendHandler}
+            className="z-50 w-10 bg-black p-4 text-black"
+          >
+            click
+          </button>
           <p
             className="mt-6 text-xl font-semibold text-white text-shadow-custom text-stroke-custom"
             style={{

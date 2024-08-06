@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import IonIcon from "@reacticons/ionicons";
 import { FiSend } from "react-icons/fi";
-
+import { sendHandler } from "../../utils/Chat";
+import { userToken } from "../../atom/store";
+import { useRecoilValue } from "recoil";
 type friendProfile = {
   folloserId: number;
   nickname: string;
@@ -14,8 +16,17 @@ const FriendChatRoom: React.FC<{
   friend: friendProfile;
   onChatClose: () => void;
 }> = ({ friend, onChatClose }) => {
+  const token = useRecoilValue(userToken);
+
   const [newMessage, setNewMessage] = useState("");
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendHandler(token ? token : "", 1, newMessage);
+      setNewMessage(""); // 메시지 전송 후 입력란 비우기
+    }
+  };
   return (
     <div className="absolute bottom-0 left-350px z-20 flex h-96 w-96 flex-col bg-chatRoomMain-color font-semibold opacity-85">
       <header className="flex p-3 text-white">
@@ -40,7 +51,9 @@ const FriendChatRoom: React.FC<{
         type="text"
         className="w-full border-t-2 border-solid border-custom-purple-color bg-chatRoomMain-color p-4 text-white focus:outline-none"
         onChange={(e) => setNewMessage(e.target.value)}
+        value={newMessage}
         placeholder="메시지를 입력하세요"
+        onKeyDown={handleKeyDown}
       />
     </div>
   );

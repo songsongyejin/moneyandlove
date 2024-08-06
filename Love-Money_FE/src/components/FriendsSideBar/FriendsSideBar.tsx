@@ -23,7 +23,7 @@ const FreindsSideBar: React.FC = () => {
     queryFn: () => fetchFriendsListData(token as string),
     enabled: !!token,
   });
-  console.log(friendsList);
+
   //친구 목록에 띄울 친구 객체 타입
   type friendProfile = {
     folloserId: number;

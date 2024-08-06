@@ -2,11 +2,12 @@ import axios from "axios";
 
 export const fetchFriendsListData = async (token: string) => {
   try {
-    const response = await axios.get("http://i11a405.p.ssafy.io:8080/friends", {
+    const response = await axios.get("https://i11a405.p.ssafy.io/friends", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log(response.data);
     return response.data;
   } catch (err) {
     console.error(err);

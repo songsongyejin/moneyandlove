@@ -9,7 +9,7 @@ const fetchKakaoLogin = async (code: string | null) => {
   if (!code) throw new Error("No code provided");
   const res = await axios({
     method: "GET",
-    url: `http://i11a405.p.ssafy.io:8080/user/login?code=${code}`,
+    url: `https://i11a405.p.ssafy.io/user/login?code=${code}`,
     headers: {
       "Content-Type": "application/json;charset=utf-8",
     },
@@ -26,7 +26,6 @@ const LoginHandler: React.FC = () => {
     queryFn: () => fetchKakaoLogin(code),
     enabled: !!code, // code가 존재할 때만 쿼리 실행
     select: (data) => {
-      console.log(data);
       if (data) {
         if (data.signed) {
           setToken(data.token);

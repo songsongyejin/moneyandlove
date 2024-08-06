@@ -70,7 +70,7 @@ const Navbar: React.FC = () => {
               <div className="flex items-center space-x-1">
                 <LiaCoinsSolid style={{ fontSize: "36px" }} />{" "}
                 {/* 색상을 원하면 여기에 추가 */}
-                <span className="text-lg">{user?.points || 0}</span>
+                <span className="text-lg">{user?.gamePoint || 0}</span>
               </div>
               <img
                 src={user?.profileURL || sampleImage}
