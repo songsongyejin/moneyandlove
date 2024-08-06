@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.moneyandlove.common.annotation.LoginUser;
 import com.ssafy.moneyandlove.gamehistory.application.GameHistoryService;
 import com.ssafy.moneyandlove.gamehistory.dto.CreateGameHistoryRequest;
 import com.ssafy.moneyandlove.gamehistory.dto.ReadGameHistoryResponse;
+import com.ssafy.moneyandlove.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,11 +32,18 @@ public class GameHistoryController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/{userId}")
-	public ResponseEntity<?> readAllGameHistory(@PathVariable Long userId) {
-		List<ReadGameHistoryResponse>gameHistoryList = gameHistoryService.readAllGameHistory(userId);
+	@GetMapping
+	public ResponseEntity<?> readAllGameHistory(@LoginUser User loginUser) {
+		List<ReadGameHistoryResponse>gameHistoryList = gameHistoryService.readAllGameHistory(loginUser.getId());
 		Map<String, List<ReadGameHistoryResponse>> map = new HashMap<>();
 		map.put("gameHistories", gameHistoryList);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok(map);
+	}
+
+	@GetMapping("/{gameHistoryId}")
+	public ResponseEntity<?> readDetailGameHistory(@PathVariable Long gameHistoryId) {
+		ReadGameHistoryResponse readDetailGameHistory = gameHistoryService.readDetailGameHistory(gameHistoryId);
+		Map<String, List<ReadGameHistoryResponse>> map = new HashMap<>();
+		return ResponseEntity.ok(readDetailGameHistory);
 	}
 }

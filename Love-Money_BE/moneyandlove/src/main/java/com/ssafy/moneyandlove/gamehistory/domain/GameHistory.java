@@ -1,6 +1,7 @@
 package com.ssafy.moneyandlove.gamehistory.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.ssafy.moneyandlove.common.TimeBaseEntity;
 import com.ssafy.moneyandlove.user.domain.User;
@@ -44,5 +45,4 @@ public class GameHistory extends TimeBaseEntity {
 	@Enumerated(EnumType.STRING)
 	private SelectType toUserSelectType;
 
-	private LocalDate createdAt;
 }

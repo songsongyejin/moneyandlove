@@ -39,4 +39,8 @@ public class GameHistoryService {
 			.map(ReadGameHistoryResponse::from)
 			.collect(Collectors.toList());
 	}
+
+	public ReadGameHistoryResponse readDetailGameHistory(Long gameHistoryId) {
+		return ReadGameHistoryResponse.from(gameHistoryRepository.findById(gameHistoryId).get());
+	}
 }

@@ -1,6 +1,7 @@
 package com.ssafy.moneyandlove.gamehistory.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.ssafy.moneyandlove.gamehistory.domain.GameHistory;
 import com.ssafy.moneyandlove.gamehistory.domain.SelectType;
@@ -18,7 +19,7 @@ public class ReadGameHistoryResponse {
 	private Long toUserId;
 	private SelectType fromUserSelectType;
 	private SelectType toUserSelectType;
-	private LocalDate createdAt;
+	private LocalDateTime createdAt;
 
 	public static ReadGameHistoryResponse from(GameHistory gameHistory){
 		return ReadGameHistoryResponse.builder()
