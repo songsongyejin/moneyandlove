@@ -21,7 +21,7 @@ spring:
     org.hibernate.SQL: debug
 
 OPENVIDU:
-  URL: https://localhost:5443
+  URL: http://localhost:5443
   SECRET: MY_SECRET
 
 jwt:
