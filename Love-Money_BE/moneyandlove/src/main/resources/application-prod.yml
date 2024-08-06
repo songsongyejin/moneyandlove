@@ -1,3 +1,6 @@
+server:
+  port: 5442
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -11,14 +14,14 @@ spring:
   data:
     mongodb:
       uri: "mongodb://i11a405.p.ssafy.io:27017/moneyandlovedb"
-  redis:
-    host: moneyandlove-redis
-    port: 4379
+    redis:
+      host: moneyandlove-redis
+      port: 4379
   logging.level:
     org.hibernate.SQL: debug
 
 OPENVIDU:
-  URL: http://i11a405.p.ssafy.io:4443/
+  URL: https://i11a405.p.ssafy.io:5443/
   SECRET: MY_SECRET
 
 jwt:

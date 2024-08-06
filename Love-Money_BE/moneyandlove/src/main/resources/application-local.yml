@@ -18,9 +18,9 @@ spring:
   data:
     mongodb:
       uri: "mongodb://localhost:27017/moneyandlovedb"
-  redis:
-    host: moneyandlove-redis
-    port: 4379
+    redis:
+      host: moneyandlove-redis
+      port: 4379
   cache:
     type: redis
   logging.level:
