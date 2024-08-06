@@ -100,12 +100,20 @@ const Room: React.FC = () => {
 
     try {
       const token = await getToken();
-      console.log(token);
+      console.log("토큰", token);
       await session.connect(token, { clientData: myUserName });
+      const devices = await OV.getDevices();
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      console.log("비디오디바이스", videoDevices);
+      // 첫 번째 사용 가능한 비디오 장치 선택
+      const selectedDevice = videoDevices.length > 0 ? videoDevices[0] : null;
+      const videoSource = selectedDevice ? selectedDevice.deviceId : undefined;
 
       const publisher = await OV.initPublisherAsync(undefined, {
         audioSource: undefined,
-        videoSource: undefined,
+        videoSource: videoSource,
         publishAudio: true,
         publishVideo: true,
         resolution: "640x480",
@@ -116,10 +124,6 @@ const Room: React.FC = () => {
 
       session.publish(publisher);
 
-      const devices = await OV.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
       const currentVideoDeviceId = publisher.stream
         .getMediaStream()
         .getVideoTracks()[0]

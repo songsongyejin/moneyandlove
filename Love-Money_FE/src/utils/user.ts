@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const fetchUserData = async (token: string) => {
   try {
-    const response = await axios.get("http://i11a405.p.ssafy.io:8080/user/my", {
+    const response = await axios.get("https://i11a405.p.ssafy.io/user/my", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
