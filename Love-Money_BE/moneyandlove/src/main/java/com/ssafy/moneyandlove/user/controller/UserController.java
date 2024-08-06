@@ -1,5 +1,7 @@
 package com.ssafy.moneyandlove.user.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -68,5 +70,17 @@ public class UserController {
 	public ResponseEntity<?> update(@LoginUser User loginUser, @RequestBody UserProfileUpdateRequest userProfileUpdateRequest){
 		userService.update(loginUser, userProfileUpdateRequest);
 		return ResponseEntity.status(HttpStatus.OK).body(userProfileUpdateRequest);
+	}
+
+	@GetMapping("/points")
+	public ResponseEntity<?> getPoint(@LoginUser User loginUser) {
+		Map<String, Long> point = userService.getGamePoint(loginUser.getId());
+		return ResponseEntity.ok(point);
+	}
+
+	@PutMapping("/points")
+	public ResponseEntity<?> updatePoint(@RequestBody Map<String, Long> point, @LoginUser User loginUser) {
+		userService.updatePoint(point, loginUser.getId());
+		return ResponseEntity.ok().build();
 	}
 }

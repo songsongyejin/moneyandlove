@@ -1,5 +1,7 @@
 package com.ssafy.moneyandlove.user.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import com.ssafy.moneyandlove.matching.dto.MatchingUserResponse;
@@ -161,5 +163,19 @@ public class UserService {
 
 	public Gender getGender(Long userId){
 		return userRepository.findGenderByUserId(userId);
+	}
+
+	public Map<String, Long> getGamePoint(Long userId){
+		Long point = userRepository.findgamePointByUserId(userId);
+		Map<String, Long> map = new HashMap<>();
+		map.put("gamePoint", point);
+		return map;
+	}
+
+	public void updatePoint(Map<String, Long> point, Long userId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(()-> new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
+		user.updateGamePoint(point.get("gamePoint"));
+		userRepository.save(user);
 	}
 }
