@@ -1,5 +1,8 @@
 package com.ssafy.moneyandlove.gamehistory.domain;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import com.ssafy.moneyandlove.common.TimeBaseEntity;
 import com.ssafy.moneyandlove.user.domain.User;
 
