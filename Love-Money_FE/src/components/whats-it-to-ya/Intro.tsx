@@ -3,7 +3,7 @@ import React from "react";
 const Intro: React.FC = () => {
   return (
     <>
-      <div className="intro-container animate-fadeIn flex h-full items-center justify-center">
+      <div className="intro-container flex h-full animate-fadeIn items-center justify-center">
         {/* Intro 메시지 */}
         <div
           className="text-center text-white"

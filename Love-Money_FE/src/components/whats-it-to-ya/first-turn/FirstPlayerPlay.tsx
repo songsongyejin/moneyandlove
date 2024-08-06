@@ -4,7 +4,6 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import Card from "../game-elements/PriorityCard";
 import DropZone from "../game-elements/DropZone";
 import InitialZone from "../game-elements/InitialZone";
-import { useWordCards } from "../../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
 import "../game-elements/WordCardsComponent.css";
 
 interface CardType {
@@ -14,6 +13,7 @@ interface CardType {
 
 interface FirstPlayerPlayProps {
   onFinalize: (dropZones: CardType[][]) => void;
+  wordCards: { id: string; word: string; bgColor: string; textColor: string }[];
 }
 
 const initialZones = {
@@ -21,16 +21,11 @@ const initialZones = {
   dropZones: Array.from({ length: 5 }, () => [] as CardType[]),
 };
 
-const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({ onFinalize }) => {
+const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({
+  onFinalize,
+  wordCards,
+}) => {
   const [zones, setZones] = useState(initialZones);
-  const { wordCards, loading, error } = useWordCards();
-  // const wordCards = [
-  //   { id: "word1", text: "바다", bgColor: "#88cce1", textColor: "#2e8bab" },
-  //   { id: "word2", text: "야구", bgColor: "#ffbdbd", textColor: "#bb7c7e" },
-  //   { id: "word3", text: "맥주", bgColor: "#FFDE59", textColor: "#bd9a5a" },
-  //   { id: "word4", text: "피아노", bgColor: "#9edaae", textColor: "#58a279" },
-  //   { id: "word5", text: "놀이공원", bgColor: "#f5b9f3", textColor: "#bd80ba" },
-  // ];
 
   // 우선순위 카드들 drop
   const handleDrop = (zoneIndex: number, item: CardType) => {
@@ -159,47 +154,47 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({ onFinalize }) => {
                 </p>
               </div>
               {/* 다섯 개의 단어 카드 영역 */}
-              {!loading && !error && (
-                <div className="card-container mt-8 flex flex-row space-x-8">
-                  {wordCards.map((card, index) => (
-                    <div
-                      key={card.id}
-                      className="card border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
-                      style={{
-                        width: "135px",
-                        height: "180px",
-                        backgroundColor: card.bgColor,
-                        animationDelay: `${index * 0.1}s`, // Stagger the animation
-                      }}
-                    >
-                      {/* 상단 영역 */}
-                      <div className="h-12 w-full rounded-xl rounded-b-none"></div>
-                      {/* 본문 영역 */}
-                      <div className="flex w-full flex-1 flex-col items-center justify-center bg-white">
-                        <p
-                          className="text-2xl"
-                          style={{
-                            fontFamily: "DungGeunMo",
-                            color: card.textColor,
-                          }}
-                        >
-                          {card.word}
-                        </p>
-                      </div>
 
-                      {/* 하단 영역 */}
-                      <div className="flex h-12 w-full items-center justify-center rounded-xl rounded-t-none">
-                        <p
-                          className="text-base"
-                          style={{ fontFamily: "DungGeunMo", color: "white" }}
-                        >
-                          MONEY & LOVE
-                        </p>
-                      </div>
+              <div className="card-container mt-8 flex flex-row space-x-8">
+                {wordCards.map((card, index) => (
+                  <div
+                    key={card.id}
+                    className="card border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
+                    style={{
+                      width: "135px",
+                      height: "180px",
+                      backgroundColor: card.bgColor,
+                      animationDelay: `${index * 0.1}s`, // Stagger the animation
+                    }}
+                  >
+                    {/* 상단 영역 */}
+                    <div className="h-12 w-full rounded-xl rounded-b-none"></div>
+                    {/* 본문 영역 */}
+                    <div className="flex w-full flex-1 flex-col items-center justify-center bg-white">
+                      <p
+                        className="text-2xl"
+                        style={{
+                          fontFamily: "DungGeunMo",
+                          color: card.textColor,
+                        }}
+                      >
+                        {card.word}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              )}
+
+                    {/* 하단 영역 */}
+                    <div className="flex h-12 w-full items-center justify-center rounded-xl rounded-t-none">
+                      <p
+                        className="text-base"
+                        style={{ fontFamily: "DungGeunMo", color: "white" }}
+                      >
+                        MONEY & LOVE
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               {/* 드래그 앤 드롭 영역 */}
               <div className="mt-2 animate-fadeIn rounded-lg py-4">
                 <div className="flex justify-center space-x-11">
