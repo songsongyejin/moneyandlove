@@ -18,7 +18,7 @@ spring:
     org.hibernate.SQL: debug
 
 OPENVIDU:
-  URL: http://i11a405.p.ssafy.io:4443/
+  URL: https://i11a405.p.ssafy.io:5443/
   SECRET: MY_SECRET
 
 jwt:
