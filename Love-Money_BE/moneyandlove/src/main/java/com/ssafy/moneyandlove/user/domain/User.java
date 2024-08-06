@@ -61,4 +61,8 @@ public class User extends TimeBaseEntity {
 		this.region = region;
 		this.profileURL = profileURL;
 	}
+
+	public void updateGamePoint(Long gamePoint) {
+		this.gamePoint += gamePoint;
+	}
 }
