@@ -22,6 +22,7 @@ public class UserProfileResponse {
 	private long gamePoint;
 	private String region;
 	private String profileURL;
+	private int age;
 
 	public static UserProfileResponse from(User user) {
 		return UserProfileResponse.builder()
@@ -31,6 +32,7 @@ public class UserProfileResponse {
 			.gamePoint(user.getGamePoint())
 			.region(user.getRegion())
 			.profileURL(user.getProfileURL())
+			.age(user.getAge())
 			.build();
 	}
 }
