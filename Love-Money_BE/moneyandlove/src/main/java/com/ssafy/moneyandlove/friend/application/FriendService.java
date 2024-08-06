@@ -1,10 +1,13 @@
 package com.ssafy.moneyandlove.friend.application;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.moneyandlove.chat.domain.ChatRoom;
+import com.ssafy.moneyandlove.chat.repository.ChatRoomRepository;
 import com.ssafy.moneyandlove.common.error.ErrorType;
 import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
 import com.ssafy.moneyandlove.friend.domain.Friend;
@@ -22,6 +25,7 @@ public class FriendService {
 
 	private final FriendRepository friendRepository;
 	private final UserRepository userRepository;
+	private final ChatRoomRepository chatRoomRepository;
 
 	@Transactional
 	public void addFriend(CreateFriendRequest createFriendRequest) {
@@ -39,6 +43,14 @@ public class FriendService {
 
 		Friend friend = CreateFriendRequest.toFriend(follower, following);
 		friendRepository.save(friend);
+
+		//이미 저장된 채팅방 이름이 있다면 삭제 후 저장
+		Optional<ChatRoom> existingChatRoom = chatRoomRepository.findChatRoomByUsers(follower.getId(), following.getId());
+		if (existingChatRoom.isPresent()) {
+			chatRoomRepository.delete(existingChatRoom.orElseThrow());
+		}
+		
+		chatRoomRepository.save(ChatRoom.of(follower, following));
 	}
 
 	public User getFriend(Long friendId) {
