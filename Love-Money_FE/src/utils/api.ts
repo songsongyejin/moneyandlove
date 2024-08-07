@@ -1,9 +1,7 @@
 import axios from "axios";
-import { userToken } from "../atom/store";
-import { useRecoilValue } from "recoil";
 
-const APPLICATION_SERVER_URL = "https://i11a405.p.ssafy.io/";
-// const token = useRecoilValue(userToken);
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
+
 // 세션 생성 함수
 export const createSession = async (
   sessionId: string,

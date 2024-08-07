@@ -3,11 +3,12 @@ import "./style.css";
 import IonIcon from "@reacticons/ionicons";
 
 type friendProfile = {
-  folloserId: number;
+  followerId: number;
   nickname: string;
   age: number;
   gender: string;
   img: string;
+  chatRoomId: number;
 };
 
 const FreindItem: React.FC<{

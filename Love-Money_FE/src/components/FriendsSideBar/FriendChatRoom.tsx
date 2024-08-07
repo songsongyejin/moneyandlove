@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import IonIcon from "@reacticons/ionicons";
 import { FiSend } from "react-icons/fi";
-import { sendHandler } from "../../utils/Chat";
+import { fetchAllChatData, sendHandler } from "../../utils/Chat";
 import { userToken } from "../../atom/store";
 import { useRecoilValue } from "recoil";
+import { useQuery } from "@tanstack/react-query";
 type friendProfile = {
-  folloserId: number;
+  followerId: number;
   nickname: string;
   age: number;
   gender: string;
   img: string;
+  chatRoomId: number;
 };
 
 const FriendChatRoom: React.FC<{
@@ -18,13 +20,22 @@ const FriendChatRoom: React.FC<{
 }> = ({ friend, onChatClose }) => {
   const token = useRecoilValue(userToken);
 
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["chatData", friend.chatRoomId, token],
+    queryFn: () => fetchAllChatData(friend.chatRoomId, token as string),
+    enabled: !!token,
+    staleTime: Infinity,
+  });
+
   const [newMessage, setNewMessage] = useState("");
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      e.preventDefault();
-      sendHandler(token ? token : "", 1, newMessage);
-      setNewMessage(""); // 메시지 전송 후 입력란 비우기
+      if (newMessage != "") {
+        e.preventDefault();
+        sendHandler(token ? token : "", friend.chatRoomId, newMessage);
+        setNewMessage(""); // 메시지 전송 후 입력란 비우기
+      }
     }
   };
   return (
@@ -45,7 +56,18 @@ const FriendChatRoom: React.FC<{
         ></IonIcon>
       </header>
       <div className="h-1 bg-white"></div>
-      <div className="flex-1 overflow-y-auto p-4 text-white">내용</div>
+      <div className="flex-1 overflow-y-auto p-4 text-white">
+        {Array.isArray(data) &&
+          data.map((chat, index) => (
+            <div key={index} className="mb-2">
+              <div>{chat.message}</div>
+              <div className="text-sm text-gray-400">{chat.senderId}</div>
+              <div className="text-xs text-gray-500">
+                {new Date(chat.createdAt).toLocaleTimeString()}
+              </div>
+            </div>
+          ))}
+      </div>
 
       <input
         type="text"
