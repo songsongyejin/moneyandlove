@@ -26,5 +26,10 @@ public class FaceController {
 	}
 
 
+    @PutMapping
+	public ResponseEntity<?> updateFaceScore(@LoginUser User loginUser, @RequestBody Map<String, Integer> score){
+		faceService.updateFaceScore(loginUser.getId(), score.get("faceScore"));
+		return ResponseEntity.ok().build();
+	}
 
 }
