@@ -17,6 +17,8 @@ import SecondTurnSecondPlayerPlay from "../../components/whats-it-to-ya/second-t
 import SecondTurnSecondPlayerWait from "../../components/whats-it-to-ya/second-turn/SecondPlayerWait";
 import SecondTurnTempScoreBoard from "../../components/whats-it-to-ya/second-turn/TempScore";
 import { useWordCards } from "../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
+import CafeBackground from "../../assets/cafe-background.jpg";
+import aiBot from "../../assets/ai_bot.gif";
 
 interface CardType {
   id: string;
@@ -275,11 +277,28 @@ const WhatsItToYa: React.FC = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       {/* // 배경 이미지와 레이아웃을 설정하는 컨테이너 */}
-      <div className="absolute inset-0 bg-main-bg bg-cover bg-center">
-        {/* 반투명한 검은색 오버레이 */}
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      <div
+        className="absolute inset-0 bg-cover"
+        style={{
+          backgroundImage: `url(${CafeBackground})`,
+          backgroundPosition: "center bottom",
+        }}
+      >
+        <div className="absolute inset-0"></div>
         {/* 게임 컴포넌트를 중앙에 배치하는 컨테이너 */}
         <div className="pt-30 fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute left-5 top-5 flex items-start">
+            <img src={aiBot} alt="" className="z-10 w-24" />
+            <div
+              className="relative ml-2 mt-11 max-w-2xl rounded-bl-3xl rounded-br-3xl rounded-tr-3xl bg-white p-4 text-2xl shadow-lg"
+              style={{
+                fontFamily: "DungGeunMo",
+              }}
+            >
+              <p className="text-2xl"></p>
+            </div>
+          </div>
+
           {/* 조건부 렌더링: 인트로 화면, 턴 선택 화면 또는 (사용자의 플레이 순서에 따른) 플레이 화면 */}
           {showIntro ? (
             <Intro />

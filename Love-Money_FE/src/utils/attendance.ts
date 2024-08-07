@@ -6,7 +6,7 @@ export const fetchAttendance = async (
 ): Promise<AttendanceDay[]> => {
   try {
     const response = await axios.get<AttendanceDay[]>(
-      "https://i11a405.p.ssafy.io/attendance",
+      "http://i11a405.p.ssafy.io:8080/attendance",
       {
         headers: {
           "Content-Type": "application/json",

@@ -12,15 +12,6 @@ const FirstPlayerWait: React.FC<FirstPlayerWaitProps> = ({ wordCards }) => {
       <div className="flex h-screen w-full items-center justify-center">
         {/* 게임창 */}
         <div className="relative flex h-[620px] w-[900px] flex-col rounded-[20px] bg-[#F0E9F6]">
-          {/* 제목 박스 */}
-          <div className="absolute -top-5 left-1/2 flex h-[50px] w-[250px] -translate-x-1/2 items-center justify-center rounded-3xl bg-[#8B6CAC]">
-            <h1
-              className="text-xl text-white"
-              style={{ fontFamily: "DNFBitBitv2" }}
-            >
-              What's it to ya
-            </h1>
-          </div>
           {/* 게임 영역 */}
           <div className="mb-14 mt-7 flex flex-1 flex-col items-center justify-center">
             <div className="flex animate-fadeIn flex-col items-center justify-center">

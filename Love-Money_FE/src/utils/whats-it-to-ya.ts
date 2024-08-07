@@ -4,7 +4,7 @@ import axios from "axios";
 export const fetchWordCards = async (token: string): Promise<string[]> => {
   try {
     const response = await axios.get<string[]>(
-      "https://i11a405.p.ssafy.io/whats-it-to-ya",
+      "http://i11a405.p.ssafy.io:8080/whats-it-to-ya",
       {
         headers: {
           Authorization: `Bearer ${token}`,
