@@ -1,15 +1,18 @@
 import { atom } from "recoil";
+import { recoilPersist } from "recoil-persist";
+
+const { persistAtom } = recoilPersist();
 
 export interface UserInfo {
   nickname: string;
   age: number;
   profileURL: string;
   gender: "MALE" | "FEMALE";
-  points: number;
+  gamePoint: number;
 }
 //유저 정보
 export const userInfo = atom<UserInfo | null>({
-  key: "user",
+  key: "userInfo",
   default: null,
 });
 
@@ -17,6 +20,7 @@ export const userInfo = atom<UserInfo | null>({
 export const userToken = atom<string | null>({
   key: "token",
   default: null,
+  effects_UNSTABLE: [persistAtom],
 });
 
 //최대 감정 값

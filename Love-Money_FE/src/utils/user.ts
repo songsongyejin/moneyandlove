@@ -1,8 +1,8 @@
 import axios from "axios";
-
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 export const fetchUserData = async (token: string) => {
   try {
-    const response = await axios.get("http://i11a405.p.ssafy.io:8080/user/my", {
+    const response = await axios.get(`${APPLICATION_SERVER_URL}user/my`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

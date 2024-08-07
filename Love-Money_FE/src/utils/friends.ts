@@ -1,12 +1,13 @@
 import axios from "axios";
-
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 export const fetchFriendsListData = async (token: string) => {
   try {
-    const response = await axios.get("http://i11a405.p.ssafy.io:8080/friends", {
+    const response = await axios.get(`${APPLICATION_SERVER_URL}friends`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+
     return response.data;
   } catch (err) {
     console.error(err);

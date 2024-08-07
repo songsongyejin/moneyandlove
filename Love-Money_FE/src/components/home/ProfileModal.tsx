@@ -85,7 +85,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 <p className="mb-2">닉네임: {user?.nickname}</p>
                 <p className="mb-2">나이: {user?.age}</p>
                 <p className="mb-2">성별: {user?.gender}</p>
-                <p>포인트: {user?.points}</p>
+                <p>포인트: {user?.gamePoint}</p>
                 <div className="mt-16 flex justify-center space-x-12">
                   <button
                     onClick={handleLogout}

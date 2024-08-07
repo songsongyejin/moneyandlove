@@ -23,14 +23,15 @@ const FreindsSideBar: React.FC = () => {
     queryFn: () => fetchFriendsListData(token as string),
     enabled: !!token,
   });
-  console.log(friendsList);
+
   //친구 목록에 띄울 친구 객체 타입
   type friendProfile = {
-    folloserId: number;
+    followerId: number;
     nickname: string;
     age: number;
     gender: string;
     img: string;
+    chatRoomId: number;
   };
 
   const handleMenuClick = () => {
@@ -63,7 +64,7 @@ const FreindsSideBar: React.FC = () => {
         <ul
           className={`nav-links ${navOpen ? "fade-in" : ""} font-bold text-white`}
         >
-          {friendsList &&
+          {Array.isArray(friendsList) &&
             friendsList.map((friend: friendProfile, index: number) => (
               <FreindItem
                 key={index}

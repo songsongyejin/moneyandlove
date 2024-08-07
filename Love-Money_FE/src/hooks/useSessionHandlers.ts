@@ -23,6 +23,7 @@ const useSessionHandlers = (
     // 스트림 생성 이벤트 핸들러
     const streamCreatedHandler = (event: any) => {
       const newSubscriber = session.subscribe(event.stream, undefined);
+      console.log(newSubscriber);
       setSubscriber(newSubscriber);
     };
 

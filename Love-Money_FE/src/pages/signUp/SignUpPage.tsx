@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosResponse, AxiosError } from "axios";
+import mainBg from "../../assets/main_bg.png";
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface SignUpData {
   kakaoId: number;
@@ -25,7 +27,7 @@ const SignUpPage: React.FC = () => {
 
   const mutation = useMutation<AxiosResponse, AxiosError, SignUpData>({
     mutationFn: (newUser: SignUpData) =>
-      axios.post("http://i11a405.p.ssafy.io:8080/user/sign", newUser, {
+      axios.post(`${APPLICATION_SERVER_URL}user/sign`, newUser, {
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*",
@@ -56,60 +58,81 @@ const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="sign-up-page">
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSignUp}>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="nickname">Nickname:</label>
-          <input
-            type="text"
-            id="nickname"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="gender">Gender:</label>
-          <select
-            id="gender"
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
+    <div className="sign-up-page flex h-screen items-center justify-center">
+      <img
+        src={mainBg}
+        alt=""
+        className={`absolute inset-0 -z-10 h-screen w-screen bg-cover bg-center`}
+      />
+      <div className="absolute inset-0 -z-10 bg-black opacity-20"></div>
+      <div
+        className="justify-betweenp-20 flex-col rounded-md p-20"
+        style={{ backgroundColor: "#F0E9F6", fontFamily: "DungGeunMo" }}
+      >
+        <h2 className="-mt-10 mb-10 text-center text-3xl">회원 가입</h2>
+        <form onSubmit={handleSignUp} className="space-y-5">
+          <div>
+            <label htmlFor="email">이메일:</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              className="ml-4 bg-transparent p-1 pl-4"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="nickname">닉네임:</label>
+            <input
+              type="text"
+              id="nickname"
+              value={nickname}
+              className="ml-4 bg-transparent p-1 pl-4"
+              onChange={(e) => setNickname(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="gender">성별:</label>
+            <select
+              id="gender"
+              value={gender}
+              className="ml-4 bg-transparent p-1 pl-4"
+              onChange={(e) => setGender(e.target.value)}
+            >
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="region">지역:</label>
+            <input
+              type="text"
+              id="region"
+              value={region}
+              className="ml-4 bg-transparent p-1 pl-4"
+              onChange={(e) => setRegion(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="age">나이:</label>
+            <input
+              type="number"
+              id="age"
+              value={age}
+              onChange={(e) => setAge(parseInt(e.target.value, 10))}
+              className="ml-4 bg-transparent p-1 pl-4"
+            />
+          </div>
+          <button
+            type="submit"
+            className="mx-auto w-full hover:scale-125 hover:font-bold"
           >
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="region">Region:</label>
-          <input
-            type="text"
-            id="region"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="age">Age:</label>
-          <input
-            type="number"
-            id="age"
-            value={age}
-            onChange={(e) => setAge(parseInt(e.target.value, 10))}
-          />
-        </div>
-        <button type="submit">Sign Up</button>
-      </form>
-      {mutation.isError && <p>Error: {mutation.error?.message}</p>}
-      {mutation.isLoading && <p>Loading...</p>}
+            고고씽!!!!
+          </button>
+        </form>
+        {mutation.isError && <p>Error: {mutation.error?.message}</p>}
+        {mutation.isLoading && <p>Loading...</p>}
+      </div>
     </div>
   );
 };
