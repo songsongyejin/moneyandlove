@@ -8,4 +8,6 @@ COPY package.json yarn.lock ./
 RUN yarn
 COPY . .
 EXPOSE 5173
+EXPOSE 80
+EXPOSE 443
 CMD ["yarn", "dev", "--host", "0.0.0.0"]
