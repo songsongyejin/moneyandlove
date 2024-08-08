@@ -16,6 +16,9 @@ import Winner from "../../components/whats-it-to-ya/Winner";
 import SecondTurnSecondPlayerPlay from "../../components/whats-it-to-ya/second-turn/SecondPlayerPlay";
 import SecondTurnSecondPlayerWait from "../../components/whats-it-to-ya/second-turn/SecondPlayerWait";
 import SecondTurnTempScoreBoard from "../../components/whats-it-to-ya/second-turn/TempScore";
+import { useWordCards } from "../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
+import CafeBackground from "../../assets/cafe-background.jpg";
+import aiBot from "../../assets/ai_bot.gif";
 
 interface CardType {
   id: string;
@@ -30,6 +33,7 @@ const WhatsItToYa: React.FC = () => {
   // 게임 단계 관리 state
   const [gamePhase, setGamePhase] = useState("SELECT_TURN");
 
+  const { wordCards, loading, error } = useWordCards(); // 단어 카드를 로드
   // 첫번째 게임
   // 플레이어1의 드롭존 상태
   const [player1DropZones, setPlayer1DropZones] = useState<CardType[][]>(
@@ -262,14 +266,31 @@ const WhatsItToYa: React.FC = () => {
     }
   }, [secondTurnPlayer1dataReceived]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <DndProvider backend={HTML5Backend}>
       {/* // 배경 이미지와 레이아웃을 설정하는 컨테이너 */}
-      <div className="absolute inset-0 bg-main-bg bg-cover bg-center">
-        {/* 반투명한 검은색 오버레이 */}
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      <div
+        className="absolute inset-0 bg-cover"
+        style={{
+          backgroundImage: `url(${CafeBackground})`,
+          backgroundPosition: "center bottom",
+        }}
+      >
+        <div className="absolute inset-0"></div>
         {/* 게임 컴포넌트를 중앙에 배치하는 컨테이너 */}
         <div className="pt-30 fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute left-5 top-5 flex items-start">
+            <img src={aiBot} alt="" className="z-10 w-24" />
+          </div>
+
           {/* 조건부 렌더링: 인트로 화면, 턴 선택 화면 또는 (사용자의 플레이 순서에 따른) 플레이 화면 */}
           {showIntro ? (
             <Intro />
@@ -278,21 +299,27 @@ const WhatsItToYa: React.FC = () => {
           ) : gamePhase === "FIRST_TURN_FIRST_PLAYER_PLAY" ? (
             <FirstTurnFirstPlayerPlay
               onFinalize={handleFirstTurnFirstPlayerFinalize}
+              wordCards={wordCards}
             />
           ) : gamePhase === "FIRST_TURN_FIRST_PLAYER_WAIT" ? (
-            <FirstTurnFirstPlayerWait dropZones={player1DropZones} />
+            <FirstTurnFirstPlayerWait
+              dropZones={player1DropZones}
+              wordCards={wordCards}
+            />
           ) : gamePhase === "FIRST_TURN_SCORE" ? (
             <FirstTurnScoreBoard
               player1DropZones={player1DropZones}
               player2GuessZones={mockPlayer2GuessZones}
               onScoreCalculated={handlePlayer2ScoreCalculated} // 콜백 함수 전달
               onNextPhase={handlePlayer1NextTurn} // 다음 단계로 넘어가기 위한 콜백 전달
+              wordCards={wordCards}
             />
           ) : gamePhase === "SECOND_TURN_FIRST_PLAYER_WAIT" ? (
-            <SecondTurnFirstPlayerWait />
+            <SecondTurnFirstPlayerWait wordCards={wordCards} />
           ) : gamePhase === "SECOND_TURN_FIRST_PLAYER_PLAY" ? (
             <SecondTurnFirstPlayerPlay
               onFinalize={handleSecondTurnFirstPlayerFinalize}
+              wordCards={wordCards}
             />
           ) : gamePhase === "SECOND_TURN_SCORE" ? (
             <SecondTurnScoreBoard
@@ -300,12 +327,14 @@ const WhatsItToYa: React.FC = () => {
               player2DropZones={mockPlayer2DropZones}
               onScoreCalculated={handlePlayer1ScoreCalculated} // 콜백 함수 전달
               onNextPhase={handleWinnerPhase}
+              wordCards={wordCards}
             />
           ) : gamePhase === "FIRST_TURN_SECOND_PLAYER_WAIT" ? (
-            <FirstTurnSecondPlayerWait />
+            <FirstTurnSecondPlayerWait wordCards={wordCards} />
           ) : gamePhase === "FIRST_TURN_SECOND_PLAYER_PLAY" ? (
             <FirstTurnSecondPlayerPlay
               onFinalize={handleFirstTurnSecondPlayerFinalize}
+              wordCards={wordCards}
             />
           ) : gamePhase === "FIRST_TURN_TEMPSCORE" ? (
             <FirstTurnTempScoreBoard
@@ -313,19 +342,25 @@ const WhatsItToYa: React.FC = () => {
               player2GuessZones={player2GuessZones}
               onScoreCalculated={handlePlayer2ScoreCalculated} // 콜백 함수 전달
               onNextPhase={handlePlayer2NextTurn} // 다음 단계로 넘어가기 위한 콜백 전달
+              wordCards={wordCards}
             />
           ) : gamePhase === "SECOND_TURN_SECOND_PLAYER_PLAY" ? (
             <SecondTurnSecondPlayerPlay
               onFinalize={handleSecondTurnSecondPlayerFinalize}
+              wordCards={wordCards}
             />
           ) : gamePhase === "SECOND_TURN_SECOND_PLAYER_WAIT" ? (
-            <SecondTurnSecondPlayerWait dropZones={player2DropZones} />
+            <SecondTurnSecondPlayerWait
+              dropZones={player2DropZones}
+              wordCards={wordCards}
+            />
           ) : gamePhase === "SECOND_TURN_TEMPSCORE" ? (
             <SecondTurnTempScoreBoard
               player1GuessZones={mockPlayer1GuessZones}
               player2DropZones={player2DropZones}
               onScoreCalculated={handlePlayer1ScoreCalculated} // 콜백 함수 전달
               onNextPhase={handleWinnerPhase}
+              wordCards={wordCards}
             />
           ) : gamePhase === "WINNER" ? (
             <Winner

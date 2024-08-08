@@ -231,13 +231,25 @@ table {
   /* move the element down by 5px (it will stay in place because it's attached to the element that also moves up 5px) */
 }
 
-/* 카드 뒤집는 애니메이션 */
+/* 턴 선택 시 뒤집는 카드들*/
+.flip-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 800px; /* 3D 효과를 위한 원근 */
+  /* margin-top: 50px; 약간의 마진 추가 */
+}
+
 .flip-card {
   background-color: transrent;
   width: 165px;
   height: 228px;
-  perspective: 1000px; /* 3D 공간 생성 */
-  display: inline-block;
+  /* 3D 공간 생성 */
+  perspective: 1000px;
+  /* 카드를 비스듬하게 배치 */
+  transform: rotateX(60deg);
+  transition: transform 0.3s ease-in-out;
+  /* display: inline-block; */
 }
 
 .flip-card-inner {
@@ -276,4 +288,98 @@ table {
   max-width: 100%;
   max-height: 100%;
   object-fit: cover;
+}
+
+.flip-card:hover {
+  /* 카드가 약간 올라가게 */
+  transform: rotateX(-10deg) scale(1.1) translateY(-38px);
+}
+
+/* 5개의 단어카드 css */
+.table-container {
+  position: relative;
+  /* width: 1000px; */
+  height: 90px;
+  perspective: 800px; /* 3D 효과를 위한 원근 */
+}
+
+.word-card-container {
+  display: flex;
+  /* width: 1000px; */
+  justify-content: space-between;
+  /* 컨테이너의 회전 */
+  transform: rotateX(60deg);
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease-in-out;
+}
+
+.word-card {
+  transform: translateZ(0);
+  will-change: transform;
+  transform-style: preserve-3d;
+  transition: all 0.3s ease-in-out;
+  width: 135px;
+  height: 180px;
+  border-radius: 5px;
+  /* 카드 그림자 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.word-card:hover {
+  /* 카드가 약간 올라가게 */
+  transform: rotateX(-60deg) scale(1.1) translateY(-38px);
+  /* 호버 시 그림자 강화 */
+  box-shadow:
+    0 25px 35px rgba(0, 0, 0, 0.5),
+    0 20px 25px rgba(0, 0, 0, 0.4),
+    0 15px 20px rgba(0, 0, 0, 0.3);
+}
+
+.initial-card {
+  transform-style: preserve-3d;
+  transform: rotateY(25deg) rotateX(60deg);
+  transition: transform 0.3s ease-in-out;
+}
+
+/* 5개의 우선순위하트카드 css */
+.drop-table-container {
+  position: relative;
+  /* width: 1200px; */
+  height: 100px;
+  perspective: 800px; /* 3D 효과를 위한 원근 */
+}
+
+.drop-card-container {
+  display: flex;
+  justify-content: space-between;
+  /* width: 1200px; */
+  /* 컨테이너의 회전 */
+  /* transform: rotateX(50deg); */
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease-in-out;
+}
+
+.drop-card,
+.drop-card-top {
+  transform-style: preserve-3d;
+  transition: all 0.3s ease-in-out;
+  /* width: 135px;
+  height: 180px; */
+  /* border-radius: 30px; */
+  /* 카드 그림자 */
+  /* box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); */
+}
+
+.drop-card:hover {
+  transform: rotateX(-55deg) scale(1.1) translateY(-20px);
+  box-shadow:
+    0 20px 30px rgba(0, 0, 0, 0.4),
+    0 15px 20px rgba(0, 0, 0, 0.2);
+}
+
+.drop-card-top:hover {
+  transform: rotateX(-70deg) scale(1.1) translateY(-20px);
+  box-shadow:
+    0 20px 30px rgba(0, 0, 0, 0.4),
+    0 15px 20px rgba(0, 0, 0, 0.2);
 }

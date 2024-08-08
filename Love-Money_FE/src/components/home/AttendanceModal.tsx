@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { userInfo, UserInfo } from "../../atom/store";
+import { userInfo, UserInfo, userToken } from "../../atom/store";
 import { useRecoilState } from "recoil";
 import BaseModal from "./BaseModal";
 import { FaRegCheckCircle } from "react-icons/fa";
+import { fetchAttendance, markAttendance } from "../../utils/attendance";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AttendanceModalProps {
   isOpen: boolean;
@@ -16,50 +18,65 @@ interface AttendanceDay {
 
 const daysOfWeek = ["MON", "TUS", "WED", "THR", "FRI", "SAT", "SUN"];
 
-// API 호출을 시뮬레이션하는 함수
-const mockFetchAttendance = (): Promise<AttendanceDay[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([
-        { attendanceDate: "2024-07-29", check: false },
-        { attendanceDate: "2024-07-30", check: false },
-        { attendanceDate: "2024-07-31", check: false },
-        { attendanceDate: "2024-08-01", check: false },
-        { attendanceDate: "2024-08-02", check: true },
-        { attendanceDate: "2024-08-03", check: false },
-        { attendanceDate: "2024-08-04", check: false },
-      ]);
-    }, 100);
-  });
-};
-
 const AttendanceModal: React.FC<AttendanceModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [attendanceDays, setAttendanceDays] = useState<AttendanceDay[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isCheckedToday, setIsCheckedToday] = useState(false);
   const [currentMonthWeek, setCurrentMonthWeek] = useState<string>("");
   const [user, setUser] = useRecoilState(userInfo);
+  const [token, setToken] = useRecoilState(userToken);
+  const queryClient = useQueryClient();
+
+  const { data: attendanceDays, isLoading } = useQuery<AttendanceDay[], Error>({
+    queryKey: ["attendance", token],
+    queryFn: () => {
+      if (!token) throw new Error("Token is null");
+      return fetchAttendance(token);
+    },
+    enabled: isOpen && !!token,
+  });
 
   useEffect(() => {
-    if (isOpen) {
-      setIsLoading(true);
-      mockFetchAttendance().then((data) => {
-        setAttendanceDays(data);
-        setIsLoading(false);
-        // 오늘 날짜의 출석 여부 확인
-        const today = new Date().toISOString().split("T")[0];
-        setIsCheckedToday(
-          data.find((day) => day.attendanceDate === today)?.check || false
-        );
-
-        // 현재 월과 주차 계산
-        setCurrentMonthWeek(getCurrentMonthWeek());
-      });
+    if (attendanceDays) {
+      const today = new Date().toISOString().split("T")[0];
+      setIsCheckedToday(
+        attendanceDays.find((day) => day.attendanceDate === today)?.check ||
+          false
+      );
+      setCurrentMonthWeek(getCurrentMonthWeek());
     }
-  }, [isOpen]);
+  }, [attendanceDays]);
+
+  const markAttendanceMutation = useMutation<void, Error, void>({
+    mutationFn: () => {
+      if (!token) throw new Error("Token is null");
+      return markAttendance(token);
+    },
+    onSuccess: () => {
+      console.log("출석체크 완료");
+      setIsCheckedToday(true);
+
+      if (user) {
+        const updatedUser: UserInfo = {
+          ...user,
+          points: user.points + 100,
+        };
+        setUser(updatedUser);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["attendance", token] });
+    },
+    onError: (error: Error) => {
+      console.error("체크 오류:", error);
+    },
+  });
+
+  const handleAttendanceCheck = () => {
+    if (token) {
+      markAttendanceMutation.mutate();
+    }
+  };
 
   // 현재 월과 주차를 계산하는 함수
   const getCurrentMonthWeek = (): string => {
@@ -70,28 +87,6 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
     const weekNumber = Math.ceil((date + firstDayOfMonth.getDay() - 1) / 7);
 
     return `${month}월 ${weekNumber}주차`;
-  };
-
-  const handleAttendanceCheck = () => {
-    // 여기에 출석 체크 API 호출 로직을 구현합니다.
-    console.log("출석 체크됨");
-    setIsCheckedToday(true);
-
-    // 오늘의 출석 상태를 업데이트
-    const today = new Date().toISOString().split("T")[0];
-    const updatedDays = attendanceDays.map((day) =>
-      day.attendanceDate === today ? { ...day, check: true } : day
-    );
-    setAttendanceDays(updatedDays);
-
-    // 사용자 포인트 업데이트
-    if (user) {
-      const updatedUser: UserInfo = {
-        ...user,
-        points: user.points + 100,
-      };
-      setUser(updatedUser);
-    }
   };
 
   const getDayColor = (day: string) => {
@@ -137,7 +132,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
             ))}
           </div>
           <div className="grid grid-cols-7">
-            {attendanceDays.map((day) => (
+            {attendanceDays?.map((day: AttendanceDay) => (
               <div
                 key={day.attendanceDate}
                 className="flex h-20 flex-col items-center justify-between border-r border-gray-200 p-4"

@@ -1,11 +1,12 @@
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useWordCards } from "../../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
 
-const SecondPlayerWait: React.FC = () => {
-  const { wordCards, loading, error } = useWordCards();
+interface SecondPlayerWaitProps {
+  wordCards: { id: string; word: string; bgColor: string; textColor: string }[];
+}
 
+const SecondPlayerWait: React.FC<SecondPlayerWaitProps> = ({ wordCards }) => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex h-screen w-full items-center justify-center">
@@ -38,46 +39,45 @@ const SecondPlayerWait: React.FC = () => {
                 </p>
               </div>
               {/* 다섯 개의 단어 카드 영역 */}
-              {!loading && !error && (
-                <div className="card-container mt-8 flex flex-row space-x-8">
-                  {wordCards.map((card) => (
-                    <div
-                      key={card.id}
-                      className="border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
-                      style={{
-                        width: "135px",
-                        height: "180px",
-                        backgroundColor: card.bgColor,
-                      }}
-                    >
-                      {/* 상단 영역 */}
-                      <div className="h-12 w-full rounded-xl rounded-b-none"></div>
-                      {/* 본문 영역 */}
-                      <div className="flex w-full flex-1 flex-col items-center justify-center bg-white">
-                        <p
-                          className="text-2xl"
-                          style={{
-                            fontFamily: "DungGeunMo",
-                            color: card.textColor,
-                          }}
-                        >
-                          {card.word}
-                        </p>
-                      </div>
-
-                      {/* 하단 영역 */}
-                      <div className="flex h-12 w-full items-center justify-center rounded-xl rounded-t-none">
-                        <p
-                          className="text-base"
-                          style={{ fontFamily: "DungGeunMo", color: "white" }}
-                        >
-                          MONEY & LOVE
-                        </p>
-                      </div>
+              <div className="card-container mt-8 flex flex-row space-x-8">
+                {wordCards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
+                    style={{
+                      width: "135px",
+                      height: "180px",
+                      backgroundColor: card.bgColor,
+                    }}
+                  >
+                    {/* 상단 영역 */}
+                    <div className="h-12 w-full rounded-xl rounded-b-none"></div>
+                    {/* 본문 영역 */}
+                    <div className="flex w-full flex-1 flex-col items-center justify-center bg-white">
+                      <p
+                        className="text-2xl"
+                        style={{
+                          fontFamily: "DungGeunMo",
+                          color: card.textColor,
+                        }}
+                      >
+                        {card.word}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              )}
+
+                    {/* 하단 영역 */}
+                    <div className="flex h-12 w-full items-center justify-center rounded-xl rounded-t-none">
+                      <p
+                        className="text-base"
+                        style={{ fontFamily: "DungGeunMo", color: "white" }}
+                      >
+                        MONEY & LOVE
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               {/* 대기 애니메이션 영역 */}
               <div
                 className="mb-20 mt-20 animate-pulse text-4xl text-custom-purple-color"

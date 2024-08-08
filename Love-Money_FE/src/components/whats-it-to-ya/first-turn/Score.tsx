@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import Card from "../game-elements/PriorityCard";
 import Card2 from "../game-elements/PriorityCard2";
-import { useWordCards } from "../../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
 
 // FirstTurnScore
 
@@ -15,6 +14,7 @@ interface ScoreProps {
   player2GuessZones: CardType[][];
   onScoreCalculated: (score: number) => void;
   onNextPhase: () => void;
+  wordCards: { id: string; word: string; bgColor: string; textColor: string }[];
 }
 
 const Score: React.FC<ScoreProps> = ({
@@ -22,9 +22,8 @@ const Score: React.FC<ScoreProps> = ({
   player2GuessZones,
   onScoreCalculated,
   onNextPhase,
+  wordCards,
 }) => {
-  const { wordCards, loading, error } = useWordCards();
-
   // 점수 계산 로직
   const calculateScore = () => {
     let score = 0;
@@ -54,120 +53,116 @@ const Score: React.FC<ScoreProps> = ({
   const score = calculateScore();
 
   return (
-    <div className="flex h-screen w-full items-center justify-center">
-      {/* 게임창 */}
-      <div className="relative flex h-[620px] w-[900px] flex-col rounded-[20px] bg-[#F0E9F6]">
-        {/* 제목 박스 */}
-        <div className="absolute -top-5 left-1/2 flex h-[50px] w-[250px] -translate-x-1/2 items-center justify-center rounded-3xl bg-[#8B6CAC]">
-          <h1
-            className="text-xl text-white"
-            style={{ fontFamily: "DNFBitBitv2" }}
+    <div className="relative flex h-screen w-full flex-col justify-end">
+      <div className="fixed top-0 flex w-full flex-col items-center justify-center">
+        {/* 점수 표시 */}
+        <div className="mb-10 mt-10 flex flex-col items-center">
+          <h3 className="text-3xl" style={{ fontFamily: "DungGeunMo" }}>
+            결과 점수
+          </h3>
+          <div className="mt-2 text-5xl font-bold text-custom-purple-color">
+            {score}
+          </div>
+        </div>
+        {/* 다음으로 넘어가는 버튼 */}
+        <div className="mt-1">
+          <button
+            onClick={onNextPhase}
+            className="rounded-lg bg-custom-purple-color px-6 py-3 text-2xl text-white"
+            style={{ fontFamily: "DungGeunMo" }}
           >
-            What's it to ya
-          </h1>
+            다음 단계
+          </button>
         </div>
         {/* 게임 영역 */}
-        <div className="mt-2 flex flex-1 flex-col items-center justify-center">
-          <div className="flex flex-col items-center justify-center">
-            {/* 다섯 개의 단어 카드 영역 */}
-            {!loading && !error && (
-              <div className="card-container mt-4 flex flex-row space-x-8">
-                {wordCards.map((card) => (
-                  <div
-                    key={card.id}
-                    className="border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
-                    style={{
-                      width: "135px",
-                      height: "180px",
-                      backgroundColor: card.bgColor,
-                    }}
-                  >
-                    {/* 상단 영역 */}
-                    <div className="h-12 w-full rounded-xl rounded-b-none"></div>
-                    {/* 본문 영역 */}
-                    <div className="flex w-full flex-1 flex-col items-center justify-center bg-white">
-                      <p
-                        className="text-2xl"
-                        style={{
-                          fontFamily: "DungGeunMo",
-                          color: card.textColor,
-                        }}
-                      >
-                        {card.word}
-                      </p>
-                    </div>
-
-                    {/* 하단 영역 */}
-                    <div className="flex h-12 w-full items-center justify-center rounded-xl rounded-t-none">
-                      <p
-                        className="text-base"
-                        style={{ fontFamily: "DungGeunMo", color: "white" }}
-                      >
-                        MONEY & LOVE
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {/* Player 1의 드랍존 카드들 */}
-            <div className="mt-3 flex flex-col items-center">
-              <h2
-                className="mb-3 text-2xl"
-                style={{ fontFamily: "DungGeunMo" }}
-              >
-                Player 1의 선택
-              </h2>
-              <div className="flex" style={{ gap: "5.5rem" }}>
-                {player1DropZones.map((zone, index) => (
-                  <div key={index} className="flex flex-col items-center">
-                    {zone.map((card) => (
-                      <Card key={card.id} id={card.id} number={card.number} />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Player 2의 예측 카드들 */}
-            <div className="mt-3 flex flex-col items-center">
-              <h2
-                className="mb-3 text-2xl"
-                style={{ fontFamily: "DungGeunMo" }}
-              >
-                Player 2의 예측
-              </h2>
-              <div className="flex" style={{ gap: "5.5rem" }}>
-                {player2GuessZones.map((zone, index) => (
-                  <div key={index} className="flex flex-col items-center">
-                    {zone.map((card) => (
-                      <Card2 key={card.id} id={card.id} number={card.number} />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* 점수 표시 */}
-          <div className="mt-7 flex flex-col items-center">
-            <h3 className="text-3xl" style={{ fontFamily: "DungGeunMo" }}>
-              결과 점수
-            </h3>
-            <div className="mt-2 text-5xl font-bold text-custom-purple-color">
-              {score}
-            </div>
-          </div>
-
-          {/* 다음으로 넘어가는 버튼 */}
-          <div className="mt-1">
-            <button
-              onClick={onNextPhase}
-              className="rounded-lg bg-custom-purple-color px-6 py-3 text-2xl text-white"
-              style={{ fontFamily: "DungGeunMo" }}
+        <div className="flex w-full flex-col items-center justify-center">
+          {/* Player 2의 예측 카드들 */}
+          <div
+            className="drop-table-container mt-10 flex flex-col items-center"
+            style={{ position: "fixed", bottom: "28%" }}
+          >
+            <div
+              className="drop-card-container flex"
+              style={{ gap: "6.5rem", transform: "rotateX(70deg)" }}
             >
-              다음 단계
-            </button>
+              {player2GuessZones.map((zone, index) => (
+                <div
+                  key={index}
+                  className="drop-card-top z-50 flex flex-col items-center"
+                >
+                  {zone.map((card) => (
+                    <Card2 key={card.id} id={card.id} number={card.number} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* 다섯 개의 단어 카드 영역 */}
+          <div
+            className="table-container"
+            style={{ position: "fixed", bottom: "22%" }}
+          >
+            <div
+              className="word-card-container flex flex-row"
+              style={{ gap: "5.5rem" }}
+            >
+              {wordCards.map((card) => (
+                <div
+                  key={card.id}
+                  className="word-card border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
+                  style={{
+                    backgroundColor: card.bgColor,
+                  }}
+                >
+                  {/* 상단 영역 */}
+                  <div className="h-12 w-full rounded-xl rounded-b-none"></div>
+                  {/* 본문 영역 */}
+                  <div className="flex w-full flex-1 flex-col items-center justify-center bg-white">
+                    <p
+                      className="text-2xl"
+                      style={{
+                        fontFamily: "DungGeunMo",
+                        color: card.textColor,
+                      }}
+                    >
+                      {card.word}
+                    </p>
+                  </div>
+
+                  {/* 하단 영역 */}
+                  <div className="flex h-12 w-full items-center justify-center rounded-xl rounded-t-none">
+                    <p
+                      className="text-base"
+                      style={{ fontFamily: "DungGeunMo", color: "white" }}
+                    >
+                      MONEY & LOVE
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Player 1의 드랍존 카드들 */}
+          <div
+            className="drop-table-container flex flex-col items-center"
+            style={{ position: "fixed", bottom: "1%" }}
+          >
+            <div
+              className="drop-card-container flex"
+              style={{ gap: "11.3rem", transform: "rotateX(55deg)" }}
+            >
+              {player1DropZones.map((zone, index) => (
+                <div
+                  key={index}
+                  className="drop-card flex flex-col items-center"
+                >
+                  {zone.map((card) => (
+                    <Card key={card.id} id={card.id} number={card.number} />
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
