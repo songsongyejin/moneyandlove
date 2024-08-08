@@ -1,12 +1,13 @@
 package com.ssafy.moneyandlove.common.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class RedisConfig {
@@ -16,10 +17,11 @@ public class RedisConfig {
 
 	@Bean
 	public JedisConnectionFactory jedisConnectionFactory() {
-		JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();
-		jedisConnectionFactory.setUsePool(true);
-		jedisConnectionFactory.setHostName(redisUrl);
-		return jedisConnectionFactory;
+		String[] urlParts = redisUrl.replace("redis://", "").split(":");
+		String host = urlParts[0];
+		int port = Integer.parseInt(urlParts[1].split("/")[0]);
+		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
+		return new JedisConnectionFactory(config);
 	}
 
 	@Bean
