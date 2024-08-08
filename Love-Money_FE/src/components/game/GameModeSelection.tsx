@@ -42,7 +42,7 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
         <div className="mb-6 flex w-full">
           <div
             className={`mr-8 cursor-pointer rounded-md shadow-btn hover:scale-110 ${selectedMode == "일반" ? "scale-110 bg-custom-purple-color text-white" : "bg-white"}`}
-            onClick={() => handleModeSelect("일반")}
+            onClick={() => handleModeSelect("random")}
           >
             <img src={randomMatch} alt="랜덤" className="w-40 rounded-t-md" />
             <h1 className="my-2 text-xl font-bold">일반 모드</h1>
@@ -52,7 +52,7 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
           </div>
           <div
             className={`mr-8 cursor-pointer rounded-md shadow-btn hover:scale-110 ${selectedMode == "러브" ? "scale-110 bg-custom-purple-color text-white" : "bg-white"}`}
-            onClick={() => handleModeSelect("러브")}
+            onClick={() => handleModeSelect("love")}
           >
             <img src={loveMatch} alt="러브" className="w-40 rounded-t-md" />
             <h1 className="my-2 text-xl font-bold">러브 모드</h1>
@@ -62,7 +62,7 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
           </div>
           <div
             className={`cursor-pointer rounded-md shadow-btn hover:scale-110 ${selectedMode == "프리미엄" ? "scale-110 bg-custom-purple-color text-white" : "bg-white"}`}
-            onClick={() => handleModeSelect("프리미엄")}
+            onClick={() => handleModeSelect("top30")}
           >
             <img
               src={premiumMatch}
