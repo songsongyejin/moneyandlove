@@ -18,17 +18,13 @@ import Matching from "../components/game/Matching";
 import Navbar from "../components/Header/Navbar";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserData } from "../utils/user";
-import {
-  connectHandler,
-  disconnectHandler,
-  sendHandler,
-  subscribeHandler,
-} from "../utils/Chat";
+
 import { fetchFriendsListData } from "../utils/friends";
-import { CompatClient } from "@stomp/stompjs";
+
 const GameHome: React.FC = () => {
   // Recoil을 사용하여 사용자 정보 상태를 가져옴
   const token = useRecoilValue(userToken);
+
   const [user, setUser] = useRecoilState(userInfo);
   type friendProfile = {
     followerId: number;
@@ -38,6 +34,7 @@ const GameHome: React.FC = () => {
     img: string;
     chatRoomId: number;
   };
+
   const { data, error, isLoading } = useQuery({
     queryKey: ["userData", token],
     queryFn: () => fetchUserData(token as string),
@@ -55,47 +52,13 @@ const GameHome: React.FC = () => {
   }, [data, setUser]);
 
   //Chat Socket 통신
+  type chatType = {
+    roomId: number;
+    senderId: number;
+    message: string;
+    createdAt: string;
+  };
 
-  const [message, setMessage] = useState<any>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    const subscriptions: any[] = [];
-    let client: CompatClient | null = null;
-    if (token && friendsList) {
-      const setupConnections = async () => {
-        try {
-          if (!client) {
-            client = await connectHandler(token);
-          }
-          if (client && isMounted) {
-            friendsList.forEach((friend: friendProfile) => {
-              const subscription = subscribeHandler(
-                client!,
-                friend.chatRoomId,
-                setMessage
-              );
-              subscriptions.push(subscription);
-            });
-          }
-        } catch (error) {
-          console.error("Failed to setup connections", error);
-        }
-      };
-
-      setupConnections();
-    }
-
-    return () => {
-      isMounted = false;
-      if (client) {
-        subscriptions.forEach((subscription) => subscription.unsubscribe());
-        client.disconnect(() => {
-          console.log("Disconnected");
-        });
-      }
-    };
-  }, [token, friendsList]);
   // useGameLogic 훅을 사용하여 게임 로직 관련 상태와 함수들을 가져옴
   const {
     showFaceVerification, // 얼굴 인증 모달의 표시 여부
@@ -152,12 +115,7 @@ const GameHome: React.FC = () => {
           >
             사랑하고 의심하라 !
           </h1>
-          <button
-            onClick={sendHandler}
-            className="z-50 w-10 bg-black p-4 text-black"
-          >
-            click
-          </button>
+
           <p
             className="mt-6 text-xl font-semibold text-white text-shadow-custom text-stroke-custom"
             style={{

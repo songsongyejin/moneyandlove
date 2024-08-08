@@ -8,4 +8,4 @@ COPY package.json .
 RUN yarn
 COPY . .
 EXPOSE 5173
-CMD ["yarn", "dev"]
+CMD ["yarn", "dev", "--host"]

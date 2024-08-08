@@ -30,6 +30,7 @@ const LoginHandler: React.FC = () => {
       if (data) {
         if (data.signed) {
           setToken(data.token);
+          console.log(data);
           navigate("/main");
         } else {
           navigate("/signUp", { state: { data } });

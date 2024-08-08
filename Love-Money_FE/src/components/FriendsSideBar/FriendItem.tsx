@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import IonIcon from "@reacticons/ionicons";
 
@@ -16,6 +16,7 @@ const FreindItem: React.FC<{
   onChatStart: (friend: friendProfile) => void;
 }> = ({ friend, onChatStart }) => {
   const [isHovered, setIsHovered] = useState(false);
+
   return (
     <li
       className="item mb-10 ml-5 flex cursor-pointer"

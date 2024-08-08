@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import sampleImage from "../../assets/sample.png"; // 이미지 경로에 맞게 수정
 import FreindItem from "./FriendItem";
@@ -8,6 +8,24 @@ import { userToken } from "../../atom/store";
 import { useRecoilValue } from "recoil";
 import { useQuery } from "@tanstack/react-query";
 import { fetchFriendsListData } from "../../utils/friends";
+import { CompatClient } from "@stomp/stompjs";
+import { connectHandler, subscribeHandler } from "../../utils/Chat";
+//받아온 msg 타입
+type chatType = {
+  roomId: number;
+  senderId: number;
+  message: string;
+  createdAt: string;
+};
+//친구 목록에 띄울 친구 객체 타입
+type friendProfile = {
+  followerId: number;
+  nickname: string;
+  age: number;
+  gender: string;
+  img: string;
+  chatRoomId: number;
+};
 const FreindsSideBar: React.FC = () => {
   const [navOpen, setNavOpen] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState<friendProfile | null>(
@@ -23,16 +41,45 @@ const FreindsSideBar: React.FC = () => {
     queryFn: () => fetchFriendsListData(token as string),
     enabled: !!token,
   });
+  const [chatData, setChatData] = useState<chatType[]>([]);
+  useEffect(() => {
+    let isMounted = true;
+    const subscriptions: any[] = [];
+    let client: CompatClient | null = null;
+    if (token && friendsList) {
+      const setupConnections = async () => {
+        try {
+          if (!client) {
+            client = await connectHandler(token);
+          }
+          if (client && isMounted) {
+            friendsList.forEach((friend: friendProfile) => {
+              const subscription = subscribeHandler(
+                client!,
+                friend.chatRoomId,
+                setChatData
+              );
+              subscriptions.push(subscription);
+            });
+          }
+        } catch (error) {
+          console.error("Failed to setup connections", error);
+        }
+      };
 
-  //친구 목록에 띄울 친구 객체 타입
-  type friendProfile = {
-    followerId: number;
-    nickname: string;
-    age: number;
-    gender: string;
-    img: string;
-    chatRoomId: number;
-  };
+      setupConnections();
+    }
+
+    return () => {
+      isMounted = false;
+      if (client) {
+        subscriptions.forEach((subscription) => subscription.unsubscribe());
+        client.disconnect(() => {
+          console.log("Disconnected");
+        });
+      }
+    };
+  }, [token, friendsList]);
 
   const handleMenuClick = () => {
     setNavOpen(!navOpen);
@@ -45,6 +92,7 @@ const FreindsSideBar: React.FC = () => {
   const handleChatClose = () => {
     setSelectedFriend(null);
   };
+
   return (
     <div style={{ fontFamily: "DungGeunMo" }}>
       <nav
@@ -65,20 +113,27 @@ const FreindsSideBar: React.FC = () => {
           className={`nav-links ${navOpen ? "fade-in" : ""} font-bold text-white`}
         >
           {Array.isArray(friendsList) &&
-            friendsList.map((friend: friendProfile, index: number) => (
-              <FreindItem
-                key={index}
-                friend={friend}
-                onChatStart={handleChatStart}
-              />
-            ))}
+            friendsList.map((friend: friendProfile, index: number) => {
+              return (
+                <FreindItem
+                  key={index}
+                  friend={friend}
+                  onChatStart={handleChatStart}
+                />
+              );
+            })}
           <li>
             <FiPlusCircle className="mx-auto mb-4 cursor-pointer text-center text-6xl text-white hover:scale-110" />
           </li>
         </ul>
       </nav>
       {selectedFriend && (
-        <FriendChatRoom friend={selectedFriend} onChatClose={handleChatClose} />
+        <FriendChatRoom
+          friend={selectedFriend}
+          chatData={chatData}
+          onChatClose={handleChatClose}
+          setChatData={setChatData}
+        />
       )}
     </div>
   );

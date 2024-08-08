@@ -4,7 +4,13 @@ import { CompatClient, Stomp } from "@stomp/stompjs";
 import axios from "axios";
 const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 let client: CompatClient | null = null;
-
+//받아온 msg 타입
+type chatType = {
+  roomId: number;
+  senderId: number;
+  message: string;
+  createdAt: string;
+};
 export const connectHandler = (token: string): Promise<CompatClient> => {
   return new Promise((resolve, reject) => {
     const socketFactory = () =>
@@ -29,19 +35,27 @@ export const connectHandler = (token: string): Promise<CompatClient> => {
 export const subscribeHandler = (
   client: CompatClient,
   roomId: number,
-  setMessage: (message: any) => void
+  setChatData: React.Dispatch<React.SetStateAction<chatType[]>>
 ) => {
   if (client) {
-    console.log(`${roomId} 구독`);
-    client.subscribe(
+    return client.subscribe(
       `/chat/receive/${roomId}`,
       (message) => {
-        setMessage(JSON.parse(message.body));
+        setChatData((prevMessages: any) => [
+          ...prevMessages,
+          JSON.parse(message.body),
+        ]);
       },
       { Authorization: client.ws?.url.split("Authorization=")[1] || "" }
     );
   }
 };
+export const unSUbscribe = (roomId: number) => {
+  if (client) {
+    client.unsubscribe(`/receive/chat/room/${roomId}`);
+  }
+};
+
 export const sendHandler = (token: string, roomId: number, message: string) => {
   if (client && client.connected) {
     client.send(
@@ -65,7 +79,6 @@ export const disconnectHandler = () => {
 
 export const fetchAllChatData = async (roomId: number, token: string) => {
   try {
-    console.log("받아온다");
     const response = await axios.get(
       `${APPLICATION_SERVER_URL}chat/room/${roomId}/message`,
       {
@@ -74,7 +87,6 @@ export const fetchAllChatData = async (roomId: number, token: string) => {
         },
       }
     );
-    console.log(response);
     return response.data;
   } catch (err) {
     console.error(err);
