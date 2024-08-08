@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import IonIcon from "@reacticons/ionicons";
+import "./style.css";
 import { FiSend } from "react-icons/fi";
 import { fetchAllChatData, sendHandler, unSUbscribe } from "../../utils/Chat";
 import { userToken } from "../../atom/store";
@@ -88,7 +89,7 @@ const FriendChatRoom: React.FC<{
         ></IonIcon>
       </header>
       <div className="h-1 bg-white"></div>
-      <div className="flex-1 flex-col-reverse overflow-y-auto p-4 text-white">
+      <div className="fnav flex-1 flex-col-reverse overflow-y-auto p-4 text-white">
         {Array.isArray(chatData) &&
           chatData.map((chat, index) => (
             <div
