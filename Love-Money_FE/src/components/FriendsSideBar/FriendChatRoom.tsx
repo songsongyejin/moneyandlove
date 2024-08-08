@@ -88,22 +88,18 @@ const FriendChatRoom: React.FC<{
         ></IonIcon>
       </header>
       <div className="h-1 bg-white"></div>
-      <div className="flex-1 overflow-y-auto p-4 text-white">
+      <div className="flex-1 flex-col-reverse overflow-y-auto p-4 text-white">
         {Array.isArray(chatData) &&
           chatData.map((chat, index) => (
             <div
               key={index}
               className={`mb-2 rounded-lg p-2 ${
                 chat.senderId === friend.followerId
-                  ? "bg-blue-500 text-left"
-                  : "ml-auto bg-green-500 text-right"
+                  ? "text-left text-custom-purple-color"
+                  : "ml-auto text-right"
               }`}
             >
               <div>{chat.message}</div>
-              <div className="text-sm text-gray-400">{chat.senderId}</div>
-              <div className="text-xs text-gray-500">
-                {new Date(chat.createdAt).toLocaleTimeString()}
-              </div>
             </div>
           ))}
         <div ref={messagesEndRef} />
