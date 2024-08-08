@@ -289,14 +289,6 @@ const WhatsItToYa: React.FC = () => {
         <div className="pt-30 fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute left-5 top-5 flex items-start">
             <img src={aiBot} alt="" className="z-10 w-24" />
-            <div
-              className="relative ml-2 mt-11 max-w-2xl rounded-bl-3xl rounded-br-3xl rounded-tr-3xl bg-white p-4 text-2xl shadow-lg"
-              style={{
-                fontFamily: "DungGeunMo",
-              }}
-            >
-              <p className="text-2xl"></p>
-            </div>
           </div>
 
           {/* 조건부 렌더링: 인트로 화면, 턴 선택 화면 또는 (사용자의 플레이 순서에 따른) 플레이 화면 */}

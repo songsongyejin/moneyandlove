@@ -185,7 +185,10 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({
 
             {/* 드래그 앤 드롭 영역 */}
             <div className="drop-table-container animate-fadeIn rounded-lg py-4">
-              <div className="drop-card-container flex justify-center space-x-28">
+              <div
+                className="drop-card-container flex justify-center"
+                style={{ gap: "1rem", transform: "rotateX(55deg)" }}
+              >
                 {zones.dropZones.map((zone, index) => (
                   <DropZone key={index} id={index} onDrop={handleDrop}>
                     {zone.map((card) => (

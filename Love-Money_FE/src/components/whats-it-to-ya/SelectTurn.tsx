@@ -39,70 +39,64 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected }) => {
   // isCardSelected, onTurnSelected, flippedCard의 변경을 감지하여 해당 로직이 필요할 때만 실행되도록 함
 
   return (
-    // <div className="relative flex h-[620px] w-[900px] flex-col rounded-[20px] bg-[#F0E9F6]">
-    <div className="relative">
-      {/* 턴 선택 영역 */}
-      <div className="mt-14 flex flex-wrap items-center justify-center gap-4">
-        <div className="flex flex-col items-center justify-center">
-          {/* 설명 영역 */}
+    <div className="flex h-screen flex-col justify-between">
+      {/* 설명 영역 */}
+      <div className="mt-10 flex flex-col items-start">
+        <div
+          className="flex animate-fadeIn flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-14 text-center"
+          style={{
+            fontFamily: "DungGeunMo",
+            width: "600px",
+          }}
+        >
+          <p className="mb-3 text-2xl">왓츠잇투야 게임이 곧 시작됩니다!</p>
+          <p className="text-2xl">게임의 순서를 위해 카드를 골라주세요</p>
+        </div>
+      </div>
+      {/* 카드 선택 영역 */}
+      <div className="mb-10 flex justify-center">
+        <div className="flip-card-container flex animate-fadeIn flex-row space-x-20">
+          {/* 첫 번째 카드 */}
           <div
-            className="mx-auto mb-16 flex animate-fadeIn flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-14 text-center"
-            style={{
-              fontFamily: "DungGeunMo",
-              width: "600px",
-            }}
+            className={`flip-card cursor-pointer ${flippedCard === 1 ? "flipped" : ""}`}
+            onClick={() => handleCardClick(1)}
           >
-            <p className="mb-3 text-2xl">왓츠잇투야 게임이 곧 시작됩니다!</p>
-            <p className="text-2xl">게임의 순서를 위해 카드를 골라주세요</p>
-          </div>
-          {/* 카드 선택 영역 */}
-          <div className="flip-card-container flex animate-fadeIn flex-row space-x-20">
-            {/* 첫 번째 카드 */}
-            <div
-              className={`flip-card cursor-pointer ${
-                flippedCard === 1 ? "flipped" : ""
-              }`}
-              onClick={() => handleCardClick(1)}
-            >
-              <div className="flip-card-inner hover:scale-105">
-                <div className="flip-card-front">
-                  <img
-                    src={cardBack}
-                    alt="첫 번째 카드 뒷면"
-                    className="h-[228px] w-[165px] object-contain"
-                  />
-                </div>
-                <div className="flip-card-back">
-                  <img
-                    src={cardFirstTurn}
-                    alt="첫 번째 카드 앞면"
-                    className="h-[228px] w-[165px] rounded-lg object-contain"
-                  />
-                </div>
+            <div className="flip-card-inner hover:scale-105">
+              <div className="flip-card-front">
+                <img
+                  src={cardBack}
+                  alt="첫 번째 카드 뒷면인 상태"
+                  className="h-[228px] w-[165px] object-contain"
+                />
+              </div>
+              <div className="flip-card-back">
+                <img
+                  src={cardFirstTurn}
+                  alt="첫 번째 카드 앞면"
+                  className="h-[228px] w-[165px] rounded-lg object-contain"
+                />
               </div>
             </div>
-            {/* 두 번째 카드 */}
-            <div
-              className={`flip-card cursor-pointer ${
-                flippedCard === 2 ? "flipped" : ""
-              }`}
-              onClick={() => handleCardClick(2)}
-            >
-              <div className="flip-card-inner hover:scale-105">
-                <div className="flip-card-front">
-                  <img
-                    src={cardBack}
-                    alt="두 번째 카드 뒷면"
-                    className="h-[228px] w-[165px] object-contain"
-                  />
-                </div>
-                <div className="flip-card-back">
-                  <img
-                    src={cardSecondTurn}
-                    alt="두 번째 카드 앞면"
-                    className="h-[228px] w-[165px] rounded-lg object-contain"
-                  />
-                </div>
+          </div>
+          {/* 두 번째 카드 */}
+          <div
+            className={`flip-card cursor-pointer ${flippedCard === 2 ? "flipped" : ""}`}
+            onClick={() => handleCardClick(2)}
+          >
+            <div className="flip-card-inner hover:scale-105">
+              <div className="flip-card-front">
+                <img
+                  src={cardBack}
+                  alt="두 번째 카드 뒷면"
+                  className="h-[228px] w-[165px] object-contain"
+                />
+              </div>
+              <div className="flip-card-back">
+                <img
+                  src={cardSecondTurn}
+                  alt="두 번째 카드 앞면"
+                  className="h-[228px] w-[165px] rounded-lg object-contain"
+                />
               </div>
             </div>
           </div>
