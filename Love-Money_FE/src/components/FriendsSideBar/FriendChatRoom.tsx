@@ -4,7 +4,7 @@ import { FiSend } from "react-icons/fi";
 import { fetchAllChatData, sendHandler, unSUbscribe } from "../../utils/Chat";
 import { userToken } from "../../atom/store";
 import { useRecoilValue } from "recoil";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 type friendProfile = {
   followerId: number;
@@ -35,7 +35,11 @@ const FriendChatRoom: React.FC<{
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
-
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    // Invalidate and refetch when friend changes
+    queryClient.invalidateQueries(["chatData", friend.chatRoomId, token]);
+  }, [friend, queryClient]);
   useEffect(() => {
     scrollToBottom();
   }, [chatData]);
