@@ -95,7 +95,7 @@ const FriendChatRoom: React.FC<{
               key={index}
               className={`mb-2 rounded-lg p-2 ${
                 chat.senderId === friend.followerId
-                  ? "text-left text-custom-purple-color"
+                  ? "text-left text-fuchsia-500"
                   : "ml-auto text-right"
               }`}
             >
