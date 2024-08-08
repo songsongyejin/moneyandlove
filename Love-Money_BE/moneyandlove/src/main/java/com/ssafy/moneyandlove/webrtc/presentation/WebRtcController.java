@@ -23,7 +23,7 @@ import jakarta.annotation.PostConstruct;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/video-sessions")
+@RequestMapping("/api/video-sessions")
 public class WebRtcController {
 	@Value("${OPENVIDU.URL}")
 	private String OPENVIDU_URL;

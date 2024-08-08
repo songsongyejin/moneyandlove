@@ -1,4 +1,4 @@
-package com.ssafy.moneyandlove.user.service;
+package com.ssafy.moneyandlove.user.application;
 
 import java.util.HashMap;
 import java.util.Map;

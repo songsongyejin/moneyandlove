@@ -1,7 +1,10 @@
 package com.ssafy.moneyandlove.matching.presentation;
 
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,13 +17,9 @@ import com.ssafy.moneyandlove.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/matching")
+@RequestMapping("/api/matching")
 public class MatchingController {
 
 	private final MatchingService matchingService;

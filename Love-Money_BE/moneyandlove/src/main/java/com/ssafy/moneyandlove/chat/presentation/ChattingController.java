@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/api/chat")
 @RequiredArgsConstructor
 @Slf4j
 public class ChattingController {
@@ -44,7 +44,7 @@ public class ChattingController {
         log.info("{}", loginUser.getId());
         ChatMessage chatMessage = chatMessageRepository.save(chatMessageRequest.toChatMessage(loginUser.getId()));
         log.info("{}",chatMessage);
-        simpMessagingTemplate.convertAndSend("/chat/receive/" + chatRoomId, ChatMessageResponse.from(chatMessage));
+        simpMessagingTemplate.convertAndSend("/api/chat/receive/" + chatRoomId, ChatMessageResponse.from(chatMessage));
     }
 
     @GetMapping("/room")

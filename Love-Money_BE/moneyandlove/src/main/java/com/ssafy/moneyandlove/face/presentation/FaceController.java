@@ -3,19 +3,24 @@ package com.ssafy.moneyandlove.face.presentation;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ssafy.moneyandlove.common.annotation.LoginUser;
-import com.ssafy.moneyandlove.user.domain.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.moneyandlove.common.annotation.LoginUser;
 import com.ssafy.moneyandlove.face.application.FaceService;
+import com.ssafy.moneyandlove.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/face")
+@RequestMapping("/api/face")
 public class FaceController {
 
 	private final FaceService faceService;
