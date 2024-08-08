@@ -15,7 +15,7 @@ spring:
     mongodb:
       uri: "mongodb://i11a405.p.ssafy.io:27017/moneyandlovedb"
     redis:
-      uri: "redis://i11a405.p.ssafy.io:4379/0"
+      uri: "redis://i11a405.p.ssafy.io:6379/0"
   logging.level:
     org.hibernate.SQL: debug
 
