@@ -89,7 +89,7 @@ const FriendChatRoom: React.FC<{
         ></IonIcon>
       </header>
       <div className="h-1 bg-white"></div>
-      <div className="fnav flex-1 flex-col-reverse overflow-y-auto p-4 text-white">
+      <div className="scrollbar flex-1 flex-col-reverse overflow-y-scroll p-4 text-white">
         {Array.isArray(chatData) &&
           chatData.map((chat, index) => (
             <div
