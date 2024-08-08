@@ -17,13 +17,14 @@ import JoinSessionForm from "../../components/room/JoinSessionForm";
 import GameView from "../../components/room/GameView";
 import { createSession, createToken } from "../../utils/api";
 import { useRecoilValue } from "recoil";
-import { maxExpressionState, warning } from "../../atom/store";
+import { maxExpressionState, userToken, warning } from "../../atom/store";
 import ai_face from "../../assets/ai_face.gif";
 // Room 컴포넌트
 const Room: React.FC = () => {
   //recoil 전역변수
   const maxExpression = useRecoilValue(maxExpressionState);
   const warningMsg = useRecoilValue(warning);
+  const token = useRecoilValue(userToken);
   //감정을 이모지로 변환
   const expressionToEmoji = (expression: string): string => {
     const emojis: { [key: string]: string } = {
@@ -86,8 +87,8 @@ const Room: React.FC = () => {
 
   // 토큰 얻기 함수
   const getToken = useCallback(async (): Promise<string> => {
-    const sessionId = await createSession(mySessionId);
-    return await createToken(sessionId);
+    const sessionId = await createSession(mySessionId, token ? token : "");
+    return await createToken(sessionId, token ? token : "");
   }, [mySessionId]);
 
   // 세션 참가 함수
@@ -131,14 +132,15 @@ const Room: React.FC = () => {
       currentVideoDevice.current = videoDevices.find(
         (device) => device.deviceId === currentVideoDeviceId
       );
-
+      console.log(publisher);
       setPublisher(publisher);
       setMainStreamManager(publisher);
     } catch (error) {
+      const typedError = error as { code: string; message: string }; // 오류 타입 명시
       console.error(
         "There was an error connecting to the session:",
-        error.code,
-        error.message
+        typedError.code,
+        typedError.message
       );
     }
   };

@@ -5,11 +5,12 @@ import { useEffect } from "react";
 import mainBg from "../../assets/main_bg.png";
 import { userToken } from "../../atom/store";
 import { useRecoilState } from "recoil";
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 const fetchKakaoLogin = async (code: string | null) => {
   if (!code) throw new Error("No code provided");
   const res = await axios({
     method: "GET",
-    url: `http://i11a405.p.ssafy.io:8080/user/login?code=${code}`,
+    url: `${APPLICATION_SERVER_URL}user/login?code=${code}`,
     headers: {
       "Content-Type": "application/json;charset=utf-8",
     },
@@ -26,10 +27,10 @@ const LoginHandler: React.FC = () => {
     queryFn: () => fetchKakaoLogin(code),
     enabled: !!code, // code가 존재할 때만 쿼리 실행
     select: (data) => {
-      console.log(data);
       if (data) {
         if (data.signed) {
           setToken(data.token);
+          console.log(data);
           navigate("/main");
         } else {
           navigate("/signUp", { state: { data } });

@@ -10,13 +10,14 @@ interface OpenViduVideoComponentProps {
 
 const OvVideo: React.FC<OpenViduVideoComponentProps> = ({ streamManager }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
+  const [warningMsg, setWarningMsg] = useRecoilState(warning);
   useEffect(() => {
     if (streamManager && videoRef.current) {
+      console.log(videoRef);
       streamManager.addVideoElement(videoRef.current);
     }
   }, [streamManager]);
-  // const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
-  // const [warningMsg, setWarningMsg] = useRecoilState(warning);
 
   // useEffect(() => {
   //   const loadModels = async () => {

@@ -32,6 +32,8 @@ const GameView = ({
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>; // 모달 상태 변경 핸들러
   myUserName: String;
 }) => {
+  console.log(mainStreamManager);
+  console.log(subscriber);
   return (
     <div
       id="session"
@@ -46,20 +48,20 @@ const GameView = ({
         </div>
       )}
       <div
-        className={`${mode === "chat" ? "hidden" : ""} flex w-3/5 items-center justify-center bg-violet-400`}
+        className={`${mode === "chat" ? "collapse" : ""} flex w-3/5 items-center justify-center bg-violet-400`}
       >
         <div>게임이 들어갈 화면입니다.</div>
       </div>
-      <div
-        id="video-container"
-        className={`${mode === "chat" ? "hidden" : ""}`}
-      >
-        {subscriber && (
+      {subscriber && (
+        <div
+          id="video-container"
+          className={`${mode === "chat" ? "collapse" : ""}`}
+        >
           <div className="stream-container absolute bottom-4 right-2 w-72 rounded-2xl bg-white p-4">
             <UserVideoComponent streamManager={subscriber} />
           </div>
-        )}
-      </div>
+        </div>
+      )}
       <button
         onClick={() => setIsModalOpen(true)}
         className={`${mode === "chat" ? "" : "hidden"} rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700`}

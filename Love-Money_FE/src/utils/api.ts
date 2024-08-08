@@ -1,18 +1,19 @@
 import axios from "axios";
-import { userToken } from "../atom/store";
-import { useRecoilValue } from "recoil";
 
-const APPLICATION_SERVER_URL = "http://i11a405.p.ssafy.io:8080/";
-// const token = useRecoilValue(userToken);
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
+
 // 세션 생성 함수
-export const createSession = async (sessionId: string): Promise<string> => {
+export const createSession = async (
+  sessionId: string,
+  token: string
+): Promise<string> => {
   try {
     const response = await axios.post(
       APPLICATION_SERVER_URL + "video-sessions",
       { customSessionId: sessionId },
       {
         headers: {
-          Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzM4NCJ9.eyJpYXQiOjE3MjI4MzQ1NDgsImV4cCI6MTcyNTQyNjU0OCwic3ViIjoidGVzdDFAbmF2ZXIuY29tIiwiaWQiOjIsIm5pY2tuYW1lIjoidGVzdDEifQ.ZPd7am55uzIpM6oB8yIj-TGfqG54HDz5DIW9peWI96edNM1WtUpmgid9NdEkXg9X`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       }
@@ -26,13 +27,16 @@ export const createSession = async (sessionId: string): Promise<string> => {
 };
 
 // 토큰 생성 함수
-export const createToken = async (sessionId: string): Promise<string> => {
+export const createToken = async (
+  sessionId: string,
+  token: string
+): Promise<string> => {
   const response = await axios.post(
     APPLICATION_SERVER_URL + "video-sessions/" + sessionId + "/connections",
     {},
     {
       headers: {
-        Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzM4NCJ9.eyJpYXQiOjE3MjI4MzQ1NDgsImV4cCI6MTcyNTQyNjU0OCwic3ViIjoidGVzdDFAbmF2ZXIuY29tIiwiaWQiOjIsIm5pY2tuYW1lIjoidGVzdDEifQ.ZPd7am55uzIpM6oB8yIj-TGfqG54HDz5DIW9peWI96edNM1WtUpmgid9NdEkXg9X`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     }
