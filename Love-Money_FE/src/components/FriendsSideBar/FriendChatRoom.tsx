@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import IonIcon from "@reacticons/ionicons";
 import { FiSend } from "react-icons/fi";
-import { fetchAllChatData, sendHandler } from "../../utils/Chat";
+import { fetchAllChatData, sendHandler, unSUbscribe } from "../../utils/Chat";
 import { userToken } from "../../atom/store";
 import { useRecoilValue } from "recoil";
 import { useQuery } from "@tanstack/react-query";
+
 type friendProfile = {
   followerId: number;
   nickname: string;
@@ -14,30 +15,57 @@ type friendProfile = {
   chatRoomId: number;
 };
 
+type chatType = {
+  roomId: number;
+  senderId: number;
+  message: string;
+  createdAt: string;
+};
+
 const FriendChatRoom: React.FC<{
   friend: friendProfile;
   onChatClose: () => void;
-}> = ({ friend, onChatClose }) => {
+  chatData: chatType[];
+  setChatData: React.Dispatch<React.SetStateAction<chatType[]>>;
+}> = ({ friend, onChatClose, chatData, setChatData }) => {
   const token = useRecoilValue(userToken);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
-  const { data, error, isLoading } = useQuery({
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatData]);
+  const {
+    data: initialData,
+    error,
+    isLoading,
+  } = useQuery({
     queryKey: ["chatData", friend.chatRoomId, token],
     queryFn: () => fetchAllChatData(friend.chatRoomId, token as string),
     enabled: !!token,
     staleTime: Infinity,
   });
 
+  useEffect(() => {
+    if (initialData) {
+      setChatData(initialData);
+    }
+  }, [initialData]);
+
   const [newMessage, setNewMessage] = useState("");
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      if (newMessage != "") {
-        e.preventDefault();
-        sendHandler(token ? token : "", friend.chatRoomId, newMessage);
-        setNewMessage(""); // 메시지 전송 후 입력란 비우기
-      }
+    if (e.key === "Enter" && newMessage.trim() !== "") {
+      e.preventDefault();
+      sendHandler(token || "", friend.chatRoomId, newMessage);
+      setNewMessage(""); // 메시지 전송 후 입력란 비우기
     }
   };
+
   return (
     <div className="absolute bottom-0 left-350px z-20 flex h-96 w-96 flex-col bg-chatRoomMain-color font-semibold opacity-85">
       <header className="flex p-3 text-white">
@@ -51,15 +79,22 @@ const FriendChatRoom: React.FC<{
         <IonIcon
           name="close-outline"
           className="ml-auto cursor-pointer"
-          onClick={() => onChatClose()}
+          onClick={onChatClose}
           style={{ fontSize: "25px" }}
         ></IonIcon>
       </header>
       <div className="h-1 bg-white"></div>
       <div className="flex-1 overflow-y-auto p-4 text-white">
-        {Array.isArray(data) &&
-          data.map((chat, index) => (
-            <div key={index} className="mb-2">
+        {Array.isArray(chatData) &&
+          chatData.map((chat, index) => (
+            <div
+              key={index}
+              className={`mb-2 rounded-lg p-2 ${
+                chat.senderId === friend.followerId
+                  ? "bg-blue-500 text-left"
+                  : "ml-auto bg-green-500 text-right"
+              }`}
+            >
               <div>{chat.message}</div>
               <div className="text-sm text-gray-400">{chat.senderId}</div>
               <div className="text-xs text-gray-500">
@@ -67,6 +102,7 @@ const FriendChatRoom: React.FC<{
               </div>
             </div>
           ))}
+        <div ref={messagesEndRef} />
       </div>
 
       <input
