@@ -1,5 +1,6 @@
 package com.ssafy.moneyandlove.face.presentation;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.ssafy.moneyandlove.common.annotation.LoginUser;
@@ -26,9 +27,10 @@ public class FaceController {
 	}
 
 	@GetMapping("/score")
-	public ResponseEntity<?> getFaceScore(@LoginUser User loginUser, @RequestParam String prefix, @RequestParam String imageName) {
-		faceService.getFaceScoreByUserId(loginUser.getId());
-		return ResponseEntity.ok().build();
+	public ResponseEntity<Map<String, Integer>> getFaceScore(@LoginUser User loginUser) {
+		Map<String, Integer> result = new HashMap<>();
+		result.put("faceScore",faceService.getFaceScoreByUserId(loginUser.getId()));
+		return ResponseEntity.ok(result);
 	}
 
     @PutMapping("/score")
