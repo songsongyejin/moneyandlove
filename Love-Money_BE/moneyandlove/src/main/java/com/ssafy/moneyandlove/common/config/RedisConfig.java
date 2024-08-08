@@ -1,5 +1,6 @@
 package com.ssafy.moneyandlove.common.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -9,9 +10,16 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
+
+	@Value("${spring.data.redis.url}")
+	private String redisUrl;
+
 	@Bean
 	public JedisConnectionFactory jedisConnectionFactory() {
-		return new JedisConnectionFactory();
+		JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();
+		jedisConnectionFactory.setUsePool(true);
+		jedisConnectionFactory.setHostName(redisUrl);
+		return jedisConnectionFactory;
 	}
 
 	@Bean
