@@ -15,10 +15,11 @@ public class RankingUserResponse {
 	// 기본 생성자
 	public RankingUserResponse() {}
 
-	public RankingUserResponse(String nickName, String montage, Long rankPoint) {
+	public RankingUserResponse(String nickName, String montage, Long rankPoint, Long rankNumber) {
 		this.nickName = nickName;
 		this.montage = montage;
 		this.rankPoint = rankPoint;
+		this.rankNumber = rankNumber;
 	}
 
 }
