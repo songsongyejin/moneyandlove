@@ -1,0 +1,14 @@
+server:
+  port: 8080
+
+spring:
+  logging.level:
+    org.hibernate.SQL: debug
+
+OPENVIDU:
+  URL: http://localhost:5442
+  SECRET: MY_SECRET
+
+logging:
+  level:
+    root: info
