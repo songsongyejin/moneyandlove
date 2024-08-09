@@ -1,5 +1,5 @@
 import axios from "axios";
-const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_OPENVIDU_URL;
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 // 단어 카드 데이터를 가져오는 API 호출 함수
 export const fetchWordCards = async (token: string): Promise<string[]> => {
   try {
