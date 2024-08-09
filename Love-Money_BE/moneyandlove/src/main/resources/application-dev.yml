@@ -1,28 +1,21 @@
+server:
+  port: 8080
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: "jdbc:mysql://localhost:3306/moneyandlovedb?autoReconnect=true&useUnicode=true&serverTimezone=Asia/Seoul"
-    username: root
-    password: 1234
+    url: "jdbc:mysql://i11a405.p.ssafy.io:3306/moneyandlovedb"
+    username: myteam
+    password: ssafy
   jpa:
-    database: mysql
-    properties:
-      hibernate:
-        storage_engine: innodb
-        format_sql: true
-        use_sql_comments: true
     hibernate:
       ddl-auto: update
     open-in-view: false
-    show_sql: true
   data:
     mongodb:
-      uri: "mongodb://localhost:27017/moneyandlovedb"
+      uri: "mongodb://i11a405.p.ssafy.io:27017/moneyandlovedb"
     redis:
-      host: moneyandlove-redis
-      port: 4379
-  cache:
-    type: redis
+      url: "redis://i11a405.p.ssafy.io:4379/0"
   logging.level:
     org.hibernate.SQL: debug
 
@@ -32,7 +25,6 @@ oauth2:
   client-id: ${KAKAO_CLIENT}
   client-secret: ${KAKAO_SECRET}
   redirect-uri: "http://localhost:5173/login/oauth2/callback"
-
 cloud:
   aws:
     region: ap-northeast-2
@@ -43,3 +35,7 @@ cloud:
     bucket: ${AWS_BUCKET_NAME}
   stack:
     auto: false
+
+logging:
+  level:
+    root: info
