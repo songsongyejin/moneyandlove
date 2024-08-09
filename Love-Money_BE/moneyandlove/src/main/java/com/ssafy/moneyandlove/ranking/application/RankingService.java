@@ -22,9 +22,8 @@ public class RankingService {
 	private final RankingRepository rankingRepository;
 	private final UserRepository userRepository;
 
-	public List<RankingUserResponse> getTopRankings() {
-		PageRequest pageRequest = PageRequest.of(0, 20);
-		return rankingRepository.findTopRankings(pageRequest);
+	public List<RankingUserResponse> getTopRankings(int limit) {
+		return rankingRepository.findTopRankings(limit);
 	}
 
 	public RankingUserResponse getMyRanking(Long userId) {
