@@ -1,4 +1,4 @@
-package com.ssafy.moneyandlove.user.controller;
+package com.ssafy.moneyandlove.user.presentation;
 
 import java.util.Map;
 
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.moneyandlove.common.annotation.LoginUser;
+import com.ssafy.moneyandlove.user.application.UserService;
 import com.ssafy.moneyandlove.user.domain.User;
 import com.ssafy.moneyandlove.user.dto.JwtResponse;
 import com.ssafy.moneyandlove.user.dto.KakaoAccount;
@@ -21,14 +22,13 @@ import com.ssafy.moneyandlove.user.dto.KakaoToken;
 import com.ssafy.moneyandlove.user.dto.SignUpRequest;
 import com.ssafy.moneyandlove.user.dto.SignUpResponse;
 import com.ssafy.moneyandlove.user.dto.UserProfileUpdateRequest;
-import com.ssafy.moneyandlove.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
 

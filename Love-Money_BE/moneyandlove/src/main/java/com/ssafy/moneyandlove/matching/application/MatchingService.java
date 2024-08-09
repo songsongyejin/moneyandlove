@@ -1,24 +1,28 @@
 package com.ssafy.moneyandlove.matching.application;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.ssafy.moneyandlove.face.application.FaceService;
-import com.ssafy.moneyandlove.matching.dto.MatchingUserResponse;
-import com.ssafy.moneyandlove.user.service.UserService;
-import jakarta.annotation.PreDestroy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.moneyandlove.common.error.ErrorType;
 import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
+import com.ssafy.moneyandlove.face.application.FaceService;
 import com.ssafy.moneyandlove.matching.dto.MatchingUserRequest;
+import com.ssafy.moneyandlove.matching.dto.MatchingUserResponse;
+import com.ssafy.moneyandlove.user.application.UserService;
 
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 
 @Service

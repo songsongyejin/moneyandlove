@@ -21,7 +21,7 @@ import com.ssafy.moneyandlove.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/game-history")
+@RequestMapping("/api/game-history")
 @RequiredArgsConstructor
 public class GameHistoryController {
 	private final GameHistoryService gameHistoryService;

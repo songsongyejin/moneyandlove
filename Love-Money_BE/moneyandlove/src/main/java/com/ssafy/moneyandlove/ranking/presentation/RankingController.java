@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rankings")
+@RequestMapping("/api/rankings")
 public class RankingController {
 
 	private final RankingService rankingService;
