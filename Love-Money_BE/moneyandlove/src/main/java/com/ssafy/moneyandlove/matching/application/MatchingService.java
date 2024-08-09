@@ -68,8 +68,8 @@ public class MatchingService {
 
 		addToQueue(matchingUserRequest);
 
-		//3분동안 매칭 대기
-		long endTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3);
+		//1분동안 매칭 대기
+		long endTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1);
 
 		while (System.currentTimeMillis() < endTime) {
 			// 매칭 상태 확인
@@ -116,7 +116,7 @@ public class MatchingService {
 				break;
 			}
 		}
-		// No match found within 3 minutes.
+		// No match found within 1 minutes.
 		//deleteFromQue
 		redisTemplate.opsForZSet().remove(MATCHING_QUEUE, matchingUserRequest);
 		response.put("status", "timeout");
@@ -133,8 +133,8 @@ public class MatchingService {
 		String uuid =  UUID.randomUUID().toString();
 		matchInfo.put("sessionId", uuid);
 
-		// Redis에 매칭 결과 저장 및 TTL 설정 (예: 10분)
-		redisTemplate.opsForValue().set(matchKey, matchInfo, 10, TimeUnit.MINUTES);
+		// Redis에 매칭 결과 저장 및 TTL 설정 (40초)
+		redisTemplate.opsForValue().set(matchKey,matchInfo, 40, TimeUnit.SECONDS);
 	}
 
 	private String generateMatchKey(Long userId1, Long userId2) {
