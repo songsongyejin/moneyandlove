@@ -24,7 +24,7 @@ jwt:
 oauth2:
   client-id: ${KAKAO_CLIENT}
   client-secret: ${KAKAO_SECRET}
-  redirect-uri: "https://i11a405.q.ssafy.io/login/oauth2/callback"
+  redirect-uri: "http://i11a405.q.ssafy.io/login/oauth2/callback"
 cloud:
   aws:
     region: ap-northeast-2
