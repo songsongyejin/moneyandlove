@@ -124,45 +124,57 @@ const SecondPlayerPlay: React.FC<SecondPlayerPlayProps> = ({
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex h-screen w-full items-center justify-center">
-        {/* 게임창 */}
-        <div className="relative flex h-[620px] w-[900px] flex-col rounded-[20px] bg-[#F0E9F6]">
-          {/* 제목 박스 */}
-          <div className="absolute -top-5 left-1/2 flex h-[50px] w-[250px] -translate-x-1/2 items-center justify-center rounded-3xl bg-[#8B6CAC]">
-            <h1
-              className="text-xl text-white"
-              style={{ fontFamily: "DNFBitBitv2" }}
+      <div className="relative flex h-screen w-full flex-col justify-end">
+        <div className="fixed top-0 flex w-full flex-col items-center justify-center">
+          {/* 설명 영역 */}
+          <div className="mb-10 mt-10 flex flex-col items-center">
+            <div
+              className="mx-auto flex flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-4 text-center"
+              style={{
+                fontFamily: "DungGeunMo",
+                width: "780px",
+              }}
             >
-              What's it to ya
-            </h1>
+              <p className="mb-2 text-xl">당신의 차례입니다.</p>
+              <p className="text-xl">
+                {" "}
+                다섯 개의 단어 카드를 보고 당신의 우선순위를 정해주세요{" "}
+              </p>
+            </div>
+          </div>
+          {/* 버튼 두개: 초기화 버튼, 선택완료 버튼*/}
+          <div className="mb-2 mt-10 flex animate-fadeIn space-x-10">
+            <button
+              onClick={handleReset}
+              className="rounded-lg bg-gray-400 px-6 py-3 text-2xl text-white"
+              style={{ fontFamily: "DungGeunMo" }}
+            >
+              Reset
+            </button>
+            <button
+              onClick={handleFinalize}
+              className="rounded-lg bg-custom-purple-color px-4 py-3 text-xl text-white"
+              style={{ fontFamily: "DungGeunMo" }}
+            >
+              선택완료
+            </button>
           </div>
           {/* 게임 영역 */}
-          <div className="mt-1 flex flex-1 flex-col items-center justify-center">
-            <div className="flex flex-col items-center justify-center">
-              {/* 설명 영역 */}
+          <div className="flex w-full flex-col items-center justify-center">
+            {/* 다섯 개의 단어 카드 영역 */}
+            <div
+              className="table-container"
+              style={{ position: "fixed", bottom: "26%" }}
+            >
               <div
-                className="mx-auto mt-5 flex flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-4 text-center"
-                style={{
-                  fontFamily: "DungGeunMo",
-                  width: "780px",
-                }}
+                className="word-card-container flex flex-row"
+                style={{ gap: "3rem" }}
               >
-                <p className="mb-2 text-xl">당신의 차례입니다.</p>
-                <p className="text-xl">
-                  {" "}
-                  다섯 개의 단어 카드를 보고 당신의 우선순위를 정해주세요{" "}
-                </p>
-              </div>
-              {/* 다섯 개의 단어 카드 영역 */}
-
-              <div className="card-container mt-8 flex flex-row space-x-8">
                 {wordCards.map((card, index) => (
                   <div
                     key={card.id}
-                    className="card border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
+                    className="word-card border-3 flex flex-col items-center justify-center rounded-xl shadow-md"
                     style={{
-                      width: "135px",
-                      height: "180px",
                       backgroundColor: card.bgColor,
                       animationDelay: `${index * 0.1}s`, // Stagger the animation
                     }}
@@ -194,36 +206,25 @@ const SecondPlayerPlay: React.FC<SecondPlayerPlayProps> = ({
                   </div>
                 ))}
               </div>
-
-              {/* 드래그 앤 드롭 영역 */}
-              <div className="mt-2 animate-fadeIn rounded-lg py-4">
-                <div className="flex justify-center space-x-11">
-                  {zones.dropZones.map((zone, index) => (
-                    <DropZone key={index} id={index} onDrop={handleDrop}>
-                      {zone.map((card) => (
-                        <Card key={card.id} id={card.id} number={card.number} />
-                      ))}
-                    </DropZone>
-                  ))}
-                </div>
-              </div>
             </div>
-            {/* 버튼 두개: 초기화 버튼, 선택완료 버튼*/}
-            <div className="mb-2 mt-10 flex animate-fadeIn space-x-10">
-              <button
-                onClick={handleReset}
-                className="rounded-lg bg-gray-400 px-6 py-3 text-2xl text-white"
-                style={{ fontFamily: "DungGeunMo" }}
+
+            {/* 드래그 앤 드롭 영역 */}
+            <div
+              className="drop-table-container animate-fadeIn rounded-lg"
+              style={{ position: "fixed", bottom: "8%" }}
+            >
+              <div
+                className="drop-card-container flex justify-center"
+                style={{ gap: "6.2rem", transform: "rotateX(60deg)" }}
               >
-                Reset
-              </button>
-              <button
-                onClick={handleFinalize}
-                className="rounded-lg bg-custom-purple-color px-4 py-3 text-xl text-white"
-                style={{ fontFamily: "DungGeunMo" }}
-              >
-                선택완료
-              </button>
+                {zones.dropZones.map((zone, index) => (
+                  <DropZone key={index} id={index} onDrop={handleDrop}>
+                    {zone.map((card) => (
+                      <Card key={card.id} id={card.id} number={card.number} />
+                    ))}
+                  </DropZone>
+                ))}
+              </div>
             </div>
           </div>
         </div>
