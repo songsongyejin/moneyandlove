@@ -40,10 +40,4 @@ public class GameHistoryController {
 		return ResponseEntity.ok(map);
 	}
 
-	@GetMapping("/{gameHistoryId}")
-	public ResponseEntity<?> readDetailGameHistory(@PathVariable Long gameHistoryId) {
-		ReadGameHistoryResponse readDetailGameHistory = gameHistoryService.readDetailGameHistory(gameHistoryId);
-		Map<String, List<ReadGameHistoryResponse>> map = new HashMap<>();
-		return ResponseEntity.ok(readDetailGameHistory);
-	}
 }
