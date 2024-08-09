@@ -68,8 +68,8 @@ public class MatchingService {
 
 		addToQueue(matchingUserRequest);
 
-		//1분동안 매칭 대기
-		long endTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1);
+		//30초동안 매칭 대기
+		long endTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
 
 		while (System.currentTimeMillis() < endTime) {
 			// 매칭 상태 확인
