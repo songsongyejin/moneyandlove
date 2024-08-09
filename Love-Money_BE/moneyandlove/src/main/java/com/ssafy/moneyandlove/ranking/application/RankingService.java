@@ -1,6 +1,12 @@
 package com.ssafy.moneyandlove.ranking.application;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +28,30 @@ public class RankingService {
 	private final RankingRepository rankingRepository;
 	private final UserRepository userRepository;
 
-	public List<RankingUserResponse> getTopRankings(int limit) {
-		return rankingRepository.findTopRankings(limit);
+	public Map<String, Object> getTopRankings(int limit, Long userId) {
+		List<RankingUserResponse> rankings = rankingRepository.findAllRankings();
+
+		AtomicLong rank = new AtomicLong(1);
+		// 순위를 계산하면서 목록을 구성
+		List<RankingUserResponse> allRankList = rankings.stream()
+				.peek(ranking -> ranking.putRankNumber(rank.getAndIncrement()))
+				.collect(Collectors.toList());
+
+		// 내 랭킹 찾기
+		Ranking myRankingInfo = rankingRepository.findByUserId(userId)
+				.orElseThrow(() -> new MoneyAndLoveException(ErrorType.RANKING_NOT_FOUND));
+
+		Optional<RankingUserResponse> myRanking = allRankList.stream()
+				.filter(ranking -> ranking.getRankingId().equals(myRankingInfo.getId()))
+				.findFirst();
+
+		List<RankingUserResponse> rankList = rankings.subList(0, Math.min(limit, rankings.size()));
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("rankList", rankList);
+		response.put("myRank", myRanking);
+
+		return response;
 	}
 
 	public RankingUserResponse getMyRanking(Long userId) {
