@@ -32,8 +32,6 @@ const GameView = ({
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>; // 모달 상태 변경 핸들러
   myUserName: String;
 }) => {
-  console.log(mainStreamManager);
-  console.log(subscriber);
   return (
     <div
       id="session"

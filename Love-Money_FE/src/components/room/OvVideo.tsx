@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { StreamManager } from "openvidu-browser";
 import * as faceapi from "face-api.js";
 import { useRecoilState } from "recoil";
@@ -12,101 +12,45 @@ const OvVideo: React.FC<OpenViduVideoComponentProps> = ({ streamManager }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
   const [warningMsg, setWarningMsg] = useRecoilState(warning);
+
   useEffect(() => {
-    if (streamManager && videoRef.current) {
-      console.log(videoRef);
-      streamManager.addVideoElement(videoRef.current);
-    }
-  }, [streamManager]);
+    const loadModels = async () => {
+      await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+      await faceapi.nets.faceExpressionNet.loadFromUri("/models");
+    };
 
-  // useEffect(() => {
-  //   const loadModels = async () => {
-  //     await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
-  //     await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
-  //     await faceapi.nets.faceRecognitionNet.loadFromUri("/models");
-  //     await faceapi.nets.faceExpressionNet.loadFromUri("/models");
-  //     console.log("Models loaded");
-  //   };
+    const analyzeExpressions = async () => {
+      if (videoRef.current) {
+        const video = videoRef.current;
+        const detection = await faceapi
+          .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+          .withFaceExpressions();
 
-  //   loadModels();
+        if (detection) {
+          const expressions = detection.expressions;
+          const maxExpressionKey = Object.keys(expressions).reduce((a, b) =>
+            expressions[a as keyof faceapi.FaceExpressions] >
+            expressions[b as keyof faceapi.FaceExpressions]
+              ? a
+              : b
+          ) as keyof faceapi.FaceExpressions;
+          setMaxExpression(maxExpressionKey);
+          setWarningMsg(""); // Clear any previous warning messages
+        } else {
+          setWarningMsg("Face or expression not detected. Please try again.");
+        }
+      }
+    };
 
-  //   if (streamManager && videoRef.current) {
-  //     streamManager.addVideoElement(videoRef.current);
-  //     videoRef.current.addEventListener("play", () => {
-  //       const video = videoRef.current!;
-  //       let noFaceDetectedTimeout: NodeJS.Timeout | null = null;
+    loadModels().then(() => {
+      if (streamManager && videoRef.current) {
+        streamManager.addVideoElement(videoRef.current);
+        const intervalId = setInterval(analyzeExpressions, 100); // Analyze expressions every second
 
-  //       const handleVideoPlay = () => {
-  //         if (video.videoWidth > 0 && video.videoHeight > 0) {
-  //           if (streamManager.stream.streamManager.accessAllowed) {
-  //             const displaySize = {
-  //               width: video.videoWidth,
-  //               height: video.videoHeight,
-  //             };
-
-  //             faceapi.matchDimensions(video, displaySize);
-
-  //             const interval = setInterval(async () => {
-  //               if (video.readyState === 4) {
-  //                 // Video is ready
-  //                 const detections = await faceapi
-  //                   .detectAllFaces(
-  //                     video,
-  //                     new faceapi.TinyFaceDetectorOptions()
-  //                   )
-  //                   .withFaceLandmarks()
-  //                   .withFaceExpressions();
-  //                 const resizedDetections = faceapi.resizeResults(
-  //                   detections,
-  //                   displaySize
-  //                 );
-
-  //                 if (resizedDetections.length === 0) {
-  //                   if (!noFaceDetectedTimeout) {
-  //                     noFaceDetectedTimeout = setTimeout(() => {
-  //                       setWarningMsg(
-  //                         "얼굴 인식이 되지 않았습니다. \n정면을 응시해주세요!!! \n표정이 인식되면 채팅장이 공개됩니다!!!"
-  //                       );
-  //                     }, 1000);
-  //                   }
-  //                 } else {
-  //                   // 얼굴이 인식되었을 때 경고 메시지 제거
-  //                   if (noFaceDetectedTimeout) {
-  //                     clearTimeout(noFaceDetectedTimeout);
-  //                     noFaceDetectedTimeout = null;
-  //                   }
-  //                   setWarningMsg("");
-
-  //                   // Find the maximum expression value
-  //                   let maxExpression = "";
-  //                   let maxValue = 0;
-  //                   resizedDetections.forEach((detection) => {
-  //                     const expressions = detection.expressions as any;
-  //                     for (let [expression, value] of Object.entries(
-  //                       expressions
-  //                     )) {
-  //                       if (typeof value === "number" && value > maxValue) {
-  //                         maxValue = value;
-  //                         maxExpression = expression;
-  //                       }
-  //                     }
-  //                   });
-  //                   setMaxExpression(maxExpression);
-  //                 }
-  //               }
-  //             }, 100);
-
-  //             return () => clearInterval(interval);
-  //           }
-  //         } else {
-  //           requestAnimationFrame(handleVideoPlay);
-  //         }
-  //       };
-
-  //       requestAnimationFrame(handleVideoPlay);
-  //     });
-  //   }
-  // }, [streamManager, setMaxExpression]);
+        return () => clearInterval(intervalId); // Cleanup interval on component unmount
+      }
+    });
+  }, [streamManager, setMaxExpression, setWarningMsg]);
 
   return (
     <div className="flex flex-col items-center justify-center">
