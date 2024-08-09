@@ -32,16 +32,16 @@ const Winner: React.FC<WinnerProps> = ({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center bg-[#F0E9F6]">
+    <div className="flex h-full animate-fadeIn flex-col items-center justify-center">
       <h1
-        className="mb-6 text-4xl font-bold"
+        className="mb-6 text-center text-6xl text-white"
         style={{ fontFamily: "DNFBitBitv2" }}
       >
         {resultMessage}
       </h1>
-      <div className="mb-6 text-2xl">
-        <p>Player 1 Score: {player1Score}</p>
-        <p>Player 2 Score: {player2Score}</p>
+      <div className="mt-10 text-4xl text-white">
+        <p className="mb-10">당신의 스코어 {player1Score} 점</p>
+        <p>상대방의 스코어 {player2Score} 점</p>
       </div>
     </div>
   );

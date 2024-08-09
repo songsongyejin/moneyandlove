@@ -124,13 +124,12 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex h-screen w-full flex-col justify-end">
-        {/* 게임 영역 */}
-        <div className="mb-8 flex flex-col items-center justify-center">
-          <div className="flex flex-col items-center justify-center">
-            {/* 설명 영역 */}
+      <div className="relative flex h-screen w-full flex-col justify-end">
+        <div className="fixed top-0 flex w-full flex-col items-center justify-center">
+          {/* 설명 영역 */}
+          <div className="mb-10 mt-10 flex flex-col items-center">
             <div
-              className="mx-auto mt-5 flex flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-4 text-center"
+              className="mx-auto flex flex-col justify-center rounded-lg border-2 border-dashed border-custom-purple-color bg-white px-10 py-4 text-center"
               style={{
                 fontFamily: "DungGeunMo",
                 width: "780px",
@@ -142,9 +141,35 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({
                 다섯 개의 단어 카드를 보고 당신의 우선순위를 정해주세요{" "}
               </p>
             </div>
+          </div>
+          {/* 버튼 두개: 초기화 버튼, 선택완료 버튼*/}
+          <div className="mb-2 mt-10 flex animate-fadeIn space-x-10">
+            <button
+              onClick={handleReset}
+              className="rounded-lg bg-gray-400 px-6 py-3 text-2xl text-white"
+              style={{ fontFamily: "DungGeunMo" }}
+            >
+              Reset
+            </button>
+            <button
+              onClick={handleFinalize}
+              className="rounded-lg bg-custom-purple-color px-4 py-3 text-xl text-white"
+              style={{ fontFamily: "DungGeunMo" }}
+            >
+              선택완료
+            </button>
+          </div>
+          {/* 게임 영역 */}
+          <div className="flex w-full flex-col items-center justify-center">
             {/* 다섯 개의 단어 카드 영역 */}
-            <div className="table-container">
-              <div className="word-card-container flex flex-row space-x-8">
+            <div
+              className="table-container"
+              style={{ position: "fixed", bottom: "26%" }}
+            >
+              <div
+                className="word-card-container flex flex-row"
+                style={{ gap: "3rem" }}
+              >
                 {wordCards.map((card, index) => (
                   <div
                     key={card.id}
@@ -184,10 +209,13 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({
             </div>
 
             {/* 드래그 앤 드롭 영역 */}
-            <div className="drop-table-container animate-fadeIn rounded-lg py-4">
+            <div
+              className="drop-table-container animate-fadeIn rounded-lg"
+              style={{ position: "fixed", bottom: "8%" }}
+            >
               <div
                 className="drop-card-container flex justify-center"
-                style={{ gap: "1rem", transform: "rotateX(55deg)" }}
+                style={{ gap: "6.2rem", transform: "rotateX(60deg)" }}
               >
                 {zones.dropZones.map((zone, index) => (
                   <DropZone key={index} id={index} onDrop={handleDrop}>
@@ -198,23 +226,6 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({
                 ))}
               </div>
             </div>
-          </div>
-          {/* 버튼 두개: 초기화 버튼, 선택완료 버튼*/}
-          <div className="mb-2 mt-10 flex animate-fadeIn space-x-10">
-            <button
-              onClick={handleReset}
-              className="rounded-lg bg-gray-400 px-6 py-3 text-2xl text-white"
-              style={{ fontFamily: "DungGeunMo" }}
-            >
-              Reset
-            </button>
-            <button
-              onClick={handleFinalize}
-              className="rounded-lg bg-custom-purple-color px-4 py-3 text-xl text-white"
-              style={{ fontFamily: "DungGeunMo" }}
-            >
-              선택완료
-            </button>
           </div>
         </div>
         {/* 게임창 밖 우선순위 정하는 카드들 영역*/}
