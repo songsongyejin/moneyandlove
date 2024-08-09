@@ -96,12 +96,14 @@ public class MatchingService {
 				//successMatch
 				MatchingUserResponse fromUser = userService.getUserDetails(matchingUserRequest.getUserId(), matchingUserRequest.getPosition(), matchingUserRequest.getMatchType());
 				MatchingUserResponse toUser = userService.getUserDetails(matchedUser.getUserId(), matchedUser.getPosition(), matchedUser.getMatchType());
+				String uuid =  UUID.randomUUID().toString();
 				response.put("status", "success");
 				response.put("fromUser", fromUser);
 				response.put("toUser", toUser);
+				response.put("sessionId", uuid);
 
 				// 매칭 상태 저장
-				saveMatchingResult(matchingUserRequest.getUserId(), matchedUser.getUserId(), fromUser, toUser);
+				saveMatchingResult(matchingUserRequest.getUserId(), matchedUser.getUserId(), fromUser, toUser, uuid);
 
 				return response;
 			}
@@ -123,14 +125,11 @@ public class MatchingService {
 		return response;
     }
 
-	private void saveMatchingResult(Long userId1, Long userId2, MatchingUserResponse fromUser, MatchingUserResponse toUser) {
+	private void saveMatchingResult(Long userId1, Long userId2, MatchingUserResponse fromUser, MatchingUserResponse toUser, String uuid) {
 		String matchKey = generateMatchKey(userId1, userId2);
 		Map<String, Object> matchInfo = new HashMap<>();
 		matchInfo.put("fromUser", fromUser);
 		matchInfo.put("toUser", toUser);
-
-		//화상 채팅이랑 세션 참가할 고유한 UUID 만들어서 줘야 함.
-		String uuid =  UUID.randomUUID().toString();
 		matchInfo.put("sessionId", uuid);
 
 		// Redis에 매칭 결과 저장 및 TTL 설정 (40초)
