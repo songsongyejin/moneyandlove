@@ -36,7 +36,7 @@ public class RankingController {
 
 	@GetMapping
 	public ResponseEntity<Map<String, Object>> getRankings(@LoginUser User loginUser) {
-		List<RankingUserResponse> rankList = rankingService.getTopRankings();
+		List<RankingUserResponse> rankList = rankingService.getTopRankings(20);
 		RankingUserResponse myRank = rankingService.getMyRanking(loginUser.getId());
 
 		Map<String, Object> response = new HashMap<>();

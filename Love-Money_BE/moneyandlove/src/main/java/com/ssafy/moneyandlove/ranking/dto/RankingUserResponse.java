@@ -6,11 +6,11 @@ import lombok.ToString;
 
 @Getter
 @ToString
-@Builder
 public class RankingUserResponse {
 	private String nickName;
 	private String montage;
 	private Long rankPoint;
+	private Long rankNumber;
 
 	// 기본 생성자
 	public RankingUserResponse() {}

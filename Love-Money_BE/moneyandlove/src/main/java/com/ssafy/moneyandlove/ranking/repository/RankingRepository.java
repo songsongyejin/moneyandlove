@@ -17,18 +17,22 @@ public interface RankingRepository extends JpaRepository<Ranking, Long> {
 
 	Optional<Ranking> findByUserId(Long userId);
 
-	@Query("SELECT new com.ssafy.moneyandlove.ranking.dto.RankingUserResponse(u.nickname, f.montageURL, r.rankPoint) " +
-		"FROM Ranking r " +
-		"JOIN r.user u " +
-		"LEFT JOIN Face f ON f.user.id = u.id " +
-		"ORDER BY r.rankPoint DESC")
-	List<RankingUserResponse> findTopRankings(Pageable pageable);
 
-	@Query("SELECT new com.ssafy.moneyandlove.ranking.dto.RankingUserResponse(u.nickname, f.montageURL, r.rankPoint) " +
-		"FROM Ranking r " +
-		"JOIN r.user u " +
-		"LEFT JOIN Face f ON f.user.id = u.id " +
-		"WHERE u.id = :userId")
-	Optional <RankingUserResponse> findMyRanking(@Param("userId") Long userId);
+	@Query(value = "SELECT u.id AS userId, u.nickname AS nickName, f.montage_url AS montage, r.rank_point AS rankPoint, " +
+			"ROW_NUMBER() OVER(ORDER BY r.rank_point DESC) AS rankNumber " +
+			"FROM ranking r " +
+			"JOIN user u ON r.user_id = u.id " +
+			"LEFT JOIN face f ON f.user_id = u.id " +
+			"ORDER BY r.rank_point DESC LIMIT :limit", nativeQuery = true)
+	List<RankingUserResponse> findTopRankings(@Param("limit") int limit);
+
+	@Query(value = "SELECT u.id AS userId, u.nickname AS nickName, f.montage_url AS montage, r.rank_point AS rankPoint, " +
+			"ROW_NUMBER() OVER(ORDER BY r.rank_point DESC) AS rankNumber " +
+			"FROM ranking r " +
+			"JOIN user u ON r.user_id = u.id " +
+			"LEFT JOIN face f ON f.user_id = u.id " +
+			"WHERE u.id = :userId", nativeQuery = true)
+	Optional<RankingUserResponse> findMyRanking(@Param("userId") Long userId);
+
 
 }
