@@ -87,13 +87,18 @@ const GameHome: React.FC = () => {
   console.log(selectedPosition);
   console.log(gameMode);
 
-  const { data: s } = useQuery({
+  const {
+    data: s,
+    error: e,
+    isLoading: l,
+  } = useQuery({
     queryKey: ["matching", token, selectedPosition, gameMode],
     queryFn: () =>
       matching(token as string, selectedPosition as string, gameMode as string),
     enabled: !!token && showMatching,
   });
   console.log(s);
+  if (l) return "";
   // 선택된 포지션에 따라 배경 클래스를 결정하는 함수
   const getBackgroundClass = () => {
     if (selectedPosition === "MONEY") return mainBgLove;
