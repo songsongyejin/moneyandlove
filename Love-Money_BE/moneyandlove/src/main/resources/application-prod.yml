@@ -19,10 +19,6 @@ spring:
   logging.level:
     org.hibernate.SQL: debug
 
-OPENVIDU:
-  URL: http://localhost:5443
-  SECRET: MY_SECRET
-
 jwt:
   secret: nienteammoneyandlovenienteammoneyandlovenienteammoneyandlovenienteammoneyandlove
 oauth2:
