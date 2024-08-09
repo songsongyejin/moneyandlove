@@ -36,7 +36,7 @@ public class SecurityConfig {
 			.headers(c -> c.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable).disable())
 			.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/health", "/user/login", "/user/sign", "/websocket/**").permitAll()
+				.requestMatchers("/health", "/api/user/login", "/api/user/sign", "/api/websocket/**").permitAll()
 				.anyRequest().authenticated() // 다른 모든 요청은 인증 요구
 			)
 			.addFilterBefore(new JwtAuthenticateFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
