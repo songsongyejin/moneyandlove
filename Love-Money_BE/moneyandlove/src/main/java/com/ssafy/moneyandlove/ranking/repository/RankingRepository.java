@@ -17,21 +17,22 @@ public interface RankingRepository extends JpaRepository<Ranking, Long> {
 
 	Optional<Ranking> findByUserId(Long userId);
 
-	@Query(value = "SELECT u.nickname AS nickName, f.montage_url AS montage, r.rank_point AS rankPoint, " +
+	@Query(value = "SELECT u.nickname AS nickName, f.montageurl AS montage, r.rank_point AS rankPoint, " +
 			"ROW_NUMBER() OVER(ORDER BY r.rank_point DESC) AS rankNumber " +
 			"FROM ranking r " +
-			"JOIN user u ON r.user_id = u.id " +
-			"LEFT JOIN face f ON f.user_id = u.id " +
+			"JOIN user u ON r.user_id = u.user_id " +
+			"LEFT JOIN face f ON f.user_id = u.user_id " +
 			"ORDER BY r.rank_point DESC LIMIT :limit", nativeQuery = true)
 	List<RankingUserResponse> findTopRankings(@Param("limit") int limit);
 
-	@Query(value = "SELECT u.nickname AS nickName, f.montage_url AS montage, r.rank_point AS rankPoint, " +
+	@Query(value = "SELECT u.nickname AS nickName, f.montageurl AS montage, r.rank_point AS rankPoint, " +
 			"ROW_NUMBER() OVER(ORDER BY r.rank_point DESC) AS rankNumber " +
 			"FROM ranking r " +
-			"JOIN user u ON r.user_id = u.id " +
-			"LEFT JOIN face f ON f.user_id = u.id " +
-			"WHERE u.id = :userId", nativeQuery = true)
+			"JOIN user u ON r.user_id = u.user_id " +
+			"LEFT JOIN face f ON f.user_id = u.user_id " +
+			"WHERE u.user_id = :userId", nativeQuery = true)
 	Optional<RankingUserResponse> findMyRanking(@Param("userId") Long userId);
+
 
 
 }
