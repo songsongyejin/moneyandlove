@@ -37,7 +37,7 @@ const GameView = ({
   return (
     <div
       id="session"
-      className={`${mode === "chat" ? "justify-end" : "justify-center"} flex h-screen p-4`}
+      className={`${mode === "chat" ? "justify-end" : "justify-center"} flex h-screen`}
     >
       {mainStreamManager && (
         <div
@@ -64,7 +64,7 @@ const GameView = ({
       )}
       <button
         onClick={() => setIsModalOpen(true)}
-        className={`${mode === "chat" ? "" : "hidden"} rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700`}
+        className={`${mode === "chat" ? "" : "hidden"} z-50 rounded text-white`}
       >
         Open Face Chat Agreement
       </button>
