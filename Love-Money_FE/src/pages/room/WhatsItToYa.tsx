@@ -19,13 +19,14 @@ import SecondTurnTempScoreBoard from "../../components/whats-it-to-ya/second-tur
 import { useWordCards } from "../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
 import CafeBackground from "../../assets/cafe-background.jpg";
 import aiBot from "../../assets/ai_bot.gif";
+import { Session } from "openvidu-browser";
 
 interface CardType {
   id: string;
   number: number;
 }
 
-const WhatsItToYa: React.FC = () => {
+const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
   // Intro 화면 표시 여부를 관리하는 state
   const [showIntro, setShowIntro] = useState(true);
   // 사용자의 플레이 순서를 관리하는 state
@@ -295,7 +296,7 @@ const WhatsItToYa: React.FC = () => {
           {showIntro ? (
             <Intro />
           ) : gamePhase === "SELECT_TURN" ? (
-            <SelectTurn onTurnSelected={handleTurnSelected} />
+            <SelectTurn onTurnSelected={handleTurnSelected} session={session} />
           ) : gamePhase === "FIRST_TURN_FIRST_PLAYER_PLAY" ? (
             <FirstTurnFirstPlayerPlay
               onFinalize={handleFirstTurnFirstPlayerFinalize}
