@@ -14,37 +14,14 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
   const [flippedCard, setFlippedCard] = useState<number | null>(null);
   // 카드가 선택되었는지 여부를 관리하는 state
   const [isCardSelected, setIsCardSelected] = useState(false);
-
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
-  const [cards, setCards] = useState<
-    { id: number; frontImage: string; backImage: string }[]
-  >([]);
-
-  useEffect(() => {
-    // 카드 배열 초기화 및 랜덤 섞기
-    const initialCards = [
-      { id: 1, frontImage: cardFirstTurn, backImage: cardBack },
-      { id: 2, frontImage: cardSecondTurn, backImage: cardBack },
-    ];
-
-    // 배열 섞기
-    initialCards.sort(() => Math.random() - 0.5);
-    setCards(initialCards);
-  }, []);
-
-  useEffect(() => {
-    // OpenVidu 세션에서 signal을 수신했을 때 실행되는 코드
-    session.on("signal:cardSelected", (event: any) => {
-      const { cardIndex } = JSON.parse(event.data);
-      console.log(`수신한 카드번호: ${cardIndex}`); // 수신된 카드 번호 확인
-      setSelectedCards((prev) => [...prev, cardIndex]); // 선택된 카드 인덱스 추가
-    });
-  }, [session]);
+  const [mySelectedCard, setMySelectedCard] = useState<number | null>(null);
 
   // 카드 클릭 핸들러
   // 사용자가 선, 후 카드 선택했을 때
   const handleCardClick = (cardIndex: number) => {
     if (!isCardSelected) {
+      setMySelectedCard(cardIndex);
       setFlippedCard(cardIndex); // 카드가 뒤집어지도록 함
       setIsCardSelected(true); // 카드선택완료상태로 변경
       // 카드 선택번호가 1이면 선, 2이면 후인거임
@@ -63,21 +40,32 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
         .catch((error) => {
           console.error(`카드 선택 신호 전송 실패: ${error.message}`); // 신호 전송 실패 시 오류 확인
         });
-      // 내가 선택한 카드도 selectedCards에 추가
       setSelectedCards((prev) => [...prev, cardIndex]);
     }
   };
 
-  // 양쪽 모두 카드를 선택했는지 확인하여 3초 후에 페이지 전환
   useEffect(() => {
-    if (selectedCards.length >= 2 && flippedCard !== null) {
+    session.on("signal:cardSelected", (event: any) => {
+      const { cardIndex } = JSON.parse(event.data);
+      console.log(`수신한 카드번호: ${cardIndex}`);
+      setSelectedCards((prev) => [...prev, cardIndex]);
+    });
+  }, [session]);
+
+  useEffect(() => {
+    console.log(`현재 선택된 카드들: ${selectedCards}`);
+    const uniqueCards = new Set(selectedCards);
+
+    if (uniqueCards.size === 2 && mySelectedCard !== null) {
+      console.log("모든 플레이어가 선택 완료, 다음 페이지로 넘어갑니다.");
       const timer = setTimeout(() => {
-        onTurnSelected(flippedCard);
+        setFlippedCard(mySelectedCard);
+        onTurnSelected(mySelectedCard);
       }, 3000);
 
-      return () => clearTimeout(timer); // 타이머 정리
+      return () => clearTimeout(timer);
     }
-  }, [selectedCards, flippedCard, onTurnSelected]);
+  }, [selectedCards, mySelectedCard, onTurnSelected]);
 
   return (
     <div className="relative flex h-screen flex-col items-center">
@@ -130,51 +118,17 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
         }}
       >
         <div className="flip-card-container flex animate-fadeIn flex-row space-x-20">
-          {cards.map((card) => (
-            <div
-              key={card.id}
-              className={`flip-card cursor-pointer ${
-                flippedCard === card.id ? "flipped" : ""
-              }`}
-              onClick={() => handleCardClick(card.id)}
-              style={{
-                pointerEvents:
-                  selectedCards.includes(card.id) && flippedCard !== card.id
-                    ? "none"
-                    : "auto", // 내가 선택하지 않은 카드는 선택 불가
-                opacity:
-                  selectedCards.includes(card.id) && flippedCard !== card.id
-                    ? 0.5
-                    : 1, // 내가 선택하지 않은 카드는 투명도 조정
-              }}
-            >
-              <div className="flip-card-inner hover:scale-105">
-                <div className="flip-card-front">
-                  <img
-                    src={card.backImage}
-                    alt={`카드 ${card.id} 뒷면`}
-                    className="h-[228px] w-[165px] object-contain"
-                  />
-                </div>
-                <div className="flip-card-back">
-                  <img
-                    src={card.frontImage}
-                    alt={`카드 ${card.id} 앞면`}
-                    className="h-[228px] w-[165px] rounded-lg object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
           {/* 첫 번째 카드 */}
-          {/* <div
+          <div
             className={`flip-card cursor-pointer ${
-              selectedCards.includes(1) ? "selected" : ""
-            } ${flippedCard === 1 ? "flipped" : ""}`}
+              flippedCard === 1 ? "flipped" : ""
+            }`}
             onClick={() => handleCardClick(1)}
             style={{
-              pointerEvents: selectedCards.includes(1) ? "none" : "auto",
-              opacity: selectedCards.includes(1) ? 0.5 : 1,
+              pointerEvents:
+                selectedCards.includes(1) && mySelectedCard !== 1
+                  ? "none"
+                  : "auto",
             }}
           >
             <div className="flip-card-inner hover:scale-105">
@@ -193,16 +147,18 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
                 />
               </div>
             </div>
-          </div> */}
+          </div>
           {/* 두 번째 카드 */}
-          {/* <div
+          <div
             className={`flip-card cursor-pointer ${
               selectedCards.includes(2) ? "selected" : ""
             } ${flippedCard === 2 ? "flipped" : ""}`}
             onClick={() => handleCardClick(2)}
             style={{
-              pointerEvents: selectedCards.includes(2) ? "none" : "auto",
-              opacity: selectedCards.includes(2) ? 0.5 : 1,
+              pointerEvents:
+                selectedCards.includes(2) && mySelectedCard !== 2
+                  ? "none"
+                  : "auto",
             }}
           >
             <div className="flip-card-inner hover:scale-105">
@@ -221,7 +177,7 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
                 />
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
