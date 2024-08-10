@@ -16,11 +16,27 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
   const [isCardSelected, setIsCardSelected] = useState(false);
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [mySelectedCard, setMySelectedCard] = useState<number | null>(null);
+  const [shuffledCards, setShuffledCards] = useState<number[]>([]);
+
+  // 카드를 랜덤하게 섞는 함수
+  const shuffleCards = () => {
+    const cards = [1, 2];
+    for (let i = cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cards[i], cards[j]] = [cards[j], cards[i]];
+    }
+    return cards;
+  };
+
+  // 컴포넌트가 처음 렌더링될 때 카드를 섞음
+  useEffect(() => {
+    setShuffledCards(shuffleCards());
+  }, []);
 
   // 카드 클릭 핸들러
   // 사용자가 선, 후 카드 선택했을 때
   const handleCardClick = (cardIndex: number) => {
-    if (!isCardSelected) {
+    if (!isCardSelected && !selectedCards.includes(cardIndex)) {
       setMySelectedCard(cardIndex);
       setFlippedCard(cardIndex); // 카드가 뒤집어지도록 함
       setIsCardSelected(true); // 카드선택완료상태로 변경
@@ -118,8 +134,44 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
         }}
       >
         <div className="flip-card-container flex animate-fadeIn flex-row space-x-20">
+          {shuffledCards.map((card, index) => (
+            <div
+              key={card}
+              className={`flip-card cursor-pointer ${
+                flippedCard === card ? "flipped" : ""
+              }`}
+              onClick={() => handleCardClick(card)}
+              style={{
+                pointerEvents:
+                  selectedCards.includes(card) && mySelectedCard !== card
+                    ? "none"
+                    : "auto",
+                opacity:
+                  selectedCards.includes(card) && mySelectedCard !== card
+                    ? 0.5
+                    : 1, // 투명도 설정
+              }}
+            >
+              <div className="flip-card-inner hover:scale-105">
+                <div className="flip-card-front">
+                  <img
+                    src={cardBack}
+                    alt={`카드 ${index + 1} 뒷면`}
+                    className="h-[228px] w-[165px] object-contain"
+                  />
+                </div>
+                <div className="flip-card-back">
+                  <img
+                    src={card === 1 ? cardFirstTurn : cardSecondTurn}
+                    alt={`카드 ${index + 1} 앞면`}
+                    className="h-[228px] w-[165px] rounded-lg object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
           {/* 첫 번째 카드 */}
-          <div
+          {/* <div
             className={`flip-card cursor-pointer ${
               flippedCard === 1 ? "flipped" : ""
             }`}
@@ -129,6 +181,8 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
                 selectedCards.includes(1) && mySelectedCard !== 1
                   ? "none"
                   : "auto",
+              opacity:
+                selectedCards.includes(1) && mySelectedCard !== 1 ? 0.5 : 1, // 투명도 설정
             }}
           >
             <div className="flip-card-inner hover:scale-105">
@@ -147,9 +201,9 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
           {/* 두 번째 카드 */}
-          <div
+          {/* <div
             className={`flip-card cursor-pointer ${
               selectedCards.includes(2) ? "selected" : ""
             } ${flippedCard === 2 ? "flipped" : ""}`}
@@ -159,6 +213,8 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
                 selectedCards.includes(2) && mySelectedCard !== 2
                   ? "none"
                   : "auto",
+              opacity:
+                selectedCards.includes(2) && mySelectedCard !== 2 ? 0.5 : 1, // 투명도 설정
             }}
           >
             <div className="flip-card-inner hover:scale-105">
@@ -177,7 +233,7 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
