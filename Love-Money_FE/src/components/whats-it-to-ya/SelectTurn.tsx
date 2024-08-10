@@ -118,8 +118,14 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
         <div className="flip-card-container flex animate-fadeIn flex-row space-x-20">
           {/* 첫 번째 카드 */}
           <div
-            className={`flip-card cursor-pointer ${flippedCard === 1 || selectedCards.includes(1) ? "flipped" : ""}`}
+            className={`flip-card cursor-pointer ${
+              selectedCards.includes(1) ? "selected" : ""
+            } ${flippedCard === 1 ? "flipped" : ""}`}
             onClick={() => handleCardClick(1)}
+            style={{
+              pointerEvents: selectedCards.includes(1) ? "none" : "auto",
+              opacity: selectedCards.includes(1) ? 0.5 : 1,
+            }}
           >
             <div className="flip-card-inner hover:scale-105">
               <div className="flip-card-front">
@@ -140,8 +146,14 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
           </div>
           {/* 두 번째 카드 */}
           <div
-            className={`flip-card cursor-pointer ${flippedCard === 2 || selectedCards.includes(2) ? "flipped" : ""}`}
+            className={`flip-card cursor-pointer ${
+              selectedCards.includes(2) ? "selected" : ""
+            } ${flippedCard === 2 ? "flipped" : ""}`}
             onClick={() => handleCardClick(2)}
+            style={{
+              pointerEvents: selectedCards.includes(2) ? "none" : "auto",
+              opacity: selectedCards.includes(2) ? 0.5 : 1,
+            }}
           >
             <div className="flip-card-inner hover:scale-105">
               <div className="flip-card-front">
