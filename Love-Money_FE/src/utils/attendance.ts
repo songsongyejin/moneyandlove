@@ -29,7 +29,7 @@ export const fetchAttendance = async (
 export const markAttendance = async (token: string): Promise<void> => {
   try {
     await axios.post(
-      "http://i11a405.p.ssafy.io:8080/attendance",
+      `${APPLICATION_SERVER_URL}attendance`,
       {},
       {
         headers: {
