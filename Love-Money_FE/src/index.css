@@ -371,6 +371,7 @@ table {
   /* width: 1200px; */
   /* 컨테이너의 회전 */
   /* transform: rotateX(50deg); */
+  perspective: 1000px;
   transform-style: preserve-3d;
   transition: transform 0.3s ease-in-out;
 }
