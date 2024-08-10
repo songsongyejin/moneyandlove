@@ -45,6 +45,31 @@ export const markAttendance = async (token: string): Promise<void> => {
   }
 };
 
+// 포인트 업데이트 API
+export const updateUserPoints = async (
+  token: string,
+  points: number
+): Promise<void> => {
+  try {
+    await axios.put(
+      `${APPLICATION_SERVER_URL}user/points`,
+      {
+        gamePoint: points,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("포인트 업데이트 성공");
+  } catch (error) {
+    console.error("포인트 업데이트 실패:", error);
+    throw error; // 필요에 따라 에러를 다시 던질 수 있습니다.
+  }
+};
+
 // AttendanceDay 인터페이스를 정의합니다.
 export interface AttendanceDay {
   attendanceDate: string;
