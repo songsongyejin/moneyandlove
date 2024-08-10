@@ -310,97 +310,84 @@ const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      {/* // 배경 이미지와 레이아웃을 설정하는 컨테이너 */}
-      <div
-        className="absolute inset-0 bg-cover"
-        style={{
-          backgroundImage: `url(${CafeBackground})`,
-          backgroundPosition: "center bottom",
-        }}
-      >
-        <div className="absolute inset-0"></div>
-        {/* 게임 컴포넌트를 중앙에 배치하는 컨테이너 */}
-        <div className="pt-30 fixed inset-0 z-50 flex items-center justify-center">
-          {/* 조건부 렌더링: 인트로 화면, 턴 선택 화면 또는 (사용자의 플레이 순서에 따른) 플레이 화면 */}
-          {showIntro ? (
-            <Intro />
-          ) : gamePhase === "SELECT_TURN" ? (
-            <SelectTurn onTurnSelected={handleTurnSelected} session={session} />
-          ) : gamePhase === "FIRST_TURN_FIRST_PLAYER_PLAY" ? (
-            <FirstTurnFirstPlayerPlay
-              onFinalize={handleFirstTurnFirstPlayerFinalize}
-              wordCards={wordCards}
-            />
-          ) : gamePhase === "FIRST_TURN_FIRST_PLAYER_WAIT" ? (
-            <FirstTurnFirstPlayerWait
-              dropZones={player1DropZones}
-              wordCards={wordCards}
-            />
-          ) : gamePhase === "FIRST_TURN_SCORE" ? (
-            <FirstTurnScoreBoard
-              player1DropZones={player1DropZones}
-              player2GuessZones={mockPlayer2GuessZones}
-              onScoreCalculated={handlePlayer2ScoreCalculated} // 콜백 함수 전달
-              onNextPhase={handlePlayer1NextTurn} // 다음 단계로 넘어가기 위한 콜백 전달
-              wordCards={wordCards}
-            />
-          ) : gamePhase === "SECOND_TURN_FIRST_PLAYER_WAIT" ? (
-            <SecondTurnFirstPlayerWait wordCards={wordCards} />
-          ) : gamePhase === "SECOND_TURN_FIRST_PLAYER_PLAY" ? (
-            <SecondTurnFirstPlayerPlay
-              onFinalize={handleSecondTurnFirstPlayerFinalize}
-              wordCards={wordCards}
-            />
-          ) : gamePhase === "SECOND_TURN_SCORE" ? (
-            <SecondTurnScoreBoard
-              player1GuessZones={player1GuessZones}
-              player2DropZones={mockPlayer2DropZones}
-              onScoreCalculated={handlePlayer1ScoreCalculated} // 콜백 함수 전달
-              onNextPhase={handleWinnerPhase}
-              wordCards={wordCards}
-            />
-          ) : gamePhase === "FIRST_TURN_SECOND_PLAYER_WAIT" ? (
-            <FirstTurnSecondPlayerWait wordCards={wordCards} />
-          ) : gamePhase === "FIRST_TURN_SECOND_PLAYER_PLAY" ? (
-            <FirstTurnSecondPlayerPlay
-              onFinalize={handleFirstTurnSecondPlayerFinalize}
-              wordCards={wordCards}
-            />
-          ) : gamePhase === "FIRST_TURN_TEMPSCORE" ? (
-            <FirstTurnTempScoreBoard
-              player1DropZones={player1DropZones}
-              player2GuessZones={player2GuessZones}
-              onScoreCalculated={handlePlayer2ScoreCalculated} // 콜백 함수 전달
-              onNextPhase={handlePlayer2NextTurn} // 다음 단계로 넘어가기 위한 콜백 전달
-              wordCards={wordCards}
-            />
-          ) : gamePhase === "SECOND_TURN_SECOND_PLAYER_PLAY" ? (
-            <SecondTurnSecondPlayerPlay
-              onFinalize={handleSecondTurnSecondPlayerFinalize}
-              wordCards={wordCards}
-            />
-          ) : gamePhase === "SECOND_TURN_SECOND_PLAYER_WAIT" ? (
-            <SecondTurnSecondPlayerWait
-              dropZones={player2DropZones}
-              wordCards={wordCards}
-            />
-          ) : gamePhase === "SECOND_TURN_TEMPSCORE" ? (
-            <SecondTurnTempScoreBoard
-              player1GuessZones={mockPlayer1GuessZones}
-              player2DropZones={player2DropZones}
-              onScoreCalculated={handlePlayer1ScoreCalculated} // 콜백 함수 전달
-              onNextPhase={handleWinnerPhase}
-              wordCards={wordCards}
-            />
-          ) : gamePhase === "WINNER" ? (
-            <Winner
-              player1Score={player1Score}
-              player2Score={player2Score}
-              userRole={selectedTurn === 1 ? "Player 1" : "Player 2"}
-            />
-          ) : null}
-        </div>
-      </div>
+      {/* 조건부 렌더링: 인트로 화면, 턴 선택 화면 또는 (사용자의 플레이 순서에 따른) 플레이 화면 */}
+      {showIntro ? (
+        <Intro />
+      ) : gamePhase === "SELECT_TURN" ? (
+        <SelectTurn onTurnSelected={handleTurnSelected} session={session} />
+      ) : gamePhase === "FIRST_TURN_FIRST_PLAYER_PLAY" ? (
+        <FirstTurnFirstPlayerPlay
+          onFinalize={handleFirstTurnFirstPlayerFinalize}
+          wordCards={wordCards}
+        />
+      ) : gamePhase === "FIRST_TURN_FIRST_PLAYER_WAIT" ? (
+        <FirstTurnFirstPlayerWait
+          dropZones={player1DropZones}
+          wordCards={wordCards}
+        />
+      ) : gamePhase === "FIRST_TURN_SCORE" ? (
+        <FirstTurnScoreBoard
+          player1DropZones={player1DropZones}
+          player2GuessZones={mockPlayer2GuessZones}
+          onScoreCalculated={handlePlayer2ScoreCalculated} // 콜백 함수 전달
+          onNextPhase={handlePlayer1NextTurn} // 다음 단계로 넘어가기 위한 콜백 전달
+          wordCards={wordCards}
+        />
+      ) : gamePhase === "SECOND_TURN_FIRST_PLAYER_WAIT" ? (
+        <SecondTurnFirstPlayerWait wordCards={wordCards} />
+      ) : gamePhase === "SECOND_TURN_FIRST_PLAYER_PLAY" ? (
+        <SecondTurnFirstPlayerPlay
+          onFinalize={handleSecondTurnFirstPlayerFinalize}
+          wordCards={wordCards}
+        />
+      ) : gamePhase === "SECOND_TURN_SCORE" ? (
+        <SecondTurnScoreBoard
+          player1GuessZones={player1GuessZones}
+          player2DropZones={mockPlayer2DropZones}
+          onScoreCalculated={handlePlayer1ScoreCalculated} // 콜백 함수 전달
+          onNextPhase={handleWinnerPhase}
+          wordCards={wordCards}
+        />
+      ) : gamePhase === "FIRST_TURN_SECOND_PLAYER_WAIT" ? (
+        <FirstTurnSecondPlayerWait wordCards={wordCards} />
+      ) : gamePhase === "FIRST_TURN_SECOND_PLAYER_PLAY" ? (
+        <FirstTurnSecondPlayerPlay
+          onFinalize={handleFirstTurnSecondPlayerFinalize}
+          wordCards={wordCards}
+        />
+      ) : gamePhase === "FIRST_TURN_TEMPSCORE" ? (
+        <FirstTurnTempScoreBoard
+          player1DropZones={player1DropZones}
+          player2GuessZones={player2GuessZones}
+          onScoreCalculated={handlePlayer2ScoreCalculated} // 콜백 함수 전달
+          onNextPhase={handlePlayer2NextTurn} // 다음 단계로 넘어가기 위한 콜백 전달
+          wordCards={wordCards}
+        />
+      ) : gamePhase === "SECOND_TURN_SECOND_PLAYER_PLAY" ? (
+        <SecondTurnSecondPlayerPlay
+          onFinalize={handleSecondTurnSecondPlayerFinalize}
+          wordCards={wordCards}
+        />
+      ) : gamePhase === "SECOND_TURN_SECOND_PLAYER_WAIT" ? (
+        <SecondTurnSecondPlayerWait
+          dropZones={player2DropZones}
+          wordCards={wordCards}
+        />
+      ) : gamePhase === "SECOND_TURN_TEMPSCORE" ? (
+        <SecondTurnTempScoreBoard
+          player1GuessZones={mockPlayer1GuessZones}
+          player2DropZones={player2DropZones}
+          onScoreCalculated={handlePlayer1ScoreCalculated} // 콜백 함수 전달
+          onNextPhase={handleWinnerPhase}
+          wordCards={wordCards}
+        />
+      ) : gamePhase === "WINNER" ? (
+        <Winner
+          player1Score={player1Score}
+          player2Score={player2Score}
+          userRole={selectedTurn === 1 ? "Player 1" : "Player 2"}
+        />
+      ) : null}
     </DndProvider>
   );
 };
