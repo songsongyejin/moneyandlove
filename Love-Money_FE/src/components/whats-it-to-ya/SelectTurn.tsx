@@ -14,22 +14,14 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
   const [flippedCard, setFlippedCard] = useState<number | null>(null);
   // 카드가 선택되었는지 여부를 관리하는 state
   const [isCardSelected, setIsCardSelected] = useState(false);
-
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
-
-  useEffect(() => {
-    // OpenVidu 세션에서 signal을 수신했을 때 실행되는 코드
-    session.on("signal:cardSelected", (event: any) => {
-      const { cardIndex } = JSON.parse(event.data);
-      console.log(`수신한 카드번호: ${cardIndex}`); // 수신된 카드 번호 확인
-      setSelectedCards((prev) => [...prev, cardIndex]); // 선택된 카드 인덱스 추가
-    });
-  }, [session]);
+  const [mySelectedCard, setMySelectedCard] = useState<number | null>(null);
 
   // 카드 클릭 핸들러
   // 사용자가 선, 후 카드 선택했을 때
   const handleCardClick = (cardIndex: number) => {
     if (!isCardSelected) {
+      setMySelectedCard(cardIndex);
       setFlippedCard(cardIndex); // 카드가 뒤집어지도록 함
       setIsCardSelected(true); // 카드선택완료상태로 변경
       // 카드 선택번호가 1이면 선, 2이면 후인거임
@@ -48,22 +40,32 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
         .catch((error) => {
           console.error(`카드 선택 신호 전송 실패: ${error.message}`); // 신호 전송 실패 시 오류 확인
         });
+      setSelectedCards((prev) => [...prev, cardIndex]);
     }
   };
 
-  // 카드 선택 후 4초 뒤에 onTurnSelected 함수를 호출해서, 다음 페이지로 이동하게끔 함
   useEffect(() => {
-    if (isCardSelected && flippedCard !== null) {
+    session.on("signal:cardSelected", (event: any) => {
+      const { cardIndex } = JSON.parse(event.data);
+      console.log(`수신한 카드번호: ${cardIndex}`);
+      setSelectedCards((prev) => [...prev, cardIndex]);
+    });
+  }, [session]);
+
+  useEffect(() => {
+    console.log(`현재 선택된 카드들: ${selectedCards}`);
+    const uniqueCards = new Set(selectedCards);
+
+    if (uniqueCards.size === 2 && mySelectedCard !== null) {
+      console.log("모든 플레이어가 선택 완료, 다음 페이지로 넘어갑니다.");
       const timer = setTimeout(() => {
-        onTurnSelected(flippedCard);
-      }, 4000);
+        setFlippedCard(mySelectedCard);
+        onTurnSelected(mySelectedCard);
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
-  }, [isCardSelected, onTurnSelected, flippedCard]);
-  // useEffect 훅의 두 번째 매개변수로 전달된 배열은 의존성 배열
-  // 이 배열에 포함된 값이 변경될 때마다 useEffect가 다시 실행됨
-  // isCardSelected, onTurnSelected, flippedCard의 변경을 감지하여 해당 로직이 필요할 때만 실행되도록 함
+  }, [selectedCards, mySelectedCard, onTurnSelected]);
 
   return (
     <div className="relative flex h-screen flex-col items-center">
@@ -119,12 +121,14 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
           {/* 첫 번째 카드 */}
           <div
             className={`flip-card cursor-pointer ${
-              selectedCards.includes(1) ? "selected" : ""
-            } ${flippedCard === 1 ? "flipped" : ""}`}
+              flippedCard === 1 ? "flipped" : ""
+            }`}
             onClick={() => handleCardClick(1)}
             style={{
-              pointerEvents: selectedCards.includes(1) ? "none" : "auto",
-              opacity: selectedCards.includes(1) ? 0.5 : 1,
+              pointerEvents:
+                selectedCards.includes(1) && mySelectedCard !== 1
+                  ? "none"
+                  : "auto",
             }}
           >
             <div className="flip-card-inner hover:scale-105">
@@ -151,8 +155,10 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
             } ${flippedCard === 2 ? "flipped" : ""}`}
             onClick={() => handleCardClick(2)}
             style={{
-              pointerEvents: selectedCards.includes(2) ? "none" : "auto",
-              opacity: selectedCards.includes(2) ? 0.5 : 1,
+              pointerEvents:
+                selectedCards.includes(2) && mySelectedCard !== 2
+                  ? "none"
+                  : "auto",
             }}
           >
             <div className="flip-card-inner hover:scale-105">
