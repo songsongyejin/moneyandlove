@@ -16,6 +16,21 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
   const [isCardSelected, setIsCardSelected] = useState(false);
 
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
+  const [cards, setCards] = useState<
+    { id: number; frontImage: string; backImage: string }[]
+  >([]);
+
+  useEffect(() => {
+    // 카드 배열 초기화 및 랜덤 섞기
+    const initialCards = [
+      { id: 1, frontImage: cardFirstTurn, backImage: cardBack },
+      { id: 2, frontImage: cardSecondTurn, backImage: cardBack },
+    ];
+
+    // 배열 섞기
+    initialCards.sort(() => Math.random() - 0.5);
+    setCards(initialCards);
+  }, []);
 
   useEffect(() => {
     // OpenVidu 세션에서 signal을 수신했을 때 실행되는 코드
@@ -48,22 +63,20 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
         .catch((error) => {
           console.error(`카드 선택 신호 전송 실패: ${error.message}`); // 신호 전송 실패 시 오류 확인
         });
+      // 내가 선택한 카드도 selectedCards에 추가
+      setSelectedCards((prev) => [...prev, cardIndex]);
     }
   };
 
   // 카드 선택 후 4초 뒤에 onTurnSelected 함수를 호출해서, 다음 페이지로 이동하게끔 함
   useEffect(() => {
-    if (isCardSelected && flippedCard !== null) {
-      const timer = setTimeout(() => {
-        onTurnSelected(flippedCard);
-      }, 4000);
-
-      return () => clearTimeout(timer);
+    if (isCardSelected && selectedCards.length >= 2 && flippedCard !== null) {
+      // 두 사람이 모두 카드를 선택했을 때 넘어가기
+      onTurnSelected(flippedCard);
     }
-  }, [isCardSelected, onTurnSelected, flippedCard]);
+  }, [isCardSelected, onTurnSelected, flippedCard, selectedCards]);
   // useEffect 훅의 두 번째 매개변수로 전달된 배열은 의존성 배열
   // 이 배열에 포함된 값이 변경될 때마다 useEffect가 다시 실행됨
-  // isCardSelected, onTurnSelected, flippedCard의 변경을 감지하여 해당 로직이 필요할 때만 실행되도록 함
 
   return (
     <div className="relative flex h-screen flex-col items-center">
@@ -116,8 +129,44 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
         }}
       >
         <div className="flip-card-container flex animate-fadeIn flex-row space-x-20">
+          {cards.map((card) => (
+            <div
+              key={card.id}
+              className={`flip-card cursor-pointer ${
+                flippedCard === card.id ? "flipped" : ""
+              }`}
+              onClick={() => handleCardClick(card.id)}
+              style={{
+                pointerEvents:
+                  selectedCards.includes(card.id) && flippedCard !== card.id
+                    ? "none"
+                    : "auto", // 내가 선택하지 않은 카드는 선택 불가
+                opacity:
+                  selectedCards.includes(card.id) && flippedCard !== card.id
+                    ? 0.5
+                    : 1, // 내가 선택하지 않은 카드는 투명도 조정
+              }}
+            >
+              <div className="flip-card-inner hover:scale-105">
+                <div className="flip-card-front">
+                  <img
+                    src={card.backImage}
+                    alt={`카드 ${card.id} 뒷면`}
+                    className="h-[228px] w-[165px] object-contain"
+                  />
+                </div>
+                <div className="flip-card-back">
+                  <img
+                    src={card.frontImage}
+                    alt={`카드 ${card.id} 앞면`}
+                    className="h-[228px] w-[165px] rounded-lg object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
           {/* 첫 번째 카드 */}
-          <div
+          {/* <div
             className={`flip-card cursor-pointer ${
               selectedCards.includes(1) ? "selected" : ""
             } ${flippedCard === 1 ? "flipped" : ""}`}
@@ -143,9 +192,9 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
           {/* 두 번째 카드 */}
-          <div
+          {/* <div
             className={`flip-card cursor-pointer ${
               selectedCards.includes(2) ? "selected" : ""
             } ${flippedCard === 2 ? "flipped" : ""}`}
@@ -171,7 +220,7 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
