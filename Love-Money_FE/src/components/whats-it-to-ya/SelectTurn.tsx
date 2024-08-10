@@ -68,15 +68,16 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
     }
   };
 
-  // 카드 선택 후 4초 뒤에 onTurnSelected 함수를 호출해서, 다음 페이지로 이동하게끔 함
+  // 양쪽 모두 카드를 선택했는지 확인하여 3초 후에 페이지 전환
   useEffect(() => {
-    if (isCardSelected && selectedCards.length >= 2 && flippedCard !== null) {
-      // 두 사람이 모두 카드를 선택했을 때 넘어가기
-      onTurnSelected(flippedCard);
+    if (selectedCards.length >= 2 && flippedCard !== null) {
+      const timer = setTimeout(() => {
+        onTurnSelected(flippedCard);
+      }, 3000);
+
+      return () => clearTimeout(timer); // 타이머 정리
     }
-  }, [isCardSelected, onTurnSelected, flippedCard, selectedCards]);
-  // useEffect 훅의 두 번째 매개변수로 전달된 배열은 의존성 배열
-  // 이 배열에 포함된 값이 변경될 때마다 useEffect가 다시 실행됨
+  }, [selectedCards, flippedCard, onTurnSelected]);
 
   return (
     <div className="relative flex h-screen flex-col items-center">
