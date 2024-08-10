@@ -1,4 +1,5 @@
 import axios from "axios";
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 // 출석 조회 API
 export const fetchAttendance = async (
@@ -6,7 +7,7 @@ export const fetchAttendance = async (
 ): Promise<AttendanceDay[]> => {
   try {
     const response = await axios.get<AttendanceDay[]>(
-      "http://i11a405.p.ssafy.io:8080/attendance",
+      `${APPLICATION_SERVER_URL}attendance`,
       {
         headers: {
           "Content-Type": "application/json",
