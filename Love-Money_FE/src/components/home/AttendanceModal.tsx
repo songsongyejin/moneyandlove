@@ -60,7 +60,7 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
       if (user) {
         const updatedUser: UserInfo = {
           ...user,
-          points: user.points + 100,
+          gamePoint: user.gamePoint + 100,
         };
         setUser(updatedUser);
       }
