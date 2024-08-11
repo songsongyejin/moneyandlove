@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import BaseModal from "./BaseModal";
 import RankingItem from "./RankingItem";
+import { useQuery } from "@tanstack/react-query";
+import { fetchRanking } from "../../utils/rankingAPI";
+import { useRecoilValue } from "recoil";
+import { userToken } from "../../atom/store";
 
 interface RankingModalProps {
   isOpen: boolean;
@@ -38,10 +42,17 @@ const myRank: RankItem = {
 const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
   const [rankings, setRankings] = useState<RankItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const token = useRecoilValue(userToken);
 
   // 모달이 열릴 때 랭킹 데이터를 로드
   useEffect(() => {
     if (isOpen) {
+      const { data: s } = useQuery({
+        queryKey: ["ranking", token],
+        queryFn: () => fetchRanking(token as string),
+        enabled: !!token,
+      });
+      console.log(s);
       setRankings(mockRankings);
       setIsLoading(false);
     }
