@@ -249,6 +249,7 @@ table {
   /* 카드를 비스듬하게 배치 */
   transform: rotateX(60deg);
   transition: transform 0.3s ease-in-out;
+  border-radius: 15px; /* 카드 모서리를 둥글게 */
   /* display: inline-block; */
 }
 
@@ -261,6 +262,15 @@ table {
     transform 0.9s,
     box-shadow 0.6s;
   transform-style: preserve-3d;
+  backface-visibility: hidden;
+  box-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.6),
+    1.5px 1.5px 3px rgba(0, 0, 0, 0.5),
+    2px 2px 5px rgba(0, 0, 0, 0.4),
+    2.5px 2.5px 7px rgba(0, 0, 0, 0.3),
+    3px 3px 9px rgba(0, 0, 0, 0.2),
+    3.5px 3.5px 11px rgba(0, 0, 0, 0.1);
+  border-radius: 15px; /* 카드 내부 요소도 둥글게 */
 }
 
 .flip-card.flipped .flip-card-inner {
@@ -272,12 +282,12 @@ table {
   position: absolute;
   width: 100%;
   height: 100%;
-  -webkit-backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; /* Safari */
   backface-visibility: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: transrent;
+  background-color: transparent;
 }
 
 .flip-card-back {
@@ -290,9 +300,11 @@ table {
   object-fit: cover;
 }
 
-.flip-card:hover {
-  /* 카드가 약간 올라가게 */
-  transform: rotateX(-10deg) scale(1.1) translateY(-38px);
+/* hover 효과가 flipped 클래스가 없는 경우에만 적용되도록 */
+.flip-card:not(.flipped):hover,
+.flip-card.flipped {
+  /* 카드가 정면을 향하게 */
+  transform: rotateX(0deg) scale(1) translateY(-38px);
 }
 
 /* 5개의 단어카드 css */
@@ -308,7 +320,7 @@ table {
   /* width: 1000px; */
   justify-content: space-between;
   /* 컨테이너의 회전 */
-  transform: rotateX(60deg);
+  transform: rotateX(65deg);
   transform-style: preserve-3d;
   transition: transform 0.3s ease-in-out;
 }
@@ -327,7 +339,7 @@ table {
 
 .word-card:hover {
   /* 카드가 약간 올라가게 */
-  transform: rotateX(-60deg) scale(1.1) translateY(-38px);
+  transform: rotateX(-65deg) scale(1.1) translateY(-38px);
   /* 호버 시 그림자 강화 */
   box-shadow:
     0 25px 35px rgba(0, 0, 0, 0.5),
@@ -335,10 +347,14 @@ table {
     0 15px 20px rgba(0, 0, 0, 0.3);
 }
 
+/* 드래그 하기 전 우선순위 하트카드 */
 .initial-card {
   transform-style: preserve-3d;
   transform: rotateY(25deg) rotateX(60deg);
   transition: transform 0.3s ease-in-out;
+}
+.initial-card:hover {
+  transform: rotateX(0deg) rotateY(0deg) scale(1.1) translateY(-10px);
 }
 
 /* 5개의 우선순위하트카드 css */
@@ -371,7 +387,7 @@ table {
 }
 
 .drop-card:hover {
-  transform: rotateX(-55deg) scale(1.1) translateY(-20px);
+  transform: rotateX(-60deg) scale(1.1) translateY(-20px);
   box-shadow:
     0 20px 30px rgba(0, 0, 0, 0.4),
     0 15px 20px rgba(0, 0, 0, 0.2);
@@ -382,4 +398,14 @@ table {
   box-shadow:
     0 20px 30px rgba(0, 0, 0, 0.4),
     0 15px 20px rgba(0, 0, 0, 0.2);
+}
+
+.drop-zone-drop-card {
+  transform-style: preserve-3d;
+  transition: all 0.3s ease-in-out;
+}
+
+.drop-zone-drop-card:hover {
+  transform: rotateX(0deg) scale(1.1) translateY(-20px);
+  transition: transform 0.3s ease-in-out;
 }

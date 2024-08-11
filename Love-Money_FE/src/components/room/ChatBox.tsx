@@ -142,7 +142,6 @@ const ChatBox = ({
       <div className="absolute bottom-20 left-28 rounded-e-2xl rounded-tl-2xl border-4 border-solid border-custom-purple-color bg-white p-3 text-lg font-semibold text-custom-purple-color">
         자신이 러브헌터임을 어필해주세요!
       </div>
-
       <div className="h-full">
         <div
           style={{ fontFamily: "DungGeunMo" }}

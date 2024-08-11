@@ -1,4 +1,5 @@
 import axios from "axios";
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 // 출석 조회 API
 export const fetchAttendance = async (
@@ -6,7 +7,7 @@ export const fetchAttendance = async (
 ): Promise<AttendanceDay[]> => {
   try {
     const response = await axios.get<AttendanceDay[]>(
-      "http://i11a405.p.ssafy.io:8080/attendance",
+      `${APPLICATION_SERVER_URL}attendance`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -28,7 +29,7 @@ export const fetchAttendance = async (
 export const markAttendance = async (token: string): Promise<void> => {
   try {
     await axios.post(
-      "http://i11a405.p.ssafy.io:8080/attendance",
+      `${APPLICATION_SERVER_URL}attendance`,
       {},
       {
         headers: {
@@ -40,6 +41,31 @@ export const markAttendance = async (token: string): Promise<void> => {
     console.log("출석체크 완료");
   } catch (error) {
     console.error("출석체크 실패:", error);
+    throw error; // 필요에 따라 에러를 다시 던질 수 있습니다.
+  }
+};
+
+// 포인트 업데이트 API
+export const updateUserPoints = async (
+  token: string,
+  points: number
+): Promise<void> => {
+  try {
+    await axios.put(
+      `${APPLICATION_SERVER_URL}user/points`,
+      {
+        gamePoint: points,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("포인트 업데이트 성공");
+  } catch (error) {
+    console.error("포인트 업데이트 실패:", error);
     throw error; // 필요에 따라 에러를 다시 던질 수 있습니다.
   }
 };

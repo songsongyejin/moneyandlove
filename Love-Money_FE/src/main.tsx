@@ -23,7 +23,7 @@ import Room from "./pages/room/Room.tsx";
 import LoginHandler from "./pages/login/LoginHandler.tsx";
 import SignUpPage from "./pages/signUp/SignUpPage.tsx";
 import WhatsItToYa from "./pages/room/WhatsItToYa.tsx";
-import Test from "./pages/test/Test.tsx";
+
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
@@ -41,9 +41,6 @@ const router = createBrowserRouter([
       },
       { path: "signUp", element: <SignUpPage /> },
       { path: "whatsittoya", element: <WhatsItToYa /> },
-      { path: "test", element: <Test /> },
-
-      // // { path: "cart", element: <MyCart /> },
     ],
   },
 ]);

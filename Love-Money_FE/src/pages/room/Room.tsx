@@ -15,6 +15,7 @@ import {
 import useSessionHandlers from "../../hooks/useSessionHandlers";
 import JoinSessionForm from "../../components/room/JoinSessionForm";
 import GameView from "../../components/room/GameView";
+import TempGameView from "../../components/room/TempGameView";
 import { createSession, createToken } from "../../utils/api";
 import { useRecoilValue } from "recoil";
 import { maxExpressionState, userToken, warning } from "../../atom/store";
@@ -104,9 +105,11 @@ const Room: React.FC = () => {
       console.log("토큰", token);
       await session.connect(token, { clientData: myUserName });
       const devices = await OV.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
+      console.log(devices + " :::::devices");
+      const videoDevices = devices.filter((device) => {
+        console.log(device + " :::::::device");
+        device.kind === "videoinput";
+      });
       console.log("비디오디바이스", videoDevices);
       // 첫 번째 사용 가능한 비디오 장치 선택
       const selectedDevice = videoDevices.length > 0 ? videoDevices[0] : null;
@@ -200,7 +203,21 @@ const Room: React.FC = () => {
           handleChangeSessionId={handleChangeSessionId}
         />
       ) : (
-        <GameView
+        // <GameView
+        //   mode={mode}
+        //   setMode={setMode}
+        //   mainStreamManager={mainStreamManager}
+        //   subscriber={subscriber}
+        //   messages={messages}
+        //   newMessage={newMessage}
+        //   setNewMessage={setNewMessage}
+        //   sendMessage={sendMessage}
+        //   leaveSession={leaveSession}
+        //   isModalOpen={isModalOpen}
+        //   setIsModalOpen={setIsModalOpen}
+        //   myUserName={myUserName}
+        // />
+        <TempGameView
           mode={mode}
           setMode={setMode}
           mainStreamManager={mainStreamManager}
@@ -213,6 +230,7 @@ const Room: React.FC = () => {
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           myUserName={myUserName}
+          session={session}
         />
       )}
     </div>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_OPENVIDU_URL;
 
 // 세션 생성 함수
 export const createSession = async (

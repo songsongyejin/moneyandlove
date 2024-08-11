@@ -8,6 +8,8 @@ import { useRecoilState } from "recoil";
 const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 const fetchKakaoLogin = async (code: string | null) => {
   if (!code) throw new Error("No code provided");
+  console.log(code);
+
   const res = await axios({
     method: "GET",
     url: `${APPLICATION_SERVER_URL}user/login?code=${code}`,

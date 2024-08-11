@@ -39,7 +39,7 @@ export const subscribeHandler = (
 ) => {
   if (client) {
     return client.subscribe(
-      `/chat/receive/${roomId}`,
+      `/api/chat/receive/${roomId}`,
       (message) => {
         setChatData((prevMessages: any) => [
           ...prevMessages,
@@ -52,14 +52,14 @@ export const subscribeHandler = (
 };
 export const unSUbscribe = (roomId: number) => {
   if (client) {
-    client.unsubscribe(`/receive/chat/room/${roomId}`);
+    client.unsubscribe(`/api/receive/chat/room/${roomId}`);
   }
 };
 
 export const sendHandler = (token: string, roomId: number, message: string) => {
   if (client && client.connected) {
     client.send(
-      `/chat/send/${roomId}`,
+      `/api/chat/send/${roomId}`,
       { Authorization: `Bearer ${token}` },
       JSON.stringify({
         roomId: roomId,

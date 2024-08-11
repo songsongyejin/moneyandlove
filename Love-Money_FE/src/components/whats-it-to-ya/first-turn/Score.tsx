@@ -78,12 +78,12 @@ const Score: React.FC<ScoreProps> = ({
         <div className="flex w-full flex-col items-center justify-center">
           {/* Player 2의 예측 카드들 */}
           <div
-            className="drop-table-container mt-10 flex flex-col items-center"
-            style={{ position: "fixed", bottom: "28%" }}
+            className="drop-table-container mt-10 flex animate-fadeIn flex-col items-center"
+            style={{ position: "fixed", bottom: "30%" }}
           >
             <div
               className="drop-card-container flex"
-              style={{ gap: "6.5rem", transform: "rotateX(70deg)" }}
+              style={{ gap: "4rem", transform: "rotateX(70deg)" }}
             >
               {player2GuessZones.map((zone, index) => (
                 <div
@@ -100,11 +100,11 @@ const Score: React.FC<ScoreProps> = ({
           {/* 다섯 개의 단어 카드 영역 */}
           <div
             className="table-container"
-            style={{ position: "fixed", bottom: "22%" }}
+            style={{ position: "fixed", bottom: "26%" }}
           >
             <div
               className="word-card-container flex flex-row"
-              style={{ gap: "5.5rem" }}
+              style={{ gap: "3rem" }}
             >
               {wordCards.map((card) => (
                 <div
@@ -145,12 +145,12 @@ const Score: React.FC<ScoreProps> = ({
 
           {/* Player 1의 드랍존 카드들 */}
           <div
-            className="drop-table-container flex flex-col items-center"
-            style={{ position: "fixed", bottom: "1%" }}
+            className="drop-table-container flex animate-fadeIn flex-col items-center"
+            style={{ position: "fixed", bottom: "7%" }}
           >
             <div
               className="drop-card-container flex"
-              style={{ gap: "11.3rem", transform: "rotateX(55deg)" }}
+              style={{ gap: "9.1rem", transform: "rotateX(60deg)" }}
             >
               {player1DropZones.map((zone, index) => (
                 <div

@@ -25,7 +25,6 @@ import { matching } from "../utils/matchingAPI";
 const GameHome: React.FC = () => {
   // Recoil을 사용하여 사용자 정보 상태를 가져옴
   const token = useRecoilValue(userToken);
-
   const [user, setUser] = useRecoilState(userInfo);
   type friendProfile = {
     followerId: number;
@@ -41,11 +40,13 @@ const GameHome: React.FC = () => {
     queryFn: () => fetchUserData(token as string),
     enabled: !!token,
   });
+
   const { data: friendsList } = useQuery({
     queryKey: ["friendsList", token],
     queryFn: () => fetchFriendsListData(token as string),
     enabled: !!token,
   });
+
   useEffect(() => {
     if (data) {
       setUser(data);
@@ -86,13 +87,18 @@ const GameHome: React.FC = () => {
   console.log(selectedPosition);
   console.log(gameMode);
 
-  const { data: s } = useQuery({
+  const {
+    data: s,
+    error: e,
+    isLoading: l,
+  } = useQuery({
     queryKey: ["matching", token, selectedPosition, gameMode],
     queryFn: () =>
       matching(token as string, selectedPosition as string, gameMode as string),
     enabled: !!token && showMatching,
   });
   console.log(s);
+
   // 선택된 포지션에 따라 배경 클래스를 결정하는 함수
   const getBackgroundClass = () => {
     if (selectedPosition === "MONEY") return mainBgLove;

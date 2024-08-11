@@ -1,10 +1,10 @@
 import axios from "axios";
-
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 // 단어 카드 데이터를 가져오는 API 호출 함수
 export const fetchWordCards = async (token: string): Promise<string[]> => {
   try {
     const response = await axios.get<string[]>(
-      "http://i11a405.p.ssafy.io:8080/whats-it-to-ya",
+      `${APPLICATION_SERVER_URL}whats-it-to-ya`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
