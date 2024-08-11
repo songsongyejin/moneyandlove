@@ -77,6 +77,12 @@ public class MatchingService {
 				return response;
 			}
 
+			// 매칭 취소 확인
+			if (!isUserInQueue(matchingUserRequest)) {
+				response.put("status", "cancelled");
+				return response;
+			}
+
 			MatchingUserRequest matchedUser = null;
 			switch (matchingUserRequest.getMatchType()) {
 				case "random":
@@ -89,6 +95,7 @@ public class MatchingService {
 					matchedUser = top30PercentMatch(matchingUserRequest);
 					break;
 				default:
+					cancleMatching(matchingUserRequest);
 					throw new MoneyAndLoveException(ErrorType.MATCHING_TYPE_NOT_SUPPORTED);
 			}
 
@@ -108,7 +115,7 @@ public class MatchingService {
 				return response;
 			}
 			try {
-				Thread.sleep(5000); // 5초 대기
+				Thread.sleep(3000); // 3초 대기
 			} catch (InterruptedException e) {
 				// 현재 스레드의 인터럽트 상태를 복구하고 메서드를 종료
 				Thread.currentThread().interrupt();
@@ -118,7 +125,7 @@ public class MatchingService {
 				break;
 			}
 		}
-		// No match found within 1 minutes.
+		// No match found within 30 sec.
 		//deleteFromQue
 		redisTemplate.opsForZSet().remove(MATCHING_QUEUE, matchingUserRequest);
 		response.put("status", "timeout");
@@ -214,16 +221,12 @@ public class MatchingService {
 	private boolean isValidMatch(MatchingUserRequest matchingUserRequest, MatchingUserRequest candidate) {
 		// Bidirectional condition check
 		// 1. 여성<-->남성인지 체크
-		// 2. 이전에 매칭되었던 사람인지 체크
-		// 3. 상대방의 조건에 내가 부합하는지 체크
+		// 2. 상대방의 조건에 내가 부합하는지 체크
 
 		String candidateMatchingType = candidate.getMatchType();
 		String userPosition = matchingUserRequest.getPosition();
 
 		if (!candidate.getGender().equals(matchingUserRequest.getGender())) {
-			/*
-			* 이전에 매칭되었던 사람인지 체크하는 로직
-			* */
 
 			if(candidateMatchingType.equals("love")&&userPosition.equals("money")) {
 				return false;
@@ -237,4 +240,18 @@ public class MatchingService {
 	}
 
 
+	public void cancleMatching(MatchingUserRequest matchingUserRequest) {
+		Long userId = matchingUserRequest.getUserId();
+		matchingUserRequest.putGenderFromUser(userService.getGender(userId));
+		matchingUserRequest.putFaceScoreFromFace(faceService.getFaceScoreByUserId(userId));
+		// 매칭 대기 큐에서 사용자의 요청 제거
+		redisTemplate.opsForZSet().remove(MATCHING_QUEUE, matchingUserRequest);
+	}
+
+	// 사용자 매칭 큐에 있는지 확인하는 메서드
+	private boolean isUserInQueue(MatchingUserRequest matchingUserRequest) {
+		ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
+		Double score = zSetOps.score(MATCHING_QUEUE, matchingUserRequest);
+		return score != null;
+	}
 }

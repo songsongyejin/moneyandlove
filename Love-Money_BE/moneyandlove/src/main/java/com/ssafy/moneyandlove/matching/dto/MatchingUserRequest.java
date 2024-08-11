@@ -31,11 +31,15 @@ public class MatchingUserRequest implements Serializable {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		MatchingUserRequest that = (MatchingUserRequest) o;
-		return userId.equals(that.userId);
+		return Objects.equals(userId, that.userId) &&
+				Objects.equals(gender, that.gender) &&
+				Objects.equals(faceScore, that.faceScore) &&
+				Objects.equals(position, that.position) &&
+				Objects.equals(matchType, that.matchType);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(userId);
+		return Objects.hash(userId, gender, faceScore, position, matchType);
 	}
 }
