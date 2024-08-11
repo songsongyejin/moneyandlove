@@ -339,7 +339,8 @@ table {
 
 .word-card:hover {
   /* 카드가 약간 올라가게 */
-  transform: rotateX(-65deg) scale(1.1) translateY(-38px);
+  transform: rotateX(-65deg) scale(1.1) translateY(-10px);
+  transform-origin: bottom;
   /* 호버 시 그림자 강화 */
   box-shadow:
     0 25px 35px rgba(0, 0, 0, 0.5),
@@ -369,17 +370,21 @@ table {
   display: flex;
   justify-content: space-between;
   /* width: 1200px; */
-  /* 컨테이너의 회전 */
-  /* transform: rotateX(50deg); */
-  perspective: 1000px;
+  perspective: 15000px;
   transform-style: preserve-3d;
   transition: transform 0.3s ease-in-out;
+  transform: rotateX(60deg);
 }
 
-.drop-card,
-.drop-card-top {
+.drop-card-you {
   transform-style: preserve-3d;
   transition: all 0.3s ease-in-out;
+  transform: rotateX(5deg);
+}
+.drop-card-me {
+  transform-style: preserve-3d;
+  transition: all 0.3s ease-in-out;
+
   /* width: 135px;
   height: 180px; */
   /* border-radius: 30px; */
@@ -387,26 +392,191 @@ table {
   /* box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); */
 }
 
-.drop-card:hover {
-  transform: rotateX(-60deg) scale(1.1) translateY(-20px);
+.drop-card-you:hover {
+  transform: rotateX(-65deg) scale(1.1) translateY(-10px);
+  transform-origin: bottom;
   box-shadow:
     0 20px 30px rgba(0, 0, 0, 0.4),
     0 15px 20px rgba(0, 0, 0, 0.2);
 }
 
-.drop-card-top:hover {
-  transform: rotateX(-70deg) scale(1.1) translateY(-20px);
+.drop-card-me:hover {
+  transform: rotateX(-60deg) scale(1.1) translateY(-10px);
+  transform-origin: bottom; /* 회전 기준점을 카드의 하단으로 설정 */
   box-shadow:
     0 20px 30px rgba(0, 0, 0, 0.4),
     0 15px 20px rgba(0, 0, 0, 0.2);
 }
 
-.drop-zone-drop-card {
+.deep-3d-text {
+  text-shadow:
+    1px 1px 2px #000,
+    2px 2px 4px #000,
+    3px 3px 8px rgba(0, 0, 0, 0.7),
+    4px 4px 12px rgba(0, 0, 0, 0.7),
+    5px 5px 16px rgba(0, 0, 0, 0.7),
+    6px 6px 20px rgba(0, 0, 0, 0.7);
+  transform: perspective(500px) rotateX(15deg);
+  font-weight: bold;
+}
+
+/* 공통 3D 버튼 스타일 */
+.three-d-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-family: "DungGeunMo", sans-serif;
+  font-size: 18px;
+  box-shadow:
+    0 5px 0 rgba(0, 0, 0, 0.2),
+    0 8px 15px rgba(0, 0, 0, 0.3); /* 그림자 */
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  cursor: pointer;
+  transform: rotateX(35deg);
+}
+
+/* Reset 버튼 (회색) */
+.three-d-button.reset {
+  background-color: #607d8b; /* 회색 계열 */
+  box-shadow:
+    0 5px 0 #455a64,
+    0 8px 15px rgba(0, 0, 0, 0.3); /* 그림자 */
+}
+
+.three-d-button.reset:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 7px 0 #455a64,
+    0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.three-d-button.reset:active {
+  transform: translateY(5px);
+  box-shadow:
+    0 2px 0 #455a64,
+    0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 선택 완료 버튼 (주황색) */
+.three-d-button.finalize {
+  background-color: #ff5722; /* 주황색 계열 */
+  box-shadow:
+    0 5px 0 #d84315,
+    0 8px 15px rgba(0, 0, 0, 0.3); /* 그림자 */
+}
+
+.three-d-button.finalize:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 7px 0 #d84315,
+    0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.three-d-button.finalize:active {
+  transform: translateY(5px);
+  box-shadow:
+    0 2px 0 #d84315,
+    0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* index.css에 추가할 로딩 스피너 스타일 */
+.spinner {
+  border: 8px solid rgba(255, 255, 255, 0.3);
+  border-top: 8px solid white;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* index.css에 추가할 점진적 진행 바 애니메이션 */
+.loading-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dot {
+  width: 15px;
+  height: 15px;
+  margin: 0 5px;
+  background-color: white;
+  border-radius: 50%;
+  animation: bounce 1.5s infinite ease-in-out;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Love와 Money 선택 카드 스타일 */
+.select-card-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem; /* 카드 간격 설정 */
+  transform: rotateX(0deg);
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease-in-out;
+}
+
+.select-card {
+  width: 150px;
+  height: 200px;
+  border-radius: 5px;
+  background-color: #1e293b;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateZ(0);
   transform-style: preserve-3d;
   transition: all 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
 }
 
-.drop-zone-drop-card:hover {
-  transform: rotateX(0deg) scale(1.1) translateY(-20px);
-  transition: transform 0.3s ease-in-out;
+.select-card:hover {
+  transform: rotateX(-65deg) scale(1.1) translateY(-10px);
+  transform-origin: bottom;
+  box-shadow:
+    0 25px 35px rgba(0, 0, 0, 0.5),
+    0 20px 25px rgba(0, 0, 0, 0.4),
+    0 15px 20px rgba(0, 0, 0, 0.3);
+}
+
+.select-card.selected {
+  background-color: #f97316;
+  transform: rotateX(-65deg) scale(1.1) translateY(-10px);
+  box-shadow:
+    0 25px 35px rgba(0, 0, 0, 0.6),
+    0 20px 25px rgba(0, 0, 0, 0.5),
+    0 15px 20px rgba(0, 0, 0, 0.4);
 }

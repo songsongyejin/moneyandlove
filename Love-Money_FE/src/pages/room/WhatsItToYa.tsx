@@ -7,15 +7,15 @@ import FirstTurnFirstPlayerPlay from "../../components/whats-it-to-ya/first-turn
 import FirstTurnFirstPlayerWait from "../../components/whats-it-to-ya/first-turn/FirstPlayerWait";
 import FirstTurnSecondPlayerWait from "../../components/whats-it-to-ya/first-turn/SecondPlayerWait";
 import FirstTurnSecondPlayerPlay from "../../components/whats-it-to-ya/first-turn/SecondPlayerPlay";
-import FirstTurnScoreBoard from "../../components/whats-it-to-ya/first-turn/Score";
-import FirstTurnTempScoreBoard from "../../components/whats-it-to-ya/first-turn/TempScore";
+import FirstTurnScoreBoard from "../../components/whats-it-to-ya/first-turn/FirstPlayerScoreBoard";
+import FirstTurnTempScoreBoard from "../../components/whats-it-to-ya/first-turn/SecondPlayerScoreBoard";
 import SecondTurnFirstPlayerWait from "../../components/whats-it-to-ya/second-turn/FirstPlayerWait";
 import SecondTurnFirstPlayerPlay from "../../components/whats-it-to-ya/second-turn/FirstPlayerPlay";
-import SecondTurnScoreBoard from "../../components/whats-it-to-ya/second-turn/Score";
-import Winner from "../../components/whats-it-to-ya/Winner";
+import SecondTurnScoreBoard from "../../components/whats-it-to-ya/second-turn/FirstPlayerScoreBoard";
+import Winner from "../../components/whats-it-to-ya/Result";
 import SecondTurnSecondPlayerPlay from "../../components/whats-it-to-ya/second-turn/SecondPlayerPlay";
 import SecondTurnSecondPlayerWait from "../../components/whats-it-to-ya/second-turn/SecondPlayerWait";
-import SecondTurnTempScoreBoard from "../../components/whats-it-to-ya/second-turn/TempScore";
+import SecondTurnTempScoreBoard from "../../components/whats-it-to-ya/second-turn/SecondPlayerScoreBoard";
 import { useWordCards } from "../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
 import CafeBackground from "../../assets/cafe-background.jpg";
 import aiBot from "../../assets/ai_bot.gif";

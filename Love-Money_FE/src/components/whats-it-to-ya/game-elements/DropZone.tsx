@@ -43,7 +43,7 @@ const DropZone: React.FC<DropZoneProps> = ({ id, onDrop, children }) => {
       <div
         className={
           childCount === 1
-            ? "drop-zone-drop-card flex h-full w-full items-center justify-center"
+            ? "flex h-full w-full items-center justify-center"
             : "grid h-full w-full grid-cols-2 grid-rows-2 gap-0"
         }
       >

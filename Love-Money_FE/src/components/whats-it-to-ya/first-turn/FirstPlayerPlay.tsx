@@ -127,61 +127,18 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({
       <div className="relative flex h-screen flex-col items-center justify-between">
         {/* 설명 영역 */}
         <div
-          className="absolute -translate-y-1/2 transform animate-fadeIn whitespace-nowrap text-center text-white"
+          className="absolute flex -translate-y-1/2 transform animate-fadeIn items-center whitespace-nowrap text-center text-white"
           style={{
             fontFamily: "DungGeunMo",
             top: "60%", // 텍스트 위치를 적절히 조정
           }}
         >
-          <p
-            className="mb-3 text-6xl"
-            style={{
-              textShadow: `
-                1px 1px 2px #000, 2px 2px 4px #000,
-                3px 3px 8px rgba(0, 0, 0, 0.7),
-                4px 4px 12px rgba(0, 0, 0, 0.7),
-                5px 5px 16px rgba(0, 0, 0, 0.7),
-                6px 6px 20px rgba(0, 0, 0, 0.7)
-              `,
-              transform: "perspective(500px) rotateX(15deg)",
-              fontWeight: "bold",
-            }}
-          >
-            당신이 선입니다!
-          </p>
-          <p
-            className="text-2xl"
-            style={{
-              textShadow: `
-                1px 1px 2px #000, 2px 2px 4px #000,
-                3px 3px 8px rgba(0, 0, 0, 0.7),
-                4px 4px 12px rgba(0, 0, 0, 0.7),
-                5px 5px 16px rgba(0, 0, 0, 0.7),
-                6px 6px 20px rgba(0, 0, 0, 0.7)
-              `,
-              transform: "perspective(500px) rotateX(15deg)",
-              fontWeight: "bold",
-            }}
-          >
-            다섯 개의 단어 카드를 보고 당신의 우선순위를 정해주세요
-          </p>
-        </div>
-        {/* 버튼 두개: 초기화 버튼, 선택완료 버튼*/}
-        <div className="mb-2 mt-10 flex animate-fadeIn space-x-10">
-          <button
-            onClick={handleReset}
-            className="rounded-lg bg-gray-400 px-6 py-3 text-2xl text-white"
-            style={{ fontFamily: "DungGeunMo" }}
-          >
-            Reset
-          </button>
-          <button
-            onClick={handleFinalize}
-            className="rounded-lg bg-custom-purple-color px-4 py-3 text-xl text-white"
-            style={{ fontFamily: "DungGeunMo" }}
-          >
-            선택완료
-          </button>
+          <div>
+            <p className="deep-3d-text mb-3 text-4xl">당신이 선입니다!</p>
+            <p className="deep-3d-text text-4xl">
+              다섯 개의 단어 카드를 보고 당신의 우선순위를 정해주세요
+            </p>
+          </div>
         </div>
 
         {/* 다섯 개의 단어 카드 영역 */}
@@ -238,7 +195,7 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({
         >
           <div
             className="drop-card-container flex justify-center"
-            style={{ gap: "6.2rem", transform: "rotateX(60deg)" }}
+            style={{ gap: "6.2rem" }}
           >
             {zones.dropZones.map((zone, index) => (
               <DropZone key={index} id={index} onDrop={handleDrop}>
@@ -249,7 +206,21 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({
             ))}
           </div>
         </div>
-
+        {/* 버튼 두개: 초기화 버튼, 선택완료 버튼*/}
+        <div
+          className="space-x-20"
+          style={{
+            position: "fixed",
+            bottom: "5%",
+          }}
+        >
+          <button onClick={handleReset} className="three-d-button reset">
+            Reset
+          </button>
+          <button onClick={handleFinalize} className="three-d-button finalize">
+            선택완료
+          </button>
+        </div>
         {/* 게임창 밖 우선순위 정하는 카드들 영역*/}
         <div className="animate-fadeIn">
           <InitialZone id={0} cards={zones.initial} onDrop={handleDrop} />
