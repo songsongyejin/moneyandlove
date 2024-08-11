@@ -5,10 +5,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ssafy.moneyandlove.common.annotation.LoginUser;
 import com.ssafy.moneyandlove.matching.application.MatchingService;
@@ -36,6 +33,13 @@ public class MatchingController {
 			// 에러 처리 로직
 			return ResponseEntity.status(601).body(Map.of("status", "error", "message", e.getMessage()));
 		}
+	}
+
+	@PutMapping
+	public ResponseEntity<?> cancleMatch(@RequestBody MatchingUserRequest matchingUserRequest, @LoginUser User loginUser){
+		matchingUserRequest.putUserId(loginUser.getId());
+		matchingService.cancleMatching(matchingUserRequest);
+		return ResponseEntity.ok().build();
 	}
 
 }
