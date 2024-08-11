@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import BaseModal from "./BaseModal";
 import RankingItem from "./RankingItem";
 import { useQuery } from "@tanstack/react-query";
-import { fetchRanking } from "../../utils/rankingAPI";
+import { fetchRanking } from "../../utils/rankingApi.ts";
 import { useRecoilValue } from "recoil";
 import { userToken } from "../../atom/store";
 
