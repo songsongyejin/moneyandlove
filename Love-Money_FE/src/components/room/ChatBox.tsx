@@ -186,11 +186,11 @@ const ChatBox = ({
                   ) : (
                     <>
                       <div>
-                        <p className="ml-10 text-sm"> {msg.user}</p>
+                        <p className="ml-10 text-white"> {msg.user}</p>
                         <div className="flex">
-                          <p className="my-auto text-2xl">{msg.Emoji}</p>
+                          <p className="my-auto text-6xl">{msg.Emoji}</p>
                           <div className="speech-bubble ml-2 p-2">
-                            <strong>{msg.user}</strong> {msg.text}
+                            {msg.text}
                           </div>
                         </div>
                       </div>

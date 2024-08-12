@@ -85,9 +85,6 @@ const GameHome: React.FC = () => {
     handleMatchComplete,
   } = useGameLogic();
 
-  console.log(selectedPosition);
-  console.log(gameMode);
-
   // 선택된 포지션에 따라 배경 클래스를 결정하는 함수
   const getBackgroundClass = () => {
     if (selectedPosition === "MONEY") return mainBgLove;
