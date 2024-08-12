@@ -14,10 +14,12 @@ interface RankingModalProps {
 }
 
 interface RankItem {
+  rankingId: number;
   rank: number;
-  nickname: string;
+  nickName: string;
   montage: string;
   rankPoint: number;
+  rankNumber: number;
 }
 
 // 목업 데이터
@@ -62,15 +64,13 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
       <div className="flex h-full w-full flex-col">
         {/* 랭킹 박스 */}
         <div className="flex-1 overflow-y-auto rounded-lg bg-white shadow-inner scrollbar-thin scrollbar-webkit">
-          {ranking.map((item,index) => (
-
+          {ranking.map((item) => (
             <RankingItem
-              key={index+1}
-              rank={index+1}
-              nickName={item.nickName}
+              key={item.rankingId}
+              rank={item.rankNumber}
+              nickName={item.nickName.length > 1 ? `${item.nickName[0]}${'*'.repeat(item.nickName.length - 1)}` : item.nickName}
               rankPoint={item.rankPoint}
             />
-
           ))}
         </div>
         {/* 내 랭킹 */}
@@ -83,7 +83,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
           }}
         >
           <RankingItem
-            rank={1}
+            rank={s.myRank.rankNumber}
             nickName={s.myRank.nickName}
             rankPoint={s.myRank.rankPoint}
           />
