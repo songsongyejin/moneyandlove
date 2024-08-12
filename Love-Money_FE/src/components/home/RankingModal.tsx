@@ -68,7 +68,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
             <RankingItem
               key={item.rankingId}
               rank={item.rankNumber}
-              nickName={item.nickName.length > 1 ? `${item.nickName[0]}${'*'.repeat(item.nickName.length - 1)}` : item.nickName}
+              nickName={item.nickName.length > 2 ? `${item.nickName.slice(0, 2)}${'*'.repeat(item.nickName.length - 2)}` : item.nickName}
               rankPoint={item.rankPoint}
             />
           ))}
