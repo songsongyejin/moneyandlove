@@ -3,6 +3,7 @@ import { FiSend } from "react-icons/fi";
 import aiBot from "../../assets/ai_bot.gif";
 import "./chatBox.css";
 import * as faceapi from "face-api.js";
+import Webcam from "react-webcam";
 import { useRecoilState } from "recoil";
 import { maxExpressionState, warning } from "../../atom/store";
 
@@ -26,110 +27,66 @@ const ChatBox = ({
       sendMessage();
     }
   };
-
+  const webcamRef = useRef<Webcam>(null);
   const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
   const [warningMsg, setWarningMsg] = useRecoilState(warning);
   const [loading, setLoading] = useState(true); // 모델 로딩 상태 추가
+  useEffect(() => {
+    const loadModels = async () => {
+      const MODEL_URL = "/models";
+      setLoading(true);
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
+      ]);
+      setLoading(false);
+    };
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const requestRef = useRef<number | null>(null);
-
-  const loadModels = useCallback(async () => {
-    const MODEL_URL = "/models";
-
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-    await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
-
-    startVideo();
+    loadModels();
   }, []);
+  const analyzeEmotion = async () => {
+    if (webcamRef.current && webcamRef.current.video) {
+      const video = webcamRef.current.video;
 
-  const startVideo = useCallback(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: {} })
-      .then((stream) => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
+      const detections = await faceapi
+        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceExpressions();
 
-          videoRef.current.addEventListener("loadedmetadata", () => {
-            analyzeExpressions();
-          });
-        }
-      })
-      .catch((err) => {
-        console.error("Error accessing webcam: ", err);
-        setWarningMsg("웹캠 접근에 실패했습니다. 권한을 확인해주세요.");
-      });
-  }, []);
-
-  const analyzeExpressions = useCallback(async () => {
-    setLoading(false); // 비디오 스트림이 시작되면 로딩 상태를 해제합니다.
-
-    if (videoRef.current) {
-      const displaySize = {
-        width: videoRef.current.videoWidth,
-        height: videoRef.current.videoHeight,
-      };
-
-      faceapi.matchDimensions(videoRef.current, displaySize);
-
-      const detect = async () => {
-        if (videoRef.current && videoRef.current.videoWidth > 0) {
-          const detections = await faceapi
-            .detectAllFaces(
-              videoRef.current!,
-              new faceapi.TinyFaceDetectorOptions()
-            )
-            .withFaceLandmarks()
-            .withFaceExpressions();
-
-          if (detections.length > 0) {
-            const exp = detections[0].expressions;
-            const maxExp = Object.keys(exp).reduce((a, b) =>
-              exp[a] > exp[b] ? a : b
-            );
-            setMaxExpression(maxExp);
-            setWarningMsg("");
-          } else {
-            if (!warningMsg) {
-              setWarningMsg(
-                "얼굴 인식이 되지 않았습니다. \n정면을 응시해주세요!!! \n표정이 인식되면 채팅장이 공개됩니다!!!"
-              );
-            }
-          }
-        }
-
-        requestRef.current = requestAnimationFrame(detect);
-      };
-
-      detect();
+      if (detections.length > 0) {
+        const expressions = detections[0].expressions;
+        const maxEmotion = Object.keys(expressions).reduce((a, b) =>
+          expressions[a] > expressions[b] ? a : b
+        );
+        setMaxExpression(maxEmotion);
+      }
     }
-  }, [warningMsg]);
+  };
 
   useEffect(() => {
-    loadModels();
-
-    return () => {
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current);
-      }
-      if (videoRef.current && videoRef.current.srcObject) {
-        (videoRef.current.srcObject as MediaStream)
-          .getTracks()
-          .forEach((track) => track.stop());
-      }
-    };
-  }, [loadModels]);
-
+    const interval = setInterval(() => {
+      analyzeEmotion();
+    }, 100); // 1초마다 감정 분석
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className="absolute h-screen w-screen">
-      <video ref={videoRef} autoPlay muted />
-
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="text-white">모델을 로딩 중입니다...</div>
-        </div>
+      {loading ? (
+        <p>Loading models...</p>
+      ) : (
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          videoConstraints={{
+            width: 160,
+            height: 120,
+            facingMode: "user",
+          }}
+          className="absolute"
+        />
       )}
 
       {maxExpression && (
