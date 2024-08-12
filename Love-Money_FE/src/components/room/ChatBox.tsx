@@ -81,41 +81,41 @@ const ChatBox = ({
       // 비디오 요소의 크기를 맞추기 위해 매칭합니다.
       faceapi.matchDimensions(videoRef.current, displaySize);
 
-      // // 100ms마다 얼굴을 감지하고 표정을 분석하는 타이머를 설정합니다.
-      // const interval = setInterval(async () => {
-      //   if (videoRef.current) {
-      //     const detections = await faceapi
-      //       .detectAllFaces(
-      //         videoRef.current!,
-      //         new faceapi.TinyFaceDetectorOptions()
-      //       )
-      //       .withFaceLandmarks()
-      //       .withFaceExpressions();
+      // 100ms마다 얼굴을 감지하고 표정을 분석하는 타이머를 설정합니다.
+      const interval = setInterval(async () => {
+        if (videoRef.current) {
+          const detections = await faceapi
+            .detectAllFaces(
+              videoRef.current!,
+              new faceapi.TinyFaceDetectorOptions()
+            )
+            .withFaceLandmarks()
+            .withFaceExpressions();
 
-      //     if (detections.length > 0) {
-      //       // 얼굴이 인식된 경우
-      //       lastDetectedTime.current = Date.now(); // 현재 시간을 저장
-      //       setWarningMsg(""); // 경고 메시지 제거
+          // if (detections.length > 0) {
+          //   // 얼굴이 인식된 경우
+          //   lastDetectedTime.current = Date.now(); // 현재 시간을 저장
+          //   setWarningMsg(""); // 경고 메시지 제거
 
-      //       // 가장 강한 표정을 찾고 상태를 업데이트합니다.
-      //       const exp = detections[0].expressions;
-      //       const maxExp = Object.keys(exp).reduce((a, b) =>
-      //         exp[a] > exp[b] ? a : b
-      //       );
-      //       setMaxExpression(maxExp);
-      //     } else if (
-      //       lastDetectedTime.current &&
-      //       Date.now() - lastDetectedTime.current > 1000
-      //     ) {
-      //       // 1초 동안 얼굴이 감지되지 않은 경우
-      //       setWarningMsg(
-      //         "얼굴 인식이 되지 않았습니다. \n정면을 응시해주세요!!! \n표정이 인식되면 채팅장이 공개됩니다!!!"
-      //       );
-      //     }
-      //   }
-      // }, 100); // 100ms마다 실행
+          //   // 가장 강한 표정을 찾고 상태를 업데이트합니다.
+          //   const exp = detections[0].expressions;
+          //   const maxExp = Object.keys(exp).reduce((a, b) =>
+          //     exp[a] > exp[b] ? a : b
+          //   );
+          //   setMaxExpression(maxExp);
+          // } else if (
+          //   lastDetectedTime.current &&
+          //   Date.now() - lastDetectedTime.current > 1000
+          // ) {
+          //   // 1초 동안 얼굴이 감지되지 않은 경우
+          //   setWarningMsg(
+          //     "얼굴 인식이 되지 않았습니다. \n정면을 응시해주세요!!! \n표정이 인식되면 채팅장이 공개됩니다!!!"
+          //   );
+          // }
+        }
+      }, 100); // 100ms마다 실행
 
-      // return () => clearInterval(interval); // 컴포넌트 언마운트 시 인터벌 정리
+      return () => clearInterval(interval); // 컴포넌트 언마운트 시 인터벌 정리
     }
   };
 
