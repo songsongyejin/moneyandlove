@@ -136,15 +136,13 @@ const ChatBox = ({
   return (
     <div className="absolute h-screen w-screen">
       {warningMsg && (
-        <div className="flex w-full justify-center">
-          <div className="absolute z-50 mx-auto flex h-5/6 w-[800px] flex-col justify-center whitespace-pre-line rounded bg-red-500 text-center text-white">
-            <div className="bg-white">
-              <img src={ai_face} alt="" className="mx-auto h-44" />
-            </div>
-            <p style={{ fontFamily: "DungGeunMo" }} className="block">
-              {warningMsg}
-            </p>
+        <div className="absolute z-50 mx-auto flex h-5/6 w-full flex-col justify-center whitespace-pre-line rounded bg-red-500 text-center text-white">
+          <div className="bg-white">
+            <img src={ai_face} alt="" className="mx-auto h-44" />
           </div>
+          <p style={{ fontFamily: "DungGeunMo" }} className="block">
+            {warningMsg}
+          </p>
         </div>
       )}
       {loading ? (
@@ -163,14 +161,6 @@ const ChatBox = ({
         />
       )}
 
-      <img
-        src={aiBot}
-        alt="AI Bot"
-        className="absolute bottom-24 left-5 w-24"
-      />
-      <div className="absolute bottom-40 left-28 rounded-e-2xl rounded-tl-2xl border-4 border-solid border-custom-purple-color bg-white p-3 text-lg font-semibold text-custom-purple-color">
-        자신이 러브헌터임을 어필해주세요!
-      </div>
       <div className="h-full">
         <div
           style={{ fontFamily: "DungGeunMo" }}
