@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { FiSend } from "react-icons/fi";
 import aiBot from "../../assets/ai_bot.gif";
 import "./chatBox.css";
+import * as faceapi from "face-api.js";
+import Webcam from "react-webcam";
+import { useRecoilState } from "recoil";
+import { maxExpressionState, warning } from "../../atom/store";
 
-// 채팅 박스 컴포넌트
 const ChatBox = ({
   mode,
   messages,
@@ -12,12 +15,12 @@ const ChatBox = ({
   sendMessage,
   myUserName,
 }: {
-  mode: string; // 모드 상태 변수 (채팅 또는 화상 채팅)
-  messages: { user: string; text: string; Emoji: string }[]; // 메시지 상태 변수
-  newMessage: string; // 새 메시지 상태 변수
-  setNewMessage: React.Dispatch<React.SetStateAction<string>>; // 새 메시지 변경 핸들러
-  sendMessage: () => void; // 메시지 전송 함수
-  myUserName: string; // 현재 사용자 이름
+  mode: string;
+  messages: { user: string; text: string; Emoji: string }[];
+  newMessage: string;
+  setNewMessage: React.Dispatch<React.SetStateAction<string>>;
+  sendMessage: () => void;
+  myUserName: string;
 }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -25,12 +28,91 @@ const ChatBox = ({
     }
   };
 
+  const webcamRef = useRef<Webcam>(null);
+  const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
+  const [warningMsg, setWarningMsg] = useRecoilState(warning);
+  const [loading, setLoading] = useState(true); // 모델 로딩 상태 추가
+
+  useEffect(() => {
+    const loadModels = async () => {
+      const MODEL_URL = "/models";
+      setLoading(true);
+      console.log("모델 로딩 시작!!!");
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
+      ]).then(() => {
+        console.log("모델 로딩 완료!");
+      });
+      setLoading(false);
+    };
+
+    loadModels();
+  }, []);
+
+  const analyzeEmotion = async () => {
+    if (webcamRef.current && webcamRef.current.video) {
+      const video = webcamRef.current.video;
+
+      const detection = await faceapi
+        .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceExpressions();
+
+      if (detection) {
+        const expressions = detection.expressions;
+        const maxEmotion = Object.keys(expressions).reduce((a, b) =>
+          expressions[a] > expressions[b] ? a : b
+        );
+        setMaxExpression(maxEmotion);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      analyzeEmotion();
+    }, 100); // 1초마다 감정 분석
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="absolute h-screen w-screen">
-      <img src={aiBot} alt="" className="absolute bottom-5 left-5 w-24" />
+      {loading ? (
+        <p>Loading models...</p>
+      ) : (
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          videoConstraints={{
+            width: 160,
+            height: 120,
+            facingMode: "user",
+          }}
+          className="absolute"
+        />
+      )}
+
+      {maxExpression && (
+        <div className="absolute left-5 top-5 rounded-md bg-white p-2 shadow-md">
+          <h3 className="text-lg font-bold">Max Expression: {maxExpression}</h3>
+        </div>
+      )}
+
+      {warningMsg && (
+        <div className="absolute bottom-5 left-5 rounded-md bg-red-500 p-2 text-white shadow-md">
+          <h3 className="text-lg font-bold">{warningMsg}</h3>
+        </div>
+      )}
+
+      <img src={aiBot} alt="AI Bot" className="absolute bottom-5 left-5 w-24" />
       <div className="absolute bottom-20 left-28 rounded-e-2xl rounded-tl-2xl border-4 border-solid border-custom-purple-color bg-white p-3 text-lg font-semibold text-custom-purple-color">
         자신이 러브헌터임을 어필해주세요!
       </div>
+
       <div className="h-full">
         <div
           style={{ fontFamily: "DungGeunMo" }}
@@ -41,7 +123,7 @@ const ChatBox = ({
               const isMyMessage = msg.user === myUserName;
               return (
                 <div
-                  key={i}
+                  key={`${msg.user}-${i}`}
                   className={`mb-3 flex ${isMyMessage ? "justify-end" : "justify-start"}`}
                 >
                   {isMyMessage ? (
@@ -56,7 +138,7 @@ const ChatBox = ({
                         <div className="flex">
                           <p className="my-auto text-2xl">{msg.Emoji}</p>
                           <div className="speech-bubble ml-2 p-2">
-                            <strong></strong> {msg.text}
+                            <strong>{msg.user}</strong> {msg.text}
                           </div>
                         </div>
                       </div>
