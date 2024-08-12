@@ -44,6 +44,13 @@ const SignUpPage: React.FC = () => {
 
   const handleSignUp = (event: React.FormEvent) => {
     event.preventDefault();
+
+    // 닉네임이 3글자 이상인지 검사
+    if (nickname.length < 3) {
+      alert("닉네임은 최소 3글자 이상이어야 합니다.");
+      return;
+    }
+
     const formData: SignUpData = {
       kakaoId,
       email,
