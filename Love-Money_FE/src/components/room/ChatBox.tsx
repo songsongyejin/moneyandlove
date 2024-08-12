@@ -35,12 +35,15 @@ const ChatBox = ({
     const loadModels = async () => {
       const MODEL_URL = "/models";
       setLoading(true);
+      console.log("모델 로딩 시작!!!");
       await Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
         faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
         faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
         faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
-      ]);
+      ]).then(() => {
+        console.log("모델 로딩!");
+      });
       setLoading(false);
     };
 
