@@ -19,11 +19,13 @@ import { createSession, createToken } from "../../utils/api";
 import { useRecoilValue } from "recoil";
 import { maxExpressionState, userToken } from "../../atom/store";
 import mainBg from "../../assets/main_bg.png";
+import { useLocation } from "react-router-dom";
 // Room 컴포넌트
 const Room: React.FC = () => {
   //recoil 전역변수
   const maxExpression = useRecoilValue(maxExpressionState);
   const token = useRecoilValue(userToken);
+
   //감정을 이모지로 변환
   const expressionToEmoji = (expression: string): string => {
     const emojis: { [key: string]: string } = {
@@ -64,20 +66,23 @@ const Room: React.FC = () => {
     setMessages
   );
 
+  //matching 성공 시
+  const location = useLocation();
+  const matchData = location.state?.matchData;
+  useEffect(() => {
+    if (matchData) {
+      setMyUserName(matchData.fromUser.nickname);
+      setMySessionId(matchData.sessionId);
+      joinSession();
+    }
+  }, [matchData]);
+
   // 페이지를 떠날 때 세션 종료
   useEffect(() => {
     const handleBeforeUnload = () => leaveSession();
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [session]);
-
-  // 세션 ID 변경 핸들러
-  const handleChangeSessionId = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setMySessionId(e.target.value);
-
-  // 사용자 이름 변경 핸들러
-  const handleChangeUserName = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setMyUserName(e.target.value);
 
   // 메인 비디오 스트림 설정 핸들러
   // const handleMainVideoStream = (stream: StreamManager) => {
@@ -91,8 +96,7 @@ const Room: React.FC = () => {
   }, [mySessionId]);
 
   // 세션 참가 함수
-  const joinSession = async (e: FormEvent) => {
-    e.preventDefault();
+  const joinSession = async () => {
     const OV = new OpenVidu();
     const session = OV.initSession();
 
@@ -106,7 +110,7 @@ const Room: React.FC = () => {
       console.log(devices + " :::::devices");
       const videoDevices = devices.filter((device) => {
         console.log(device + " :::::::device");
-        device.kind === "videoinput";
+        return device.kind === "videoinput"; // 이 부분도 return을 추가하여 올바르게 필터링되도록 수정
       });
       console.log("비디오디바이스", videoDevices);
       // 첫 번째 사용 가능한 비디오 장치 선택
@@ -186,31 +190,21 @@ const Room: React.FC = () => {
       />
       <div className="absolute inset-0 -z-10 bg-black opacity-40"></div>
 
-      {session === undefined ? (
-        <JoinSessionForm
-          joinSession={joinSession}
-          myUserName={myUserName}
-          mySessionId={mySessionId}
-          handleChangeUserName={handleChangeUserName}
-          handleChangeSessionId={handleChangeSessionId}
-        />
-      ) : (
-        <GameView
-          mode={mode}
-          setMode={setMode}
-          mainStreamManager={mainStreamManager}
-          subscriber={subscriber}
-          messages={messages}
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          sendMessage={sendMessage}
-          leaveSession={leaveSession}
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
-          myUserName={myUserName}
-          session={session}
-        />
-      )}
+      <GameView
+        mode={mode}
+        setMode={setMode}
+        mainStreamManager={mainStreamManager}
+        subscriber={subscriber}
+        messages={messages}
+        newMessage={newMessage}
+        setNewMessage={setNewMessage}
+        sendMessage={sendMessage}
+        leaveSession={leaveSession}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        myUserName={myUserName}
+        session={session}
+      />
     </div>
   );
 };

@@ -58,7 +58,7 @@ const Matching: React.FC<MatchingProps> = ({
                 fontFamily: "DNFBitBitv2",
               }}
             >
-              매칭 확인
+              매칭 수락
             </button>
           )}
         </div>
