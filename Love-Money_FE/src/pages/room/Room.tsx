@@ -18,7 +18,7 @@ import GameView from "../../components/room/GameView";
 import { createSession, createToken } from "../../utils/api";
 import { useRecoilValue } from "recoil";
 import { maxExpressionState, userToken } from "../../atom/store";
-
+import mainBg from "../assets/main_bg.png";
 // Room 컴포넌트
 const Room: React.FC = () => {
   //recoil 전역변수
@@ -179,7 +179,11 @@ const Room: React.FC = () => {
 
   return (
     <div className="relative min-h-screen">
-      <div className="absolute inset-0 -z-10 bg-main-bg bg-cover bg-center"></div>
+      <img
+        src={mainBg}
+        alt=""
+        className={`absolute inset-0 h-screen w-screen bg-cover bg-center`}
+      />
       <div className="absolute inset-0 -z-10 bg-black opacity-40"></div>
 
       {session === undefined ? (
