@@ -27,10 +27,12 @@ const ChatBox = ({
       sendMessage();
     }
   };
+
   const webcamRef = useRef<Webcam>(null);
   const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
   const [warningMsg, setWarningMsg] = useRecoilState(warning);
   const [loading, setLoading] = useState(true); // 모델 로딩 상태 추가
+
   useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = "/models";
@@ -42,24 +44,25 @@ const ChatBox = ({
         faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
         faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
       ]).then(() => {
-        console.log("모델 로딩!");
+        console.log("모델 로딩 완료!");
       });
       setLoading(false);
     };
 
     loadModels();
   }, []);
+
   const analyzeEmotion = async () => {
     if (webcamRef.current && webcamRef.current.video) {
       const video = webcamRef.current.video;
 
-      const detections = await faceapi
-        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+      const detection = await faceapi
+        .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks()
         .withFaceExpressions();
 
-      if (detections.length > 0) {
-        const expressions = detections[0].expressions;
+      if (detection) {
+        const expressions = detection.expressions;
         const maxEmotion = Object.keys(expressions).reduce((a, b) =>
           expressions[a] > expressions[b] ? a : b
         );
@@ -74,6 +77,7 @@ const ChatBox = ({
     }, 100); // 1초마다 감정 분석
     return () => clearInterval(interval);
   }, []);
+
   return (
     <div className="absolute h-screen w-screen">
       {loading ? (
