@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StreamManager } from "openvidu-browser";
-import * as faceapi from "face-api.js";
-import { useRecoilState } from "recoil";
-import { maxExpressionState, warning } from "../../atom/store";
+// import * as faceapi from "face-api.js";
+// import { useRecoilState } from "recoil";
+// import { maxExpressionState, warning } from "../../atom/store";
 
 interface OpenViduVideoComponentProps {
   streamManager: StreamManager;
@@ -10,8 +10,8 @@ interface OpenViduVideoComponentProps {
 
 const OvVideo: React.FC<OpenViduVideoComponentProps> = ({ streamManager }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
-  const [warningMsg, setWarningMsg] = useRecoilState(warning);
+  // const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
+  // const [warningMsg, setWarningMsg] = useRecoilState(warning);
   useEffect(() => {
     if (streamManager && videoRef.current) {
       console.log(videoRef);

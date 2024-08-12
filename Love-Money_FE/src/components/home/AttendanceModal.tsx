@@ -3,7 +3,11 @@ import { userInfo, UserInfo, userToken } from "../../atom/store";
 import { useRecoilState } from "recoil";
 import BaseModal from "./BaseModal";
 import { FaRegCheckCircle } from "react-icons/fa";
-import { fetchAttendance, markAttendance } from "../../utils/attendance";
+import {
+  fetchAttendance,
+  markAttendance,
+  updateUserPoints,
+} from "../../utils/attendance";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AttendanceModalProps {
@@ -53,19 +57,26 @@ const AttendanceModal: React.FC<AttendanceModalProps> = ({
       if (!token) throw new Error("Token is null");
       return markAttendance(token);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       console.log("출석체크 완료");
       setIsCheckedToday(true);
 
-      if (user) {
-        const updatedUser: UserInfo = {
-          ...user,
-          points: user.points + 100,
-        };
-        setUser(updatedUser);
-      }
+      if (user && token) {
+        // 포인트를 100 추가
+        try {
+          await updateUserPoints(token, 100); // 추가된 포인트 업데이트 함수 호출
 
-      queryClient.invalidateQueries({ queryKey: ["attendance", token] });
+          const updatedUser: UserInfo = {
+            ...user,
+            gamePoint: user.gamePoint + 100,
+          };
+          setUser(updatedUser);
+
+          queryClient.invalidateQueries({ queryKey: ["attendance", token] });
+        } catch (error) {
+          console.error("포인트 업데이트 실패:", error);
+        }
+      }
     },
     onError: (error: Error) => {
       console.error("체크 오류:", error);

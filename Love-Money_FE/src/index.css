@@ -249,6 +249,7 @@ table {
   /* 카드를 비스듬하게 배치 */
   transform: rotateX(60deg);
   transition: transform 0.3s ease-in-out;
+  border-radius: 15px; /* 카드 모서리를 둥글게 */
   /* display: inline-block; */
 }
 
@@ -262,6 +263,14 @@ table {
     box-shadow 0.6s;
   transform-style: preserve-3d;
   backface-visibility: hidden;
+  box-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.6),
+    1.5px 1.5px 3px rgba(0, 0, 0, 0.5),
+    2px 2px 5px rgba(0, 0, 0, 0.4),
+    2.5px 2.5px 7px rgba(0, 0, 0, 0.3),
+    3px 3px 9px rgba(0, 0, 0, 0.2),
+    3.5px 3.5px 11px rgba(0, 0, 0, 0.1);
+  border-radius: 15px; /* 카드 내부 요소도 둥글게 */
 }
 
 .flip-card.flipped .flip-card-inner {
