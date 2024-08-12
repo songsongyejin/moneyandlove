@@ -15,7 +15,7 @@
     "@stomp/stompjs": "^7.0.0",
     "@tanstack/react-query": "^5.51.16",
     "@teachablemachine/image": "^0.8.0",
-    "@tensorflow/tfjs": "^3.0.0",
+    "@tensorflow/tfjs": "^1.7.4",
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.2",
     "face-api.js": "^0.22.2",
