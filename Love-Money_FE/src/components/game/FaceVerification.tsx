@@ -16,9 +16,8 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
   onVerificationComplete,
 }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [predictions, setPredictions] = useState<string[]>([]);
+  const [finalScore, setFinalScore] = useState<number | null>(null); // 종합 점수를 저장할 상태
   const [model, setModel] = useState<any>(null);
-  const [labelContainer, setLabelContainer] = useState<HTMLDivElement | null>(null);
   const [user] = useRecoilState(userInfo);
 
   useEffect(() => {
@@ -31,9 +30,8 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
 
   const resetState = () => {
     setImagePreview(null);
-    setPredictions([]);
+    setFinalScore(null);
     setModel(null);
-    setLabelContainer(null);
   };
 
   const initModel = async () => {
@@ -61,9 +59,6 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
       const loadedModel = await tmImage.load(modelURL, metadataURL);
       setModel(loadedModel);
   
-      const labelContainerElement = document.getElementById("predictions");
-      setLabelContainer(labelContainerElement as HTMLDivElement | null);
-  
       console.log("모델이 성공적으로 로드되었습니다.");
     } catch (error) {
       console.error("모델을 로드하는 중 오류가 발생했습니다.", error);
@@ -88,7 +83,8 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
           if (model) {
             imgElement.onload = async () => {
               const prediction = await model.predict(imgElement);
-              displayPrediction(prediction);
+              const finalScore = calculateFinalScore(prediction);
+              setFinalScore(finalScore); // 종합 점수를 상태에 저장하고 화면에 표시
             };
           }
         } else {
@@ -97,23 +93,6 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
       }, 100); // Delay to ensure the img element is rendered
     };
     reader.readAsDataURL(file);
-  };
-
-  const displayPrediction = (predictions: any) => {
-    if (!labelContainer) return;
-    labelContainer.innerHTML = '';
-
-    const predictionTexts: string[] = [];
-
-    predictions.forEach((prediction: any) => {
-      const classPrediction = `${prediction.className}: ${prediction.probability.toFixed(2)}`;
-      predictionTexts.push(classPrediction);
-    });
-
-    setPredictions(predictionTexts);
-
-    const finalScore = calculateFinalScore(predictions);
-    console.log("종합 점수:", finalScore.toFixed(2));
   };
 
   const calculateFinalScore = (predictions: any) => {
@@ -167,11 +146,11 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
           />
         )}
 
-        <div id="predictions" className="mb-4">
-          {predictions.map((prediction, index) => (
-            <p key={index}>{prediction}</p>
-          ))}
-        </div>
+        {finalScore !== null && (
+          <div className="mb-4">
+            <p>종합 점수: {finalScore.toFixed(2)}</p> {/* 종합 점수만 표시 */}
+          </div>
+        )}
 
         <div className="flex space-x-4">
           <button
