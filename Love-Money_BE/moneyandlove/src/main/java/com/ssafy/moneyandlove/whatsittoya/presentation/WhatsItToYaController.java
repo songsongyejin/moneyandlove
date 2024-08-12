@@ -12,7 +12,7 @@ import com.ssafy.moneyandlove.whatsittoya.application.WhatsItToYaService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/whats-it-to-ya")
+@RequestMapping("/api/whats-it-to-ya")
 @RequiredArgsConstructor
 public class WhatsItToYaController {
 

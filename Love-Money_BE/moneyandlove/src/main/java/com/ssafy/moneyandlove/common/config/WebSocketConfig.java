@@ -25,15 +25,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void configureMessageBroker(MessageBrokerRegistry config) {
 
 		//클라이언트에서 메세지를 보낼 때 url에 붙여야할 preix
-		config.setApplicationDestinationPrefixes("/chat");
+		config.setApplicationDestinationPrefixes("/api/chat");
 		//클라이언트가 구독한 url
-		config.enableSimpleBroker("/chat/receive");
+		config.enableSimpleBroker("/api/chat/receive");
 
 	}
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/websocket")
+		registry.addEndpoint("/api/websocket")
 			.setAllowedOriginPatterns("*")
 			.withSockJS();
 	}
