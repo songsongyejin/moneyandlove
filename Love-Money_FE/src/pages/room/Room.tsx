@@ -18,7 +18,7 @@ import GameView from "../../components/room/GameView";
 import { createSession, createToken } from "../../utils/api";
 import { useRecoilValue } from "recoil";
 import { maxExpressionState, userToken } from "../../atom/store";
-import mainBg from "../assets/main_bg.png";
+import mainBg from "../../assets/main_bg.png";
 // Room 컴포넌트
 const Room: React.FC = () => {
   //recoil 전역변수
