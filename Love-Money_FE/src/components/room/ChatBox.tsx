@@ -33,7 +33,7 @@ const ChatBox = ({
 
   // Face API
   const videoRef = useRef<HTMLVideoElement>(null); // 비디오 요소에 대한 참조를 저장합니다.
-  const lastDetectedTime = useRef<number | null>(null); // 마지막으로 얼굴이 감지된 시간을 저장합니다.
+  const requestRef = useRef<number | null>(null);
 
   useEffect(() => {
     // 모델을 로드하는 비동기 함수입니다.
@@ -50,15 +50,13 @@ const ChatBox = ({
       startVideo();
     };
 
-    // 웹캠 스트림을 시작하는 함수입니다.
     const startVideo = () => {
       navigator.mediaDevices
         .getUserMedia({ video: {} })
         .then((stream) => {
-          // videoRef가 현재 참조하는 비디오 요소에 스트림을 할당합니다.
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
-            // 비디오가 로드된 후 analyzeExpressions를 호출
+
             videoRef.current.addEventListener("loadedmetadata", () => {
               analyzeExpressions();
             });
@@ -67,71 +65,75 @@ const ChatBox = ({
         .catch((err) => console.error("Error accessing webcam: ", err));
     };
 
-    // 모델 로드 함수 호출
+    const analyzeExpressions = async () => {
+      if (videoRef.current) {
+        const displaySize = {
+          width: videoRef.current.videoWidth, // 비디오의 실제 너비
+          height: videoRef.current.videoHeight, // 비디오의 실제 높이
+        };
+
+        faceapi.matchDimensions(videoRef.current, displaySize);
+
+        const detect = async () => {
+          if (videoRef.current && videoRef.current.videoWidth > 0) {
+            const detections = await faceapi
+              .detectAllFaces(
+                videoRef.current!,
+                new faceapi.TinyFaceDetectorOptions()
+              )
+              .withFaceLandmarks()
+              .withFaceExpressions();
+
+            if (detections.length > 0) {
+              const exp = detections[0].expressions;
+              const maxExp = Object.keys(exp).reduce((a, b) =>
+                exp[a] > exp[b] ? a : b
+              );
+              setMaxExpression(maxExp);
+              setWarningMsg(""); // 경고 메시지 제거
+            } else {
+              // 얼굴이 감지되지 않은 경우
+              if (!warningMsg) {
+                setWarningMsg(
+                  "얼굴 인식이 되지 않았습니다. \n정면을 응시해주세요!!! \n표정이 인식되면 채팅장이 공개됩니다!!!"
+                );
+              }
+            }
+          }
+
+          requestRef.current = requestAnimationFrame(detect);
+        };
+
+        detect();
+      }
+    };
+
     loadModels();
+
+    return () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
   }, []);
-
-  const analyzeExpressions = async () => {
-    if (videoRef.current) {
-      const displaySize = {
-        width: videoRef.current.width,
-        height: videoRef.current.height,
-      };
-
-      // 비디오 요소의 크기를 맞추기 위해 매칭합니다.
-      faceapi.matchDimensions(videoRef.current, displaySize);
-
-      // 100ms마다 얼굴을 감지하고 표정을 분석하는 타이머를 설정합니다.
-      const interval = setInterval(async () => {
-        if (videoRef.current) {
-          const detections = await faceapi
-            .detectAllFaces(
-              videoRef.current!,
-              new faceapi.TinyFaceDetectorOptions()
-            )
-            .withFaceLandmarks()
-            .withFaceExpressions();
-
-          // if (detections.length > 0) {
-          //   // 얼굴이 인식된 경우
-          //   lastDetectedTime.current = Date.now(); // 현재 시간을 저장
-          //   setWarningMsg(""); // 경고 메시지 제거
-
-          //   // 가장 강한 표정을 찾고 상태를 업데이트합니다.
-          //   const exp = detections[0].expressions;
-          //   const maxExp = Object.keys(exp).reduce((a, b) =>
-          //     exp[a] > exp[b] ? a : b
-          //   );
-          //   setMaxExpression(maxExp);
-          // } else if (
-          //   lastDetectedTime.current &&
-          //   Date.now() - lastDetectedTime.current > 1000
-          // ) {
-          //   // 1초 동안 얼굴이 감지되지 않은 경우
-          //   setWarningMsg(
-          //     "얼굴 인식이 되지 않았습니다. \n정면을 응시해주세요!!! \n표정이 인식되면 채팅장이 공개됩니다!!!"
-          //   );
-          // }
-        }
-      }, 100); // 100ms마다 실행
-
-      return () => clearInterval(interval); // 컴포넌트 언마운트 시 인터벌 정리
-    }
-  };
 
   return (
     <div className="absolute h-screen w-screen">
-      {/* 비디오 요소는 화면에 표시되지 않지만 표정을 분석하는 데 사용됩니다. */}
-      <video ref={videoRef} autoPlay muted width="0" height="0" />
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        width="0"
+        height="0"
+        style={{ display: "none" }} // 비디오 요소를 숨김
+      />
 
-      {/* 감지된 가장 강한 표정만 화면에 표시합니다. */}
       {maxExpression && (
         <div className="absolute left-5 top-5 rounded-md bg-white p-2 shadow-md">
           <h3 className="text-lg font-bold">Max Expression: {maxExpression}</h3>
         </div>
       )}
 
-      {/* 경고 메시지를 화면에 표시 */}
       {warningMsg && (
         <div className="absolute bottom-5 left-5 rounded-md bg-red-500 p-2 text-white shadow-md">
           <h3 className="text-lg font-bold">{warningMsg}</h3>
