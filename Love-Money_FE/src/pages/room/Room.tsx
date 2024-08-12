@@ -17,13 +17,12 @@ import JoinSessionForm from "../../components/room/JoinSessionForm";
 import GameView from "../../components/room/GameView";
 import { createSession, createToken } from "../../utils/api";
 import { useRecoilValue } from "recoil";
-import { maxExpressionState, userToken, warning } from "../../atom/store";
-import ai_face from "../../assets/ai_face.gif";
+import { maxExpressionState, userToken } from "../../atom/store";
+
 // Room 컴포넌트
 const Room: React.FC = () => {
   //recoil 전역변수
   const maxExpression = useRecoilValue(maxExpressionState);
-  const warningMsg = useRecoilValue(warning);
   const token = useRecoilValue(userToken);
   //감정을 이모지로 변환
   const expressionToEmoji = (expression: string): string => {
@@ -182,17 +181,7 @@ const Room: React.FC = () => {
     <div className="relative min-h-screen">
       <div className="absolute inset-0 -z-10 bg-main-bg bg-cover bg-center"></div>
       <div className="absolute inset-0 -z-10 bg-black opacity-40"></div>
-      {mode === "chat" && warningMsg && (
-        <div className="absolute right-4 top-12 z-50 flex h-5/6 w-96 flex-col justify-center whitespace-pre-line rounded bg-red-500 text-center text-white">
-          <div className="bg-white">
-            <img src={ai_face} alt="" className="mx-auto h-44" />
-          </div>
 
-          <p style={{ fontFamily: "DungGeunMo" }} className="block">
-            {warningMsg}
-          </p>
-        </div>
-      )}
       {session === undefined ? (
         <JoinSessionForm
           joinSession={joinSession}

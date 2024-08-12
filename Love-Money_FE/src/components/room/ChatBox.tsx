@@ -5,9 +5,16 @@ import "./chatBox.css";
 import * as faceapi from "face-api.js";
 import Webcam from "react-webcam";
 import { useRecoilState } from "recoil";
-import { maxExpressionState, warning } from "../../atom/store";
-import boy from "../../assets/boy.png";
+import { maxExpressionState } from "../../atom/store";
+import boy_neutral from "../../assets/boy_neutral.png";
+import boy_angry from "../../assets/boy_angry.png";
+import boy_disgusted from "../../assets/boy_disgusted.png";
+import boy_fearful from "../../assets/boy_fearful.png";
+import boy_happy from "../../assets/boy_happy.png";
+import boy_sad from "../../assets/boy_sad.png";
+import boy_surprised from "../../assets/boy_surprised.png";
 import girl from "../../assets/girl.png";
+import ai_face from "../../assets/ai_face.gif";
 
 const ChatBox = ({
   mode,
@@ -31,11 +38,12 @@ const ChatBox = ({
   };
 
   const webcamRef = useRef<Webcam>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null); // 스크롤 위치를 제어할 참조
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
-  const [warningMsg, setWarningMsg] = useRecoilState(warning);
-  const [loading, setLoading] = useState(true); // 모델 로딩 상태 추가
+  const [warningMsg, setWarningMsg] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [noFaceDetectedCount, setNoFaceDetectedCount] = useState(0);
 
   useEffect(() => {
     const loadModels = async () => {
@@ -71,6 +79,13 @@ const ChatBox = ({
           expressions[a] > expressions[b] ? a : b
         );
         setMaxExpression(maxEmotion);
+
+        // 얼굴이 감지되면 경고 메시지 제거
+        setNoFaceDetectedCount(0);
+        setWarningMsg("");
+      } else {
+        // 얼굴이 감지되지 않으면 카운트를 증가
+        setNoFaceDetectedCount((prevCount) => prevCount + 1);
       }
     }
   };
@@ -78,41 +93,60 @@ const ChatBox = ({
   useEffect(() => {
     const interval = setInterval(() => {
       analyzeEmotion();
-    }, 100); // 1초마다 감정 분석
+    }, 100); // 0.1초마다 감정 분석
     return () => clearInterval(interval);
   }, []);
 
-  // 메시지 목록이 업데이트될 때마다 스크롤을 아래로 이동
+  useEffect(() => {
+    if (noFaceDetectedCount > 10) {
+      // 10번 연속으로 얼굴이 감지되지 않으면 경고 메시지 표시
+      setWarningMsg(
+        "얼굴이 감지되지 않았습니다. 카메라 앞에 얼굴을 위치시켜 주세요."
+      );
+    }
+  }, [noFaceDetectedCount]);
+
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
-  // 이모지 매핑 함수
-  const getEmojiForExpression = (expression: string) => {
+  // 감정에 따라 boy 이미지 매핑
+  const getImageForExpression = (expression: string) => {
     switch (expression) {
       case "happy":
-        return "😊";
+        return boy_happy;
       case "sad":
-        return "😢";
+        return boy_sad;
       case "angry":
-        return "😡";
+        return boy_angry;
       case "surprised":
-        return "😲";
+        return boy_surprised;
       case "disgusted":
-        return "🤢";
+        return boy_disgusted;
       case "fearful":
-        return "😨";
+        return boy_fearful;
       case "neutral":
-        return "😐";
       default:
-        return "😐";
+        return boy_neutral;
     }
   };
 
   return (
     <div className="absolute h-screen w-screen">
+      {warningMsg && (
+        <div className="flex w-full justify-center">
+          <div className="absolute z-50 mx-auto flex h-5/6 w-[800px] flex-col justify-center whitespace-pre-line rounded bg-red-500 text-center text-white">
+            <div className="bg-white">
+              <img src={ai_face} alt="" className="mx-auto h-44" />
+            </div>
+            <p style={{ fontFamily: "DungGeunMo" }} className="block">
+              {warningMsg}
+            </p>
+          </div>
+        </div>
+      )}
       {loading ? (
         <p>Loading models...</p>
       ) : (
@@ -129,18 +163,6 @@ const ChatBox = ({
         />
       )}
 
-      {maxExpression && (
-        <div className="absolute bottom-24 right-80 rounded-md bg-transparent p-2 text-center shadow-md">
-          <h3 className="text-6xl">{getEmojiForExpression(maxExpression)}</h3>
-        </div>
-      )}
-
-      {warningMsg && (
-        <div className="absolute bottom-5 left-5 rounded-md bg-red-500 p-2 text-white shadow-md">
-          <h3 className="text-lg font-bold">{warningMsg}</h3>
-        </div>
-      )}
-
       <img
         src={aiBot}
         alt="AI Bot"
@@ -149,11 +171,12 @@ const ChatBox = ({
       <div className="absolute bottom-40 left-28 rounded-e-2xl rounded-tl-2xl border-4 border-solid border-custom-purple-color bg-white p-3 text-lg font-semibold text-custom-purple-color">
         자신이 러브헌터임을 어필해주세요!
       </div>
-
       <div className="h-full">
         <div
           style={{ fontFamily: "DungGeunMo" }}
-          className={`${mode === "chat" ? "" : "hidden"} mx-auto h-full w-[800px] flex-col items-center rounded-2xl pt-5`}
+          className={`${
+            mode === "chat" ? "" : "hidden"
+          } mx-auto h-full w-[800px] flex-col items-center rounded-2xl pt-5`}
         >
           <div className="scrollbar h-5/6 overflow-y-auto bg-transparent p-2">
             {messages.map((msg, i) => {
@@ -161,7 +184,9 @@ const ChatBox = ({
               return (
                 <div
                   key={`${msg.user}-${i}`}
-                  className={`mb-3 flex ${isMyMessage ? "justify-end" : "justify-start"}`}
+                  className={`mb-3 flex ${
+                    isMyMessage ? "justify-end" : "justify-start"
+                  }`}
                 >
                   {isMyMessage ? (
                     <>
@@ -204,7 +229,11 @@ const ChatBox = ({
                 />
               </div>
             </div>
-            <img src={boy} alt="" className="w-32" />
+            <img
+              src={getImageForExpression(maxExpression || "neutral")}
+              alt="Emotion"
+              className="w-32"
+            />
           </div>
         </div>
       </div>
