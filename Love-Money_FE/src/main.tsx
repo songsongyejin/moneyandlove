@@ -22,7 +22,6 @@ import GameHome from "./pages/GameHome.tsx";
 import Room from "./pages/room/Room.tsx";
 import LoginHandler from "./pages/login/LoginHandler.tsx";
 import SignUpPage from "./pages/signUp/SignUpPage.tsx";
-import WhatsItToYa from "./pages/room/WhatsItToYa.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,7 +39,6 @@ const router = createBrowserRouter([
         element: <LoginHandler />,
       },
       { path: "signUp", element: <SignUpPage /> },
-      { path: "whatsittoya", element: <WhatsItToYa /> },
     ],
   },
 ]);

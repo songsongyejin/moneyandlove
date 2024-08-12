@@ -537,46 +537,56 @@ table {
 }
 
 /* Love와 Money 선택 카드 스타일 */
-.select-card-container {
+/* 테이블 위에 이미지가 놓여 있는 듯한 효과 */
+.table-image-container {
   display: flex;
   justify-content: center;
-  gap: 2rem; /* 카드 간격 설정 */
-  transform: rotateX(0deg);
-  transform-style: preserve-3d;
-  transition: transform 0.3s ease-in-out;
+  gap: 10rem; /* 이미지 간의 간격을 설정 */
+  perspective: 800px; /* 3D 효과를 위한 원근감 */
 }
 
-.select-card {
-  width: 150px;
-  height: 200px;
-  border-radius: 5px;
-  background-color: #1e293b;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transform: translateZ(0);
-  transform-style: preserve-3d;
-  transition: all 0.3s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
+.table-image-wrapper {
+  transition:
+    transform 0.3s ease-in-out,
+    filter 0.3s ease-in-out;
   cursor: pointer;
+  transform: rotateX(
+    60deg
+  ); /* 이미지와 텍스트가 함께 비스듬하게 보이도록 회전 */
+  filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.2)); /* 기본 그림자 */
+  text-align: center;
 }
 
-.select-card:hover {
-  transform: rotateX(-65deg) scale(1.1) translateY(-10px);
-  transform-origin: bottom;
-  box-shadow:
-    0 25px 35px rgba(0, 0, 0, 0.5),
-    0 20px 25px rgba(0, 0, 0, 0.4),
-    0 15px 20px rgba(0, 0, 0, 0.3);
+.table-image-wrapper:hover {
+  transform: rotateX(40deg) translateY(-10px); /* 호버 시 이미지와 텍스트가 함께 떠오르게 */
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.4)); /* 호버 시 그림자 강화 */
 }
 
-.select-card.selected {
-  background-color: #f97316;
-  transform: rotateX(-65deg) scale(1.1) translateY(-10px);
-  box-shadow:
-    0 25px 35px rgba(0, 0, 0, 0.6),
-    0 20px 25px rgba(0, 0, 0, 0.5),
-    0 15px 20px rgba(0, 0, 0, 0.4);
+.table-image-wrapper.selected {
+  transform: rotateX(0deg) translateY(-15px) scale(1.1); /* 선택된 이미지와 텍스트를 강조 */
+  filter: drop-shadow(
+    0 20px 30px rgba(0, 0, 0, 0.5)
+  ); /* 선택된 이미지의 그림자 */
+}
+
+.table-image {
+  width: 130px;
+  height: auto;
+}
+
+.table-image-text {
+  font-family: "DungGeunMo", sans-serif;
+  margin-top: 10px;
+  color: white;
+  text-shadow:
+    2px 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 10px rgba(255, 255, 255, 0.5); /* 텍스트에 그림자와 글로우 효과 추가 */
+  font-size: 2rem; /* 텍스트 크기를 크게 설정 */
+  font-weight: bold; /* 텍스트를 굵게 설정 */
+}
+
+.table-image-wrapper.selected .table-image-text {
+  text-shadow:
+    3px 3px 6px rgba(0, 0, 0, 1),
+    0 0 15px rgba(255, 255, 255, 0.8);
 }

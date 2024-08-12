@@ -1,11 +1,18 @@
 // components/whats-it-to-ya/FinalSelection.tsx
-import React, { useState } from "react";
-import { FaHeart, FaDollarSign } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import coin from "../../assets/cards/coin.png";
+import heart from "../../assets/cards/pink_heart_card_back.png";
 
 interface FinalSelectionProps {
   onNextPhase: (selection: "Love" | "Money") => void;
+  loading: boolean;
+  opponentFinalPosition: "Love" | "Money" | null;
 }
-const FinalSelection: React.FC<FinalSelectionProps> = ({ onNextPhase }) => {
+const FinalSelection: React.FC<FinalSelectionProps> = ({
+  onNextPhase,
+  loading,
+  opponentFinalPosition,
+}) => {
   const [selectedPosition, setSelectedPosition] = useState<
     "Love" | "Money" | null
   >(null);
@@ -13,7 +20,6 @@ const FinalSelection: React.FC<FinalSelectionProps> = ({ onNextPhase }) => {
   const handleSelection = (position: "Love" | "Money") => {
     setSelectedPosition(position);
   };
-
   const handleNextPhase = () => {
     if (selectedPosition) {
       onNextPhase(selectedPosition);
@@ -22,51 +28,71 @@ const FinalSelection: React.FC<FinalSelectionProps> = ({ onNextPhase }) => {
     }
   };
 
+  // 상대방의 선택이 도착했을 때, 나도 선택을 완료한 상태라면 바로 다음 단계로 넘어감
+  useEffect(() => {
+    if (loading && opponentFinalPosition) {
+      onNextPhase(selectedPosition as "Love" | "Money");
+    }
+  }, [opponentFinalPosition, loading, onNextPhase, selectedPosition]);
+
   return (
     <div className="relative flex h-screen flex-col items-center justify-center">
-      <div
-        className="absolute flex -translate-y-1/2 transform animate-fadeIn items-center whitespace-nowrap text-center text-white"
-        style={{ fontFamily: "DungGeunMo", bottom: "30%" }}
-      >
-        <div>
-          <p className="deep-3d-text mb-3 text-4xl">최종 선택의 시간입니다.</p>
-          <p className="deep-3d-text mb-3 text-2xl">
-            당신의 포지션을 선택해주세요!
-          </p>
-        </div>
-      </div>
-
-      <div className="fixed bottom-24">
-        {/* Love와 Money 선택 카드들 */}
-        <div className="select-card-container">
-          <div
-            className={`select-card ${selectedPosition === "Love" ? "selected" : ""}`}
-            onClick={() => handleSelection("Love")}
-          >
-            <FaHeart size={60} />
-            <p className="mt-2">LOVE</p>
-          </div>
-
-          <div
-            className={`select-card ${selectedPosition === "Money" ? "selected" : ""}`}
-            onClick={() => handleSelection("Money")}
-          >
-            <FaDollarSign size={60} />
-            <p className="mt-2">MONEY</p>
-          </div>
-        </div>
-      </div>
-
-      {/* 다음으로 넘어가는 버튼 */}
-      <div className="fixed bottom-10">
-        <button
-          onClick={handleNextPhase}
-          className="three-d-button reset"
-          style={{ fontFamily: "DungGeunMo" }}
+      {loading ? (
+        <div
+          className="absolute flex -translate-y-1/2 transform animate-fadeIn flex-col items-center whitespace-nowrap text-center text-white"
+          style={{ fontFamily: "DungGeunMo", bottom: "10%" }}
         >
-          최종결과확인
-        </button>
-      </div>
+          <p className="deep-3d-text mb-10 text-4xl">
+            상대방이 선택 중입니다...
+          </p>
+          <div className="spinner bottom-3"></div>
+        </div>
+      ) : (
+        <>
+          <div
+            className="absolute flex -translate-y-1/2 transform animate-fadeIn items-center whitespace-nowrap text-center text-white"
+            style={{ fontFamily: "DungGeunMo", bottom: "30%" }}
+          >
+            <div>
+              <p className="deep-3d-text mb-3 text-4xl">
+                최종 선택의 시간입니다.
+              </p>
+              <p className="deep-3d-text mb-3 text-2xl">
+                당신의 최종 포지션을 선택해주세요!
+              </p>
+            </div>
+          </div>
+          <div className="table-image-container fixed bottom-24">
+            <div
+              className={`table-image-wrapper ${
+                selectedPosition === "Love" ? "selected" : ""
+              }`}
+              onClick={() => handleSelection("Love")}
+            >
+              <img src={heart} alt="Love" className="table-image" />
+              <p className="table-image-text">LOVE</p>
+            </div>
+            <div
+              className={`table-image-wrapper ${
+                selectedPosition === "Money" ? "selected" : ""
+              }`}
+              onClick={() => handleSelection("Money")}
+            >
+              <img src={coin} alt="Money" className="table-image" />
+              <p className="table-image-text">MONEY</p>
+            </div>
+          </div>
+          <div className="fixed bottom-10">
+            <button
+              onClick={handleNextPhase}
+              className="three-d-button reset"
+              style={{ fontFamily: "DungGeunMo" }}
+            >
+              최종선택완료
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

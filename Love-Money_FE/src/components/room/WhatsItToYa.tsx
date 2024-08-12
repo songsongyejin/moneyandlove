@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { useNavigate } from "react-router-dom";
 
 import Intro from "../whats-it-to-ya/Intro";
 import SelectTurn from "../whats-it-to-ya/SelectTurn";
@@ -19,6 +20,7 @@ import SecondTurnSecondPlayerScoreBoard from "../whats-it-to-ya/second-turn/Seco
 import Result from "../whats-it-to-ya/Result";
 import Discussion from "../whats-it-to-ya/Discussion";
 import FinalSelection from "../whats-it-to-ya/FinalSelection";
+import FinalResult from "../whats-it-to-ya/FinalResult";
 
 import { useWordCards } from "../../hooks/useWordCards";
 import { Session } from "openvidu-browser";
@@ -36,6 +38,7 @@ interface WordCard {
 }
 
 const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
+  const navigate = useNavigate();
   // Intro 화면 표시 여부를 관리하는 state
   const [showIntro, setShowIntro] = useState(true);
   // 사용자의 플레이 순서를 관리하는 state
@@ -77,7 +80,19 @@ const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
   const [winner, setWinner] = useState<string | null>(null);
   const [loser, setLoser] = useState<string | null>(null);
 
+  const [myFinalPosition, setMyFinalPosition] = useState<
+    "Love" | "Money" | null
+  >(null);
+  const [opponentFinalPosition, setOpponentFinalPosition] = useState<
+    "Love" | "Money" | null
+  >(null);
+
   //-----------------------------------------------------------------------------//
+  // gamePhase 상태 변화를 로그로 확인
+  useEffect(() => {
+    console.log("현재 gamePhase 상태:", gamePhase);
+  }, [gamePhase]);
+
   // 사용자가 Intro 화면에 진입했음을 알리는 신호 전송
   useEffect(() => {
     if (isIntroCompleted.current) return; // Intro가 완료된 경우 더 이상 실행되지 않음
@@ -128,21 +143,17 @@ const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
     };
   }, [session, introParticipants]);
 
-  // gamePhase 상태 변화를 로그로 확인
-  useEffect(() => {
-    console.log("현재 gamePhase 상태:", gamePhase);
-  }, [gamePhase]);
-
   // 턴 선택이 완료되었을 때 호출되는 함수
   const handleTurnSelected = (cardIndex: number) => {
     setSelectedTurn(cardIndex);
     if (cardIndex === 1) {
       // Player 1 선택 (선공)
       setGamePhase("FIRST_TURN_FIRST_PLAYER_PLAY");
-    } else {
-      // Player 2 선택 (후공)
-      setGamePhase("FIRST_TURN_SECOND_PLAYER_WAIT");
     }
+    // else {
+    //   // Player 2 선택 (후공)
+    //   setGamePhase("FIRST_TURN_SECOND_PLAYER_WAIT");
+    // }
   };
 
   // 플레이어 1이 생성한 단어 카드 배열을 세션을 통해 전송
@@ -170,7 +181,8 @@ const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
       session.on("signal:wordCards", (event: any) => {
         const receivedWordCards = JSON.parse(event.data);
         setWordCards(receivedWordCards); // 플레이어 2는 수신된 단어 카드를 설정
-        console.log("Received word cards:", receivedWordCards);
+        console.log("수신받은 단어카드 배열:", receivedWordCards);
+        setGamePhase("FIRST_TURN_SECOND_PLAYER_WAIT");
       });
     }
   }, [session, selectedTurn]);
@@ -371,6 +383,62 @@ const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
     setGamePhase("FINAL_SELECTION");
   };
 
+  const [finalLoading, setFinalLoading] = useState(false); // 로딩 상태 추가
+
+  useEffect(() => {
+    const handleFinalSelectionSignal = (event: any) => {
+      // 신호가 내 자신이 아닌, 상대방으로부터 온 것인지 확인
+      if (event.from.connectionId !== session.connection.connectionId) {
+        console.log("상대방 포지션 수신 완료");
+        setOpponentFinalPosition(event.data as "Love" | "Money");
+
+        // 자신이 이미 선택을 완료한 경우 바로 다음 단계로 넘어감
+        if (myFinalPosition) {
+          setFinalLoading(false); // 로딩 상태 해제
+          setGamePhase("FINAL_RESULT");
+        }
+      }
+    };
+
+    // 상대방의 선택을 수신하는 리스너 설정
+    session.on("signal:finalSelection", handleFinalSelectionSignal);
+
+    // 컴포넌트가 언마운트될 때 리스너 제거
+    return () => {
+      session.off("signal:finalSelection", handleFinalSelectionSignal);
+    };
+  }, [session, myFinalPosition]);
+
+  // 최종 선택이 완료된 후 호출되는 함수
+  const handleFinalResultPhase = (myFinalPosition: "Love" | "Money") => {
+    setMyFinalPosition(myFinalPosition);
+
+    // 상대방에게 자신의 선택을 신호로 전송
+    session
+      .signal({
+        data: myFinalPosition,
+        to: [],
+        type: "finalSelection",
+      })
+      .then(() => {
+        console.log("내 포지션 전송 완료");
+        // 상대방이 이미 선택을 완료한 경우 바로 다음 단계로 넘어감
+        if (opponentFinalPosition) {
+          setFinalLoading(false); // 로딩 상태 해제
+          setGamePhase("FINAL_RESULT");
+        } else {
+          setFinalLoading(true); // 상대방의 선택을 기다리기 위해 로딩 상태 활성화
+        }
+      })
+      .catch((error) => {
+        console.error("내 포지션 전송 에러 발생", error);
+      });
+  };
+
+  const handleBackToMain = () => {
+    navigate("/main"); // 메인 페이지로 이동
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -462,7 +530,17 @@ const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
       ) : gamePhase === "DISCUSSION" ? (
         <Discussion onNextPhase={handleFinalSelectionPhase} />
       ) : gamePhase === "FINAL_SELECTION" ? (
-        <FinalSelection onNextPhase={handleFinalSelectionPhase} /> // 최종선택 단계를 위한 컴포넌트
+        <FinalSelection
+          onNextPhase={handleFinalResultPhase}
+          loading={finalLoading}
+          opponentFinalPosition={opponentFinalPosition}
+        /> // 최종선택 단계를 위한 컴포넌트
+      ) : gamePhase === "FINAL_RESULT" ? (
+        <FinalResult
+          myFinalPosition={myFinalPosition}
+          opponentFinalPosition={opponentFinalPosition}
+          onBackToMain={handleBackToMain}
+        />
       ) : null}
     </DndProvider>
   );

@@ -32,15 +32,6 @@ const Matching: React.FC<MatchingProps> = ({ isOpen, onClose }) => {
           >
             매칭 확인
           </button>
-          <button
-            onClick={() => navigate("/whatsittoya")}
-            className="mt-8 rounded-lg bg-custom-purple-color px-8 py-3 text-lg text-white"
-            style={{
-              fontFamily: "DNFBitBitv2",
-            }}
-          >
-            왓츠잇투야 게임시작
-          </button>
         </div>
         <button
           onClick={onClose}
