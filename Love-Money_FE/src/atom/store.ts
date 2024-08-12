@@ -33,3 +33,8 @@ export const warning = atom<string>({
   key: "warning",
   default: "",
 });
+
+export const selectedPositionState = atom<string | null>({
+  key: "selectedPositionState",
+  default: null,
+});

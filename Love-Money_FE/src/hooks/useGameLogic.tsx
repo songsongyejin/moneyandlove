@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useRecoilState } from "recoil";
+import { selectedPositionState } from "../atom/store";
 
 export const useGameLogic = () => {
   // 각 단계별 모달의 표시 여부를 관리하는 상태
@@ -9,7 +11,10 @@ export const useGameLogic = () => {
   const [showMatchComplete, setShowMatchComplete] = useState(false);
 
   // 사용자가 선택한 포지션과 게임 모드를 저장하는 상태
-  const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+  // const [selectedPosition, setSelectedPosition] = useState<string | null>(null);
+  const [selectedPosition, setSelectedPosition] = useRecoilState(
+    selectedPositionState
+  );
   const [gameMode, setGameMode] = useState<string | null>(null);
 
   // 게임 시작 버튼 클릭 시 호출되는 함수
