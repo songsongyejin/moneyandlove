@@ -94,6 +94,7 @@ const GameHome: React.FC = () => {
     if (selectedPosition === "LOVE") return mainBgLove;
     return mainBg;
   };
+
   return (
     <div className="relative h-screen">
       <Navbar />

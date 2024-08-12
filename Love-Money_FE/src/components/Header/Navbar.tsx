@@ -8,6 +8,7 @@ import RulebookModal from "../home/RulebookModal";
 import RankingModal from "..//home/RankingModal";
 import AttendanceModal from "../home/AttendanceModal";
 import ProfileModal from "../home/ProfileModal";
+import FaceVerification from "../game/FaceVerification";
 import { LiaCoinsSolid } from "react-icons/lia";
 import { FaPlusCircle, FaCoins } from "react-icons/fa";
 
@@ -19,6 +20,7 @@ const Navbar: React.FC = () => {
     ranking: false,
     attendance: false,
     profile: false,
+    face: false,
   });
 
   const openModal = (modal: string) => setModals({ ...modals, [modal]: true });
@@ -40,6 +42,12 @@ const Navbar: React.FC = () => {
               onClick={() => openModal("rulebook")}
             >
               게임소개
+            </button>
+            <button
+              className="hover:scale-105"
+              onClick={() => openModal("face")}
+            >
+              얼굴
             </button>
             <button
               className="hover:scale-105"
@@ -97,6 +105,10 @@ const Navbar: React.FC = () => {
       <ProfileModal
         isOpen={modals.profile}
         onClose={() => closeModal("profile")}
+      />
+      <FaceVerification
+        isOpen={modals.face}
+        onClose={() => closeModal("face")}
       />
     </>
   );

@@ -1,24 +1,28 @@
 package com.ssafy.moneyandlove.matching.application;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.ssafy.moneyandlove.face.application.FaceService;
-import com.ssafy.moneyandlove.matching.dto.MatchingUserResponse;
-import com.ssafy.moneyandlove.user.service.UserService;
-import jakarta.annotation.PreDestroy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.moneyandlove.common.error.ErrorType;
 import com.ssafy.moneyandlove.common.exception.MoneyAndLoveException;
+import com.ssafy.moneyandlove.face.application.FaceService;
 import com.ssafy.moneyandlove.matching.dto.MatchingUserRequest;
+import com.ssafy.moneyandlove.matching.dto.MatchingUserResponse;
+import com.ssafy.moneyandlove.user.application.UserService;
 
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -64,12 +68,18 @@ public class MatchingService {
 
 		addToQueue(matchingUserRequest);
 
-		//3분동안 매칭 대기
-		long endTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3);
+		//30초동안 매칭 대기
+		long endTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
 
 		while (System.currentTimeMillis() < endTime) {
 			// 매칭 상태 확인
 			if (checkMatchingStatus(response, userId)) {
+				return response;
+			}
+
+			// 매칭 취소 확인
+			if (!isUserInQueue(matchingUserRequest)) {
+				response.put("status", "cancelled");
 				return response;
 			}
 
@@ -85,6 +95,7 @@ public class MatchingService {
 					matchedUser = top30PercentMatch(matchingUserRequest);
 					break;
 				default:
+					cancleMatching(matchingUserRequest);
 					throw new MoneyAndLoveException(ErrorType.MATCHING_TYPE_NOT_SUPPORTED);
 			}
 
@@ -92,17 +103,19 @@ public class MatchingService {
 				//successMatch
 				MatchingUserResponse fromUser = userService.getUserDetails(matchingUserRequest.getUserId(), matchingUserRequest.getPosition(), matchingUserRequest.getMatchType());
 				MatchingUserResponse toUser = userService.getUserDetails(matchedUser.getUserId(), matchedUser.getPosition(), matchedUser.getMatchType());
+				String uuid =  UUID.randomUUID().toString();
 				response.put("status", "success");
 				response.put("fromUser", fromUser);
 				response.put("toUser", toUser);
+				response.put("sessionId", uuid);
 
 				// 매칭 상태 저장
-				saveMatchingResult(matchingUserRequest.getUserId(), matchedUser.getUserId(), fromUser, toUser);
+				saveMatchingResult(matchingUserRequest.getUserId(), matchedUser.getUserId(), fromUser, toUser, uuid);
 
 				return response;
 			}
 			try {
-				Thread.sleep(5000); // 5초 대기
+				Thread.sleep(3000); // 3초 대기
 			} catch (InterruptedException e) {
 				// 현재 스레드의 인터럽트 상태를 복구하고 메서드를 종료
 				Thread.currentThread().interrupt();
@@ -112,25 +125,22 @@ public class MatchingService {
 				break;
 			}
 		}
-		// No match found within 3 minutes.
+		// No match found within 30 sec.
 		//deleteFromQue
 		redisTemplate.opsForZSet().remove(MATCHING_QUEUE, matchingUserRequest);
 		response.put("status", "timeout");
 		return response;
     }
 
-	private void saveMatchingResult(Long userId1, Long userId2, MatchingUserResponse fromUser, MatchingUserResponse toUser) {
+	private void saveMatchingResult(Long userId1, Long userId2, MatchingUserResponse fromUser, MatchingUserResponse toUser, String uuid) {
 		String matchKey = generateMatchKey(userId1, userId2);
 		Map<String, Object> matchInfo = new HashMap<>();
 		matchInfo.put("fromUser", fromUser);
 		matchInfo.put("toUser", toUser);
-
-		//화상 채팅이랑 세션 참가할 고유한 UUID 만들어서 줘야 함.
-		String uuid =  UUID.randomUUID().toString();
 		matchInfo.put("sessionId", uuid);
 
-		// Redis에 매칭 결과 저장 및 TTL 설정 (예: 10분)
-		redisTemplate.opsForValue().set(matchKey, matchInfo, 10, TimeUnit.MINUTES);
+		// Redis에 매칭 결과 저장 및 TTL 설정 (40초)
+		redisTemplate.opsForValue().set(matchKey,matchInfo, 40, TimeUnit.SECONDS);
 	}
 
 	private String generateMatchKey(Long userId1, Long userId2) {
@@ -211,16 +221,12 @@ public class MatchingService {
 	private boolean isValidMatch(MatchingUserRequest matchingUserRequest, MatchingUserRequest candidate) {
 		// Bidirectional condition check
 		// 1. 여성<-->남성인지 체크
-		// 2. 이전에 매칭되었던 사람인지 체크
-		// 3. 상대방의 조건에 내가 부합하는지 체크
+		// 2. 상대방의 조건에 내가 부합하는지 체크
 
 		String candidateMatchingType = candidate.getMatchType();
 		String userPosition = matchingUserRequest.getPosition();
 
 		if (!candidate.getGender().equals(matchingUserRequest.getGender())) {
-			/*
-			* 이전에 매칭되었던 사람인지 체크하는 로직
-			* */
 
 			if(candidateMatchingType.equals("love")&&userPosition.equals("money")) {
 				return false;
@@ -234,4 +240,18 @@ public class MatchingService {
 	}
 
 
+	public void cancleMatching(MatchingUserRequest matchingUserRequest) {
+		Long userId = matchingUserRequest.getUserId();
+		matchingUserRequest.putGenderFromUser(userService.getGender(userId));
+		matchingUserRequest.putFaceScoreFromFace(faceService.getFaceScoreByUserId(userId));
+		// 매칭 대기 큐에서 사용자의 요청 제거
+		redisTemplate.opsForZSet().remove(MATCHING_QUEUE, matchingUserRequest);
+	}
+
+	// 사용자 매칭 큐에 있는지 확인하는 메서드
+	private boolean isUserInQueue(MatchingUserRequest matchingUserRequest) {
+		ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
+		Double score = zSetOps.score(MATCHING_QUEUE, matchingUserRequest);
+		return score != null;
+	}
 }

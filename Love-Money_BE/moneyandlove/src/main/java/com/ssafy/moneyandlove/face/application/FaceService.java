@@ -145,4 +145,16 @@ public class FaceService {
 		return faceRepository.findFaceScoreByUserId(userId);
 	}
 
+	public void createFace(Long userId){
+		User user = userRepository.findById(userId)
+				.orElseThrow(()->new MoneyAndLoveException(ErrorType.USER_NOT_FOUND));
+		Face newFace = Face.builder()
+				.user(user)
+				.faceScore(0)
+				.faceAuth(0)
+				.montageURL(null)
+				.build();
+		faceRepository.save(newFace);
+	}
+
 }
