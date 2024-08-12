@@ -84,20 +84,9 @@ const GameHome: React.FC = () => {
     showMatchComplete,
     handleMatchComplete,
   } = useGameLogic();
+
   console.log(selectedPosition);
   console.log(gameMode);
-
-  const {
-    data: s,
-    error: e,
-    isLoading: l,
-  } = useQuery({
-    queryKey: ["matching", token, selectedPosition, gameMode],
-    queryFn: () =>
-      matching(token as string, selectedPosition as string, gameMode as string),
-    enabled: !!token && showMatching,
-  });
-  console.log(s);
 
   // 선택된 포지션에 따라 배경 클래스를 결정하는 함수
   const getBackgroundClass = () => {
@@ -201,7 +190,16 @@ const GameHome: React.FC = () => {
       />
 
       {/* 매칭 모달 */}
-      <Matching isOpen={showMatching} onClose={handleMatchingCancel} />
+
+      {selectedPosition && gameMode && token && (
+        <Matching
+          isOpen={showMatching}
+          onClose={handleMatchingCancel}
+          token={token}
+          selectedPosition={selectedPosition}
+          gameMode={gameMode}
+        />
+      )}
     </div>
   );
 };
