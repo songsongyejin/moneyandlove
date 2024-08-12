@@ -15,7 +15,6 @@ import {
 import useSessionHandlers from "../../hooks/useSessionHandlers";
 import JoinSessionForm from "../../components/room/JoinSessionForm";
 import GameView from "../../components/room/GameView";
-import TempGameView from "../../components/room/TempGameView";
 import { createSession, createToken } from "../../utils/api";
 import { useRecoilValue } from "recoil";
 import { maxExpressionState, userToken, warning } from "../../atom/store";
@@ -203,21 +202,7 @@ const Room: React.FC = () => {
           handleChangeSessionId={handleChangeSessionId}
         />
       ) : (
-        // <GameView
-        //   mode={mode}
-        //   setMode={setMode}
-        //   mainStreamManager={mainStreamManager}
-        //   subscriber={subscriber}
-        //   messages={messages}
-        //   newMessage={newMessage}
-        //   setNewMessage={setNewMessage}
-        //   sendMessage={sendMessage}
-        //   leaveSession={leaveSession}
-        //   isModalOpen={isModalOpen}
-        //   setIsModalOpen={setIsModalOpen}
-        //   myUserName={myUserName}
-        // />
-        <TempGameView
+        <GameView
           mode={mode}
           setMode={setMode}
           mainStreamManager={mainStreamManager}

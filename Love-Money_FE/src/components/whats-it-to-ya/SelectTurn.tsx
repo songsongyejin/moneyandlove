@@ -93,36 +93,10 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
           top: "65%", // 텍스트 위치를 적절히 조정
         }}
       >
-        <p
-          className="mb-3 text-6xl"
-          style={{
-            textShadow: `
-                1px 1px 2px #000, 2px 2px 4px #000,
-                3px 3px 8px rgba(0, 0, 0, 0.7),
-                4px 4px 12px rgba(0, 0, 0, 0.7),
-                5px 5px 16px rgba(0, 0, 0, 0.7),
-                6px 6px 20px rgba(0, 0, 0, 0.7)
-              `, // 여러 겹의 그림자를 추가하여 깊이감과 입체감을 만듦
-            transform: "perspective(500px) rotateX(15deg)", // 더 강한 원근감을 주기 위해 각도 조정
-            fontWeight: "bold",
-          }}
-        >
+        <p className="deep-3d-text mb-3 text-6xl">
           왓츠잇투야 게임이 곧 시작됩니다!
         </p>
-        <p
-          className="text-2xl"
-          style={{
-            textShadow: `
-                1px 1px 2px #000, 2px 2px 4px #000,
-                3px 3px 8px rgba(0, 0, 0, 0.7),
-                4px 4px 12px rgba(0, 0, 0, 0.7),
-                5px 5px 16px rgba(0, 0, 0, 0.7),
-                6px 6px 20px rgba(0, 0, 0, 0.7)
-              `, // 여러 겹의 그림자를 추가하여 깊이감과 입체감을 만듦
-            transform: "perspective(500px) rotateX(15deg)", // 더 강한 원근감을 주기 위해 각도 조정
-            fontWeight: "bold",
-          }}
-        >
+        <p className="deep-3d-text text-2xl">
           게임의 순서를 위해 카드를 골라주세요
         </p>
       </div>
