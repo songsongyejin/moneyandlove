@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import BaseModal from "./BaseModal";
 import RankingItem from "./RankingItem";
-import { useQuery } from "@tanstack/react-query";
-import { fetchRanking } from "../../utils/rankingApi.ts";
-import { useRecoilValue } from "recoil";
-import { userToken } from "../../atom/store";
+//
+import { userToken } from "../../atom/store"; //회원 토큰 가져오기
+import { useRecoilState } from "recoil"; //상태관리
+import { fetchRanking } from "../../utils/rankingApi";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 
 interface RankingModalProps {
   isOpen: boolean;
@@ -12,51 +14,47 @@ interface RankingModalProps {
 }
 
 interface RankItem {
+  rankingId: number;
   rank: number;
-  nickname: string;
+  nickName: string;
   montage: string;
   rankPoint: number;
+  rankNumber: number;
 }
 
 // 목업 데이터
-const mockRankings: RankItem[] = [
-  { rank: 1, nickname: "이치윤", montage: "www.", rankPoint: 1000 },
-  { rank: 2, nickname: "김성윤", montage: "www.", rankPoint: 950 },
-  { rank: 3, nickname: "이규빈", montage: "www.", rankPoint: 900 },
-  { rank: 4, nickname: "정지환", montage: "www.", rankPoint: 850 },
-  { rank: 5, nickname: "송예진", montage: "www.", rankPoint: 800 },
-  { rank: 6, nickname: "오현진", montage: "www.", rankPoint: 600 },
-  { rank: 7, nickname: "오현진", montage: "www.", rankPoint: 600 },
-  { rank: 8, nickname: "오현진", montage: "www.", rankPoint: 600 },
-  { rank: 9, nickname: "오현진", montage: "www.", rankPoint: 600 },
-  { rank: 10, nickname: "오현진", montage: "www.", rankPoint: 600 },
-];
+// const mockRankings: RankItem[] = [
 
-const myRank: RankItem = {
-  rank: 6,
-  nickname: "오현진",
-  montage: "www.",
-  rankPoint: 600,
-};
+// ];
+
+// const myRank: RankItem = {
+//   rank: 6,
+//   nickname: "오현진",
+//   montage: "www.",
+//   rankPoint: 600,
+// };
 
 const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
-  const [rankings, setRankings] = useState<RankItem[]>([]);
+  const [ranking, setRanking] = useState<RankItem[]>([]); 
   const [isLoading, setIsLoading] = useState(true);
-  const token = useRecoilValue(userToken);
+  const [token, setToken] = useRecoilState(userToken);
 
-  // 모달이 열릴 때 랭킹 데이터를 로드
+  const { data: s } = useQuery({
+    queryKey: ['rankings', token],
+    queryFn: () => fetchRanking(token as string),
+    enabled: !!token && isOpen,
+    select: (data) => data, // 그대로 data를 반환
+  });
+
+  // useEffect를 사용하여 데이터가 변경될 때만 ranking 상태를 업데이트합니다.
   useEffect(() => {
-    if (isOpen) {
-      const { data: s } = useQuery({
-        queryKey: ["ranking", token],
-        queryFn: () => fetchRanking(token as string),
-        enabled: !!token,
-      });
-      console.log(s);
-      setRankings(mockRankings);
-      setIsLoading(false);
+    if (s) {
+      console.log(s)
+      setRanking(s.rankList);
+      console.log(ranking)
+      setIsLoading(false)
     }
-  }, [isOpen]);
+  }, [s]); // 의존성 배열에 s를 추가하여 s가 변경될 때만 실행되도록 합니다.
 
   const renderContent = () => {
     if (isLoading) {
@@ -66,11 +64,11 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
       <div className="flex h-full w-full flex-col">
         {/* 랭킹 박스 */}
         <div className="flex-1 overflow-y-auto rounded-lg bg-white shadow-inner scrollbar-thin scrollbar-webkit">
-          {rankings.map((item) => (
+          {ranking.map((item) => (
             <RankingItem
-              key={item.rank}
-              rank={item.rank}
-              nickname={item.nickname}
+              key={item.rankingId}
+              rank={item.rankNumber}
+              nickName={item.nickName.length > 2 ? `${item.nickName.slice(0, 2)}${'*'.repeat(item.nickName.length - 2)}` : item.nickName}
               rankPoint={item.rankPoint}
             />
           ))}
@@ -85,9 +83,9 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
           }}
         >
           <RankingItem
-            rank={myRank.rank}
-            nickname={myRank.nickname}
-            rankPoint={myRank.rankPoint}
+            rank={s.myRank.rankNumber}
+            nickName={s.myRank.nickName}
+            rankPoint={s.myRank.rankPoint}
           />
         </div>
       </div>

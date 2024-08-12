@@ -6,13 +6,13 @@ import rank3 from "../../assets/rank3.svg";
 
 interface RankItemProps {
   rank: number;
-  nickname: string;
+  nickName: string;
   rankPoint: number;
 }
 
 const RankingItem: React.FC<RankItemProps> = ({
   rank,
-  nickname,
+  nickName,
   rankPoint,
 }) => {
   const getRankImage = (rank: number) => {
@@ -35,7 +35,7 @@ const RankingItem: React.FC<RankItemProps> = ({
     >
       <div className="flex items-center">
         {getRankImage(rank)}
-        <span>{nickname}</span>
+        <span>{nickName}</span>
       </div>
       <div className="flex items-center">
         <CiCoins1 className="mr-1 text-black" /> {/* 코인 아이콘*/}
