@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import aiBot from "../../assets/ai_bot.gif";
 import "./chatBox.css";
@@ -6,6 +6,8 @@ import * as faceapi from "face-api.js";
 import Webcam from "react-webcam";
 import { useRecoilState } from "recoil";
 import { maxExpressionState, warning } from "../../atom/store";
+import boy from "../../assets/boy.png";
+import girl from "../../assets/girl.png";
 
 const ChatBox = ({
   mode,
@@ -29,6 +31,8 @@ const ChatBox = ({
   };
 
   const webcamRef = useRef<Webcam>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null); // 스크롤 위치를 제어할 참조
+
   const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
   const [warningMsg, setWarningMsg] = useRecoilState(warning);
   const [loading, setLoading] = useState(true); // 모델 로딩 상태 추가
@@ -78,6 +82,35 @@ const ChatBox = ({
     return () => clearInterval(interval);
   }, []);
 
+  // 메시지 목록이 업데이트될 때마다 스크롤을 아래로 이동
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  // 이모지 매핑 함수
+  const getEmojiForExpression = (expression: string) => {
+    switch (expression) {
+      case "happy":
+        return "😊";
+      case "sad":
+        return "😢";
+      case "angry":
+        return "😡";
+      case "surprised":
+        return "😲";
+      case "disgusted":
+        return "🤢";
+      case "fearful":
+        return "😨";
+      case "neutral":
+        return "😐";
+      default:
+        return "😐";
+    }
+  };
+
   return (
     <div className="absolute h-screen w-screen">
       {loading ? (
@@ -92,13 +125,13 @@ const ChatBox = ({
             height: 120,
             facingMode: "user",
           }}
-          className="absolute"
+          className="absolute -z-50"
         />
       )}
 
       {maxExpression && (
-        <div className="absolute left-5 top-5 rounded-md bg-white p-2 shadow-md">
-          <h3 className="text-lg font-bold">Max Expression: {maxExpression}</h3>
+        <div className="absolute bottom-24 right-80 rounded-md bg-transparent p-2 text-center shadow-md">
+          <h3 className="text-6xl">{getEmojiForExpression(maxExpression)}</h3>
         </div>
       )}
 
@@ -108,17 +141,21 @@ const ChatBox = ({
         </div>
       )}
 
-      <img src={aiBot} alt="AI Bot" className="absolute bottom-5 left-5 w-24" />
-      <div className="absolute bottom-20 left-28 rounded-e-2xl rounded-tl-2xl border-4 border-solid border-custom-purple-color bg-white p-3 text-lg font-semibold text-custom-purple-color">
+      <img
+        src={aiBot}
+        alt="AI Bot"
+        className="absolute bottom-24 left-5 w-24"
+      />
+      <div className="absolute bottom-40 left-28 rounded-e-2xl rounded-tl-2xl border-4 border-solid border-custom-purple-color bg-white p-3 text-lg font-semibold text-custom-purple-color">
         자신이 러브헌터임을 어필해주세요!
       </div>
 
       <div className="h-full">
         <div
           style={{ fontFamily: "DungGeunMo" }}
-          className={`${mode === "chat" ? "" : "hidden"} mx-auto h-full w-[600px] flex-col items-center rounded-2xl pt-5`}
+          className={`${mode === "chat" ? "" : "hidden"} mx-auto h-full w-[800px] flex-col items-center rounded-2xl pt-5`}
         >
-          <div className="h-5/6 overflow-y-auto border border-gray-300 bg-transparent p-2">
+          <div className="scrollbar h-5/6 overflow-y-auto bg-transparent p-2">
             {messages.map((msg, i) => {
               const isMyMessage = msg.user === myUserName;
               return (
@@ -129,7 +166,7 @@ const ChatBox = ({
                   {isMyMessage ? (
                     <>
                       <div className="speech-bubble2 mr-2 p-2">{msg.text}</div>
-                      <p className="my-auto text-2xl">{msg.Emoji}</p>
+                      <p className="my-auto text-6xl">{msg.Emoji}</p>
                     </>
                   ) : (
                     <>
@@ -147,22 +184,27 @@ const ChatBox = ({
                 </div>
               );
             })}
+            <div ref={messagesEndRef} /> {/* 스크롤 위치 참조점 */}
           </div>
-          <div className="mt-3 flex items-center rounded-b-2xl bg-chat-color p-4">
-            <input
-              type="text"
-              className="flex-grow rounded-s-lg p-2 focus:outline-custom-purple-color"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="메시지를 입력하세요"
-            />
-            <div className="rounded-e-lg bg-custom-purple-color p-2 px-4">
-              <FiSend
-                className="cursor-pointer text-2xl text-white"
-                onClick={sendMessage}
+          <div className="flex justify-between">
+            <img src={girl} alt="" className="w-32" />
+            <div className="mx-8 mt-10 flex w-full items-center bg-transparent">
+              <input
+                type="text"
+                className="flex-grow rounded-s-lg p-2 focus:outline-custom-purple-color"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="메시지를 입력하세요"
               />
+              <div className="rounded-e-lg bg-custom-purple-color p-2 px-4">
+                <FiSend
+                  className="cursor-pointer text-2xl text-white"
+                  onClick={sendMessage}
+                />
+              </div>
             </div>
+            <img src={boy} alt="" className="w-32" />
           </div>
         </div>
       </div>

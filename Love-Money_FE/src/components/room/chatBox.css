@@ -39,3 +39,16 @@
   margin-top: -7px;
   margin-right: -7px;
 }
+
+.scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 5, 18, 0); /* Color of the track */
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 0px; /* Width of the scrollbar */
+}
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: #8b6cac; /* Color of the scrollbar thumb */
+  border-radius: 5px; /* Rounded corners for the scrollbar thumb */
+  border: 1px solid #8b6cac; /* Border around the scrollbar thumb */
+}
