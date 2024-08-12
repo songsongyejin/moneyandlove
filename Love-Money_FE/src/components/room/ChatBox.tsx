@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { FiSend } from "react-icons/fi";
 import aiBot from "../../assets/ai_bot.gif";
 import "./chatBox.css";
@@ -6,7 +6,6 @@ import * as faceapi from "face-api.js";
 import { useRecoilState } from "recoil";
 import { maxExpressionState, warning } from "../../atom/store";
 
-// 채팅 박스 컴포넌트
 const ChatBox = ({
   mode,
   messages,
@@ -15,12 +14,12 @@ const ChatBox = ({
   sendMessage,
   myUserName,
 }: {
-  mode: string; // 모드 상태 변수 (채팅 또는 화상 채팅)
-  messages: { user: string; text: string; Emoji: string }[]; // 메시지 상태 변수
-  newMessage: string; // 새 메시지 상태 변수
-  setNewMessage: React.Dispatch<React.SetStateAction<string>>; // 새 메시지 변경 핸들러
-  sendMessage: () => void; // 메시지 전송 함수
-  myUserName: string; // 현재 사용자 이름
+  mode: string;
+  messages: { user: string; text: string; Emoji: string }[];
+  newMessage: string;
+  setNewMessage: React.Dispatch<React.SetStateAction<string>>;
+  sendMessage: () => void;
+  myUserName: string;
 }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -30,103 +29,108 @@ const ChatBox = ({
 
   const [maxExpression, setMaxExpression] = useRecoilState(maxExpressionState);
   const [warningMsg, setWarningMsg] = useRecoilState(warning);
+  const [loading, setLoading] = useState(true); // 모델 로딩 상태 추가
 
-  // Face API
-  const videoRef = useRef<HTMLVideoElement>(null); // 비디오 요소에 대한 참조를 저장합니다.
+  const videoRef = useRef<HTMLVideoElement>(null);
   const requestRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    // 모델을 로드하는 비동기 함수입니다.
-    const loadModels = async () => {
-      const MODEL_URL = "/models"; // 모델 파일들이 위치한 경로
+  const loadModels = useCallback(async () => {
+    const MODEL_URL = "/models";
 
-      // Face API 모델을 로드합니다.
-      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-      await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+    await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
 
-      // 모델이 로드되면 비디오 스트림을 시작합니다.
-      startVideo();
-    };
+    startVideo();
+  }, []);
 
-    const startVideo = () => {
-      navigator.mediaDevices
-        .getUserMedia({ video: {} })
-        .then((stream) => {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
+  const startVideo = useCallback(() => {
+    navigator.mediaDevices
+      .getUserMedia({ video: {} })
+      .then((stream) => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
 
-            videoRef.current.addEventListener("loadedmetadata", () => {
-              analyzeExpressions();
-            });
-          }
-        })
-        .catch((err) => console.error("Error accessing webcam: ", err));
-    };
+          videoRef.current.addEventListener("loadedmetadata", () => {
+            analyzeExpressions();
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("Error accessing webcam: ", err);
+        setWarningMsg("웹캠 접근에 실패했습니다. 권한을 확인해주세요.");
+      });
+  }, []);
 
-    const analyzeExpressions = async () => {
-      if (videoRef.current) {
-        const displaySize = {
-          width: videoRef.current.videoWidth, // 비디오의 실제 너비
-          height: videoRef.current.videoHeight, // 비디오의 실제 높이
-        };
+  const analyzeExpressions = useCallback(async () => {
+    setLoading(false); // 비디오 스트림이 시작되면 로딩 상태를 해제합니다.
 
-        faceapi.matchDimensions(videoRef.current, displaySize);
+    if (videoRef.current) {
+      const displaySize = {
+        width: videoRef.current.videoWidth,
+        height: videoRef.current.videoHeight,
+      };
 
-        const detect = async () => {
-          if (videoRef.current && videoRef.current.videoWidth > 0) {
-            const detections = await faceapi
-              .detectAllFaces(
-                videoRef.current!,
-                new faceapi.TinyFaceDetectorOptions()
-              )
-              .withFaceLandmarks()
-              .withFaceExpressions();
+      faceapi.matchDimensions(videoRef.current, displaySize);
 
-            if (detections.length > 0) {
-              const exp = detections[0].expressions;
-              const maxExp = Object.keys(exp).reduce((a, b) =>
-                exp[a] > exp[b] ? a : b
+      const detect = async () => {
+        if (videoRef.current && videoRef.current.videoWidth > 0) {
+          const detections = await faceapi
+            .detectAllFaces(
+              videoRef.current!,
+              new faceapi.TinyFaceDetectorOptions()
+            )
+            .withFaceLandmarks()
+            .withFaceExpressions();
+
+          if (detections.length > 0) {
+            const exp = detections[0].expressions;
+            const maxExp = Object.keys(exp).reduce((a, b) =>
+              exp[a] > exp[b] ? a : b
+            );
+            setMaxExpression(maxExp);
+            setWarningMsg("");
+          } else {
+            if (!warningMsg) {
+              setWarningMsg(
+                "얼굴 인식이 되지 않았습니다. \n정면을 응시해주세요!!! \n표정이 인식되면 채팅장이 공개됩니다!!!"
               );
-              setMaxExpression(maxExp);
-              setWarningMsg(""); // 경고 메시지 제거
-            } else {
-              // 얼굴이 감지되지 않은 경우
-              if (!warningMsg) {
-                setWarningMsg(
-                  "얼굴 인식이 되지 않았습니다. \n정면을 응시해주세요!!! \n표정이 인식되면 채팅장이 공개됩니다!!!"
-                );
-              }
             }
           }
+        }
 
-          requestRef.current = requestAnimationFrame(detect);
-        };
+        requestRef.current = requestAnimationFrame(detect);
+      };
 
-        detect();
-      }
-    };
+      detect();
+    }
+  }, [warningMsg]);
 
+  useEffect(() => {
     loadModels();
 
     return () => {
       if (requestRef.current) {
         cancelAnimationFrame(requestRef.current);
       }
+      if (videoRef.current && videoRef.current.srcObject) {
+        (videoRef.current.srcObject as MediaStream)
+          .getTracks()
+          .forEach((track) => track.stop());
+      }
     };
-  }, []);
+  }, [loadModels]);
 
   return (
     <div className="absolute h-screen w-screen">
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        width="0"
-        height="0"
-        style={{ display: "none" }} // 비디오 요소를 숨김
-      />
+      <video ref={videoRef} autoPlay muted />
+
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="text-white">모델을 로딩 중입니다...</div>
+        </div>
+      )}
 
       {maxExpression && (
         <div className="absolute left-5 top-5 rounded-md bg-white p-2 shadow-md">
@@ -140,7 +144,7 @@ const ChatBox = ({
         </div>
       )}
 
-      <img src={aiBot} alt="" className="absolute bottom-5 left-5 w-24" />
+      <img src={aiBot} alt="AI Bot" className="absolute bottom-5 left-5 w-24" />
       <div className="absolute bottom-20 left-28 rounded-e-2xl rounded-tl-2xl border-4 border-solid border-custom-purple-color bg-white p-3 text-lg font-semibold text-custom-purple-color">
         자신이 러브헌터임을 어필해주세요!
       </div>
@@ -155,7 +159,7 @@ const ChatBox = ({
               const isMyMessage = msg.user === myUserName;
               return (
                 <div
-                  key={i}
+                  key={`${msg.user}-${i}`}
                   className={`mb-3 flex ${isMyMessage ? "justify-end" : "justify-start"}`}
                 >
                   {isMyMessage ? (
@@ -170,7 +174,7 @@ const ChatBox = ({
                         <div className="flex">
                           <p className="my-auto text-2xl">{msg.Emoji}</p>
                           <div className="speech-bubble ml-2 p-2">
-                            <strong></strong> {msg.text}
+                            <strong>{msg.user}</strong> {msg.text}
                           </div>
                         </div>
                       </div>
