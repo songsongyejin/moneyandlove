@@ -141,7 +141,7 @@ const RulebookModal: React.FC<RulebookModalProps> = ({ isOpen, onClose }) => {
     >
       <div
         id="modal-content"
-        className="p-4 text-center text-xl text-black overflow-y-auto scrollbar w-full"
+        className="p-4 text-center text-xl text-black overflow-y-auto scrollbar_rule w-full"
         style={{ fontFamily: "DungGeunMo", maxHeight: "400px" }}
         dangerouslySetInnerHTML={{ __html: pages[currentPage] }}
       ></div>

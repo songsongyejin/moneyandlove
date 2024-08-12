@@ -1,11 +1,11 @@
-.scrollbar::-webkit-scrollbar-track {
+.scrollbar_rule::-webkit-scrollbar-track {
     background: rgba(0, 5, 18, 0); /* Color of the track */
   }
   
-  .scrollbar::-webkit-scrollbar {
+.scrollbar_rule::-webkit-scrollbar {
     width: 9px; /* Width of the scrollbar */
   }
-  .scrollbar::-webkit-scrollbar-thumb {
+.scrollbar_rule::-webkit-scrollbar-thumb {
     background-color: #8b6cac; /* Color of the scrollbar thumb */
     border-radius: 5px; /* Rounded corners for the scrollbar thumb */
     border: 1px solid #8b6cac; /* Border around the scrollbar thumb */
