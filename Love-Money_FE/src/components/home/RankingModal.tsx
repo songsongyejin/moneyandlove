@@ -4,9 +4,8 @@ import RankingItem from "./RankingItem";
 //
 import { userToken } from "../../atom/store"; //회원 토큰 가져오기
 import { useRecoilState } from "recoil"; //상태관리
-import { fetchRanking } from "../../utils/rankingApi";
+import { fetchRanking } from "../../utils/rankingAPI";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
 
 interface RankingModalProps {
   isOpen: boolean;
@@ -35,12 +34,12 @@ interface RankItem {
 // };
 
 const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
-  const [ranking, setRanking] = useState<RankItem[]>([]); 
+  const [ranking, setRanking] = useState<RankItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [token, setToken] = useRecoilState(userToken);
 
   const { data: s } = useQuery({
-    queryKey: ['rankings', token],
+    queryKey: ["rankings", token],
     queryFn: () => fetchRanking(token as string),
     enabled: !!token && isOpen,
     select: (data) => data, // 그대로 data를 반환
@@ -49,10 +48,10 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
   // useEffect를 사용하여 데이터가 변경될 때만 ranking 상태를 업데이트합니다.
   useEffect(() => {
     if (s) {
-      console.log(s)
+      console.log(s);
       setRanking(s.rankList);
-      console.log(ranking)
-      setIsLoading(false)
+      console.log(ranking);
+      setIsLoading(false);
     }
   }, [s]); // 의존성 배열에 s를 추가하여 s가 변경될 때만 실행되도록 합니다.
 
@@ -68,7 +67,11 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
             <RankingItem
               key={item.rankingId}
               rank={item.rankNumber}
-              nickName={item.nickName.length > 2 ? `${item.nickName.slice(0, 2)}${'*'.repeat(item.nickName.length - 2)}` : item.nickName}
+              nickName={
+                item.nickName.length > 2
+                  ? `${item.nickName.slice(0, 2)}${"*".repeat(item.nickName.length - 2)}`
+                  : item.nickName
+              }
               rankPoint={item.rankPoint}
             />
           ))}

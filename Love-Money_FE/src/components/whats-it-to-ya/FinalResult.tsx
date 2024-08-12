@@ -1,5 +1,8 @@
 // components/whats-it-to-ya/FinalResult.tsx
-import React from "react";
+import React, { useEffect } from "react";
+import { userToken, userInfo } from "../../atom/store";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { updateGamePoints } from "../../utils/updateGamePoints";
 
 interface FinalResultProps {
   myFinalPosition: "Love" | "Money" | null;
@@ -12,8 +15,13 @@ const FinalResult: React.FC<FinalResultProps> = ({
   opponentFinalPosition,
   onBackToMain,
 }) => {
+  const token = useRecoilValue(userToken);
+  const setUserInfo = useSetRecoilState(userInfo);
+  let gamePoint = 0;
+
   const getResultMessage = () => {
     if (myFinalPosition === "Love" && opponentFinalPosition === "Love") {
+      gamePoint = 100;
       return (
         <>
           진정한 사랑을 찾았습니다. <br />
@@ -26,6 +34,7 @@ const FinalResult: React.FC<FinalResultProps> = ({
       myFinalPosition === "Love" &&
       opponentFinalPosition === "Money"
     ) {
+      gamePoint = -200;
       return (
         <>
           상대방이 당신을 속였습니다. <br />
@@ -37,6 +46,7 @@ const FinalResult: React.FC<FinalResultProps> = ({
       myFinalPosition === "Money" &&
       opponentFinalPosition === "Love"
     ) {
+      gamePoint = 200;
       return (
         <>
           당신은 상대방을 속이는 데 성공했습니다! <br />
@@ -47,6 +57,7 @@ const FinalResult: React.FC<FinalResultProps> = ({
       myFinalPosition === "Money" &&
       opponentFinalPosition === "Money"
     ) {
+      gamePoint = -100;
       return (
         <>
           서로를 속이려 했지만 실패했습니다. <br />
@@ -58,6 +69,34 @@ const FinalResult: React.FC<FinalResultProps> = ({
     }
   };
 
+  useEffect(() => {
+    const updatePoints = async () => {
+      if (myFinalPosition && opponentFinalPosition && token) {
+        try {
+          // API 요청 보내기
+          await updateGamePoints({ gamePoint, token });
+
+          // Recoil 상태 업데이트
+          setUserInfo((prevUserInfo) => {
+            if (prevUserInfo) {
+              return {
+                ...prevUserInfo,
+                gamePoint: prevUserInfo.gamePoint + gamePoint,
+              };
+            }
+            return prevUserInfo;
+          });
+
+          console.log("포인트 업데이트 성공");
+        } catch (error) {
+          console.error("포인트 업데이트 실패:", error);
+        }
+      }
+    };
+
+    updatePoints();
+  }, [myFinalPosition, opponentFinalPosition, gamePoint, token, setUserInfo]);
+
   return (
     <div className="relative flex h-screen flex-col items-center justify-center">
       <div
@@ -66,6 +105,11 @@ const FinalResult: React.FC<FinalResultProps> = ({
       >
         <div>
           <p className="deep-3d-text text-3xl">{getResultMessage()}</p>
+          <p className="deep-3d-text mt-4 text-4xl">
+            {gamePoint > 0
+              ? `+${gamePoint} 포인트 획득!`
+              : `${gamePoint} 포인트 차감`}
+          </p>
         </div>
       </div>
 

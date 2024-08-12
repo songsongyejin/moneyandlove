@@ -84,8 +84,8 @@ const GameHome: React.FC = () => {
     showMatchComplete,
     handleMatchComplete,
   } = useGameLogic();
-  console.log(selectedPosition);
-  console.log(gameMode);
+  console.log("선택된 포지션", selectedPosition);
+  console.log("게임모드", gameMode);
 
   const {
     data: s,
@@ -97,7 +97,7 @@ const GameHome: React.FC = () => {
       matching(token as string, selectedPosition as string, gameMode as string),
     enabled: !!token && showMatching,
   });
-  console.log(s);
+  console.log("매칭", s);
 
   // 선택된 포지션에 따라 배경 클래스를 결정하는 함수
   const getBackgroundClass = () => {
@@ -105,6 +105,7 @@ const GameHome: React.FC = () => {
     if (selectedPosition === "LOVE") return mainBgLove;
     return mainBg;
   };
+
   return (
     <div className="relative h-screen">
       <Navbar />
