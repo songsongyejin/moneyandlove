@@ -42,6 +42,7 @@ const FreindsSideBar: React.FC = () => {
     enabled: !!token,
   });
   const [chatData, setChatData] = useState<chatType[]>([]);
+
   useEffect(() => {
     let isMounted = true;
     const subscriptions: any[] = [];

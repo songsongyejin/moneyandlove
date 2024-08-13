@@ -201,7 +201,7 @@ const ChatBox = ({
             })}
             <div ref={messagesEndRef} /> {/* 스크롤 위치 참조점 */}
           </div>
-          <div className="flex justify-between">
+          <div className="fixed bottom-0 flex w-[800px] justify-between">
             <img src={girl} alt="" className="w-32" />
             <div className="mx-8 mt-10 flex w-full items-center bg-transparent">
               <input
