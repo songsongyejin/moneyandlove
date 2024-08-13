@@ -43,10 +43,8 @@ const Room: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [mode, setMode] = useState<string>("chat");
-  const [mySessionId, setMySessionId] = useState<string>("SessionA");
-  const [myUserName, setMyUserName] = useState<string>(
-    "Participant" + Math.floor(Math.random() * 100)
-  );
+  const [mySessionId, setMySessionId] = useState<string>("");
+  const [myUserName, setMyUserName] = useState<string>("");
   const [session, setSession] = useState<Session | undefined>();
   const [mainStreamManager, setMainStreamManager] = useState<
     StreamManager | undefined
@@ -155,8 +153,8 @@ const Room: React.FC = () => {
     if (session) session.disconnect();
     setSession(undefined);
     setSubscriber(undefined);
-    setMySessionId("SessionA");
-    setMyUserName("Participant" + Math.floor(Math.random() * 100));
+    setMySessionId("");
+    setMyUserName("");
     setMainStreamManager(undefined);
     setPublisher(undefined);
   };

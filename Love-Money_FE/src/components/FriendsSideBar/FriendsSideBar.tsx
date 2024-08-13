@@ -100,7 +100,7 @@ const FreindsSideBar: React.FC = () => {
         className={`fNav z-50 overflow-hidden ${navOpen ? "nav-open overflow-y-scroll" : ""}`}
       >
         <h1 className={`as mt-5 w-full text-center text-3xl text-white`}>
-          친구목록
+          LoveMate
         </h1>
         <div className="menu-btn w-8" onClick={handleMenuClick}>
           <div className={`line line--1 ${navOpen ? "line-cross" : ""}`}></div>
