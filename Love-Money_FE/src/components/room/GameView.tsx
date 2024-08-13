@@ -21,6 +21,7 @@ const GameView = ({
   setIsModalOpen,
   myUserName,
   session,
+  matchData,
 }: {
   mode: string; // 모드 상태 변수 (채팅 또는 화상 채팅)
   setMode: React.Dispatch<React.SetStateAction<string>>; // 모드 변경 핸들러
@@ -35,6 +36,7 @@ const GameView = ({
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>; // 모달 상태 변경 핸들러
   myUserName: string;
   session: Session; // 추가: OpenVidu 세션 객체
+  matchData: any;
 }) => {
   const renderChatMode = () => (
     <>
@@ -101,7 +103,7 @@ const GameView = ({
       )}
       {/* WhatsItToYa 게임 화면 */}
       <div className="absolute inset-0 z-50 flex items-center justify-center">
-        <WhatsItToYa session={session} />
+        <WhatsItToYa session={session} matchData={matchData} />
       </div>
     </div>
   );
