@@ -103,7 +103,11 @@ const GameView = ({
       )}
       {/* WhatsItToYa 게임 화면 */}
       <div className="absolute inset-0 z-50 flex items-center justify-center">
-        <WhatsItToYa session={session} matchData={matchData} />
+        <WhatsItToYa
+          session={session}
+          matchData={matchData}
+          leaveSession={leaveSession}
+        />
       </div>
     </div>
   );

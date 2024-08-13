@@ -38,10 +38,11 @@ interface WordCard {
   textColor: string;
 }
 
-const WhatsItToYa: React.FC<{ session: Session; matchData: any }> = ({
-  session,
-  matchData,
-}) => {
+const WhatsItToYa: React.FC<{
+  session: Session;
+  matchData: any;
+  leaveSession: () => void;
+}> = ({ session, matchData, leaveSession }) => {
   const navigate = useNavigate();
   // 사용자가 처음 선택한 포지션
   const myFirstPosition = useRecoilValue(selectedPositionState);
@@ -83,6 +84,19 @@ const WhatsItToYa: React.FC<{ session: Session; matchData: any }> = ({
   );
   // 두번째 게임 점수 상태
   const [player1Score, setPlayer1Score] = useState<number>(0);
+
+  useEffect(() => {
+    // 세션이 새로 시작될 때 또는 세션이 변경될 때 상태를 초기화
+    setPlayer1DropZones(Array.from({ length: 5 }, () => []));
+    setPlayer2GuessZones(Array.from({ length: 5 }, () => []));
+    setPlayer2Score(0);
+
+    setPlayer2DropZones(Array.from({ length: 5 }, () => []));
+    setPlayer1GuessZones(Array.from({ length: 5 }, () => []));
+    setPlayer1Score(0);
+
+    // 추가로 초기화가 필요한 상태가 있다면 여기에 추가
+  }, [session]); // session이 변경될 때마다 이 effect가 실행됩니다.
 
   const [winner, setWinner] = useState<string | null>(null);
   const [loser, setLoser] = useState<string | null>(null);
@@ -549,6 +563,7 @@ const WhatsItToYa: React.FC<{ session: Session; matchData: any }> = ({
           onBackToMain={handleBackToMain}
           fromUserId={matchData.fromUser.userId}
           toUserId={matchData.toUser.userId}
+          leaveSession={leaveSession}
         />
       ) : null}
     </DndProvider>

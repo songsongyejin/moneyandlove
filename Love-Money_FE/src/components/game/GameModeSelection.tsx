@@ -3,6 +3,8 @@ import BaseModal from "../home/BaseModal";
 import randomMode from "../../assets/randomMode.png";
 import loveMode from "../../assets/loveMode.png";
 import premiumMode from "../../assets/premiumMode.png";
+import { useRecoilValue } from "recoil";
+import { userInfo } from "../../atom/store";
 
 interface GameModeSelectionProps {
   isOpen: boolean;
@@ -20,6 +22,7 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
   selectedPosition,
 }) => {
   const [selectedMode, setSelectedMode] = useState<string>("");
+  const user = useRecoilValue(userInfo);
 
   const handleModeSelect = (mode: string) => {
     setSelectedMode(mode);
@@ -32,12 +35,23 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
     }
   };
 
+  const isEligibleToStart = () => {
+    if (!user) return false; // user 정보가 없는 경우 false 반환
+    if (selectedMode === "random" && user.gamePoint >= 100) return true;
+    if (selectedMode === "love" && user.gamePoint >= 500) return true;
+    if (selectedMode === "top30" && user.gamePoint >= 1000) return true;
+    return false;
+  };
+
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="게임 모드 선택">
       <div
         className="flex h-full flex-col items-center justify-between"
         style={{ fontFamily: "DungGeunMo" }}
       >
+        {!isEligibleToStart() && selectedMode && (
+          <p className="text-red-500">포인트가 부족합니다.</p>
+        )}
         <div className="mt-20 flex w-full justify-center">
           <div
             className={`-mr-24 -translate-x-1/2 rotate-[-15deg] transform cursor-pointer transition-transform duration-300 hover:z-10 hover:scale-110 ${
@@ -90,9 +104,9 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
           </button>
           <button
             onClick={handleConfirm}
-            disabled={!selectedMode}
+            disabled={!selectedMode || !isEligibleToStart()}
             className={`rounded px-4 py-2 text-white ${
-              selectedMode
+              selectedMode && isEligibleToStart()
                 ? "bg-green-500 hover:bg-green-600"
                 : "cursor-not-allowed bg-gray-300"
             }`}
