@@ -38,7 +38,10 @@ interface WordCard {
   textColor: string;
 }
 
-const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
+const WhatsItToYa: React.FC<{ session: Session; matchData: any }> = ({
+  session,
+  matchData,
+}) => {
   const navigate = useNavigate();
   // 사용자가 처음 선택한 포지션
   const myFirstPosition = useRecoilValue(selectedPositionState);
@@ -544,6 +547,8 @@ const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
           myFinalPosition={myFinalPosition}
           opponentFinalPosition={opponentFinalPosition}
           onBackToMain={handleBackToMain}
+          fromUserId={matchData.fromUser.userId}
+          toUserId={matchData.toUser.userId}
         />
       ) : null}
     </DndProvider>
