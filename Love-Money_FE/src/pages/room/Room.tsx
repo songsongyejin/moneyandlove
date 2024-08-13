@@ -73,9 +73,14 @@ const Room: React.FC = () => {
     if (matchData) {
       setMyUserName(matchData.fromUser.nickname);
       setMySessionId(matchData.sessionId);
-      joinSession();
     }
   }, [matchData]);
+
+  useEffect(() => {
+    if (myUserName && mySessionId) {
+      joinSession();
+    }
+  }, [myUserName, mySessionId]);
 
   console.log("매치데이터", matchData);
 
