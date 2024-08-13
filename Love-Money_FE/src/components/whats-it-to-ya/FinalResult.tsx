@@ -3,22 +3,30 @@ import React, { useEffect } from "react";
 import { userToken, userInfo } from "../../atom/store";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { updateGamePoints } from "../../utils/updateGamePoints";
+import { addFriend } from "../../utils/friends";
+import { updateRankScore } from "../../utils/rankingAPI";
 
 interface FinalResultProps {
   myFinalPosition: "Love" | "Money" | null;
   opponentFinalPosition: "Love" | "Money" | null;
   onBackToMain: () => void;
+  fromUserId: number;
+  toUserId: number;
 }
 
 const FinalResult: React.FC<FinalResultProps> = ({
   myFinalPosition,
   opponentFinalPosition,
   onBackToMain,
+  fromUserId,
+  toUserId,
 }) => {
   const token = useRecoilValue(userToken);
   const setUserInfo = useSetRecoilState(userInfo);
   let gamePoint = 0;
 
+  console.log("from", fromUserId);
+  console.log("to", toUserId);
   const getResultMessage = () => {
     if (myFinalPosition === "Love" && opponentFinalPosition === "Love") {
       gamePoint = 100;
@@ -34,7 +42,7 @@ const FinalResult: React.FC<FinalResultProps> = ({
       myFinalPosition === "Love" &&
       opponentFinalPosition === "Money"
     ) {
-      gamePoint = -200;
+      gamePoint = 0;
       return (
         <>
           상대방이 당신을 속였습니다. <br />
@@ -57,7 +65,7 @@ const FinalResult: React.FC<FinalResultProps> = ({
       myFinalPosition === "Money" &&
       opponentFinalPosition === "Money"
     ) {
-      gamePoint = -100;
+      gamePoint = 0;
       return (
         <>
           서로를 속이려 했지만 실패했습니다. <br />
@@ -70,10 +78,10 @@ const FinalResult: React.FC<FinalResultProps> = ({
   };
 
   useEffect(() => {
-    const updatePoints = async () => {
+    const updatePointsAndAddFriend = async () => {
       if (myFinalPosition && opponentFinalPosition && token) {
         try {
-          // API 요청 보내기
+          // 게임 포인트 업데이트
           await updateGamePoints({ gamePoint, token });
 
           // Recoil 상태 업데이트
@@ -88,14 +96,34 @@ const FinalResult: React.FC<FinalResultProps> = ({
           });
 
           console.log("포인트 업데이트 성공");
+
+          // 두 사용자가 모두 "Love"를 선택한 경우 친구 추가
+          if (myFinalPosition === "Love" && opponentFinalPosition === "Love") {
+            await addFriend(token, fromUserId, toUserId);
+            console.log("친구 추가 성공");
+          }
+
+          // 내가 "Money"를 선택하고 상대방이 "Love"를 선택한 경우 랭킹 포인트 업데이트
+          if (myFinalPosition === "Money" && opponentFinalPosition === "Love") {
+            await updateRankScore(token, 100); // 예: 100 랭킹 포인트를 추가
+            console.log("랭킹 포인트 업데이트 성공");
+          }
         } catch (error) {
-          console.error("포인트 업데이트 실패:", error);
+          console.error("업데이트 또는 친구 추가 실패:", error);
         }
       }
     };
 
-    updatePoints();
-  }, [myFinalPosition, opponentFinalPosition, gamePoint, token, setUserInfo]);
+    updatePointsAndAddFriend();
+  }, [
+    myFinalPosition,
+    opponentFinalPosition,
+    gamePoint,
+    token,
+    fromUserId,
+    toUserId,
+    setUserInfo,
+  ]);
 
   return (
     <div className="relative flex h-screen flex-col items-center justify-center">

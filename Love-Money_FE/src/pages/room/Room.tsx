@@ -20,6 +20,8 @@ import { useRecoilValue } from "recoil";
 import { maxExpressionState, userToken } from "../../atom/store";
 import mainBg from "../../assets/main_bg.png";
 import { useLocation } from "react-router-dom";
+import { updateGamePoints } from "../../utils/updateGamePoints";
+
 // Room 컴포넌트
 const Room: React.FC = () => {
   //recoil 전역변수
@@ -77,12 +79,26 @@ const Room: React.FC = () => {
     }
   }, [matchData]);
 
+  console.log("매치데이터", matchData);
+
   // 페이지를 떠날 때 세션 종료
   useEffect(() => {
     const handleBeforeUnload = () => leaveSession();
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [session]);
+
+  // 포인트 차감 함수
+  const deductPoints = async () => {
+    if (token) {
+      try {
+        await updateGamePoints({ gamePoint: -100, token });
+        console.log("매칭으로 인한 포인트 차감 성공");
+      } catch (error) {
+        console.error("매칭으로 인한 포인트 차감 실패", error);
+      }
+    }
+  };
 
   // 메인 비디오 스트림 설정 핸들러
   // const handleMainVideoStream = (stream: StreamManager) => {
@@ -140,6 +156,9 @@ const Room: React.FC = () => {
       console.log(publisher);
       setPublisher(publisher);
       setMainStreamManager(publisher);
+
+      // 세션 연결 및 퍼블리셔 설정이 성공적으로 완료된 후 포인트 차감
+      deductPoints();
     } catch (error) {
       const typedError = error as { code: string; message: string }; // 오류 타입 명시
       console.error(
@@ -204,6 +223,7 @@ const Room: React.FC = () => {
         setIsModalOpen={setIsModalOpen}
         myUserName={myUserName}
         session={session}
+        matchData={matchData}
       />
     </div>
   );
