@@ -1,8 +1,3 @@
-/**
-  * Spinning coin fall
-  *
-  * @author jh3y
-*/
 @-webkit-keyframes spinning-coin-fall {
   0% {
     -webkit-transform: translate(-50%, -50%) perspective(160px) rotateY(0deg)
@@ -64,20 +59,29 @@
   }
 }
 
-.spinning-coin-fall:before {
+.spinning-coin-fall {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background-color: #8b6cac; /* 코인 색상: 금색 */
+  background: radial-gradient(
+    circle at 50% 50%,
+    #8b6cac,
+    #8b6cac
+  ); /* 코인 그라데이션 */
+  border-radius: 50%; /* 코인 모양을 둥글게 */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* 입체감을 위한 그림자 */
+  border: 2px solid rgb(162 28 175 / var(--tw-bg-opacity)); /* 테두리 색상 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
   -webkit-animation: spinning-coin-fall 3s infinite;
   animation: spinning-coin-fall 3s infinite;
-  background-color: #8b6cac;
-  border-radius: 100%;
-  content: "";
-  height: 40px;
-  position: absolute;
-
   left: 50%;
-  opacity: 0;
-  -webkit-transform-origin: center;
-  transform-origin: center;
-  width: 40px;
 }
 
 .spinning-coin-fall-container {
@@ -87,4 +91,9 @@
   margin: auto;
   top: 20%;
   transform: translateY(-50%);
+}
+.spinning-coin-fall img {
+  width: 70%;
+  height: 70%;
+  object-fit: cover; /* 이미지가 코인 내부에 잘 맞도록 */
 }

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { userInfo } from "../../atom/store";
+import { userInfo, userToken } from "../../atom/store";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
 import kakaoLogoutImage from "../../assets/kakao_logout.svg";
+import { deleteUserData } from "../../utils/user";
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface ProfileModalProps {
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
   const [user, setUser] = useRecoilState(userInfo);
+  const [token, setToken] = useRecoilState(userToken);
   const [activeTab, setActiveTab] = useState<"info" | "record">("info");
   const navigate = useNavigate();
 
@@ -27,6 +29,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
     // 여기에 회원탈퇴 로직을 구현합니다.
     // 예: API 호출 등
     if (window.confirm("정말로 회원탈퇴 하시겠습니까?")) {
+      deleteUserData(token as string);
       setUser(null); // 사용자 정보 초기화
       onClose(); // 모달 닫기
       navigate("/"); // 홈 페이지로 이동

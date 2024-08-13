@@ -91,18 +91,20 @@ const FriendChatRoom: React.FC<{
       <div className="h-1 bg-white"></div>
       <div className="scrollbar flex-1 flex-col-reverse overflow-y-scroll p-4 text-white">
         {Array.isArray(chatData) &&
-          chatData.map((chat, index) => (
-            <div
-              key={index}
-              className={`mb-2 rounded-lg p-2 ${
-                chat.senderId === friend.followerId
-                  ? "text-left text-fuchsia-500"
-                  : "ml-auto text-right"
-              }`}
-            >
-              <div>{chat.message}</div>
-            </div>
-          ))}
+          chatData
+            .filter((chat) => chat.roomId === friend.chatRoomId) // 특정 채팅방의 채팅만 필터링
+            .map((chat, index) => (
+              <div
+                key={index}
+                className={`mb-2 rounded-lg p-2 ${
+                  chat.senderId === friend.followerId
+                    ? "text-left text-fuchsia-500"
+                    : "ml-auto text-right"
+                }`}
+              >
+                <div>{chat.message}</div>
+              </div>
+            ))}
         <div ref={messagesEndRef} />
       </div>
 
