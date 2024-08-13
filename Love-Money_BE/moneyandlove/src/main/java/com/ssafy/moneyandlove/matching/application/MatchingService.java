@@ -115,7 +115,7 @@ public class MatchingService {
 				return response;
 			}
 			try {
-				Thread.sleep(3000); // 3초 대기
+				Thread.sleep(2000); // 2초 대기
 			} catch (InterruptedException e) {
 				// 현재 스레드의 인터럽트 상태를 복구하고 메서드를 종료
 				Thread.currentThread().interrupt();
@@ -139,8 +139,8 @@ public class MatchingService {
 		matchInfo.put("toUser", toUser);
 		matchInfo.put("sessionId", uuid);
 
-		// Redis에 매칭 결과 저장 및 TTL 설정 (40초)
-		redisTemplate.opsForValue().set(matchKey,matchInfo, 40, TimeUnit.SECONDS);
+		// Redis에 매칭 결과 저장 및 TTL 설정 (7초)
+		redisTemplate.opsForValue().set(matchKey,matchInfo, 7, TimeUnit.SECONDS);
 	}
 
 	private String generateMatchKey(Long userId1, Long userId2) {
@@ -149,9 +149,10 @@ public class MatchingService {
 
 	private boolean checkMatchingStatus(Map<String, Object> response, Long userId) {
 		Set<String> matchKeys = redisTemplate.keys(MATCHING_RESULT_PREFIX + "*");
+		String userIdStr = userId.toString();
 		for (String matchKey : matchKeys) {
-			if (matchKey.contains(userId.toString())) {
-				// 이미 매칭된 사용자 정보 반환
+			String[] ids = matchKey.replace(MATCHING_RESULT_PREFIX, "").split("-");
+			if (ids.length == 2 && (ids[0].equals(userIdStr) || ids[1].equals(userIdStr))) {
 				Map<String, Object> matchInfo = (Map<String, Object>) redisTemplate.opsForValue().get(matchKey);
 				response.put("status", "success");
 				response.put("fromUser", matchInfo.get("toUser"));
