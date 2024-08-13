@@ -12,6 +12,7 @@ interface FinalResultProps {
   onBackToMain: () => void;
   fromUserId: number;
   toUserId: number;
+  leaveSession: () => void;
 }
 
 const FinalResult: React.FC<FinalResultProps> = ({
@@ -20,10 +21,16 @@ const FinalResult: React.FC<FinalResultProps> = ({
   onBackToMain,
   fromUserId,
   toUserId,
+  leaveSession,
 }) => {
   const token = useRecoilValue(userToken);
   const setUserInfo = useSetRecoilState(userInfo);
   let gamePoint = 0;
+
+  const handleBackToMain = () => {
+    leaveSession();
+    onBackToMain();
+  };
 
   console.log("from", fromUserId);
   console.log("to", toUserId);
@@ -95,7 +102,9 @@ const FinalResult: React.FC<FinalResultProps> = ({
             return prevUserInfo;
           });
 
-          console.log("포인트 업데이트 성공");
+          console.log(
+            `${myFinalPosition} 최종 포지션 선택으로 ${gamePoint} 포인트 변동 성공`
+          );
 
           // 두 사용자가 모두 "Love"를 선택한 경우 친구 추가
           if (myFinalPosition === "Love" && opponentFinalPosition === "Love") {
@@ -106,7 +115,7 @@ const FinalResult: React.FC<FinalResultProps> = ({
           // 내가 "Money"를 선택하고 상대방이 "Love"를 선택한 경우 랭킹 포인트 업데이트
           if (myFinalPosition === "Money" && opponentFinalPosition === "Love") {
             await updateRankScore(token, 100); // 예: 100 랭킹 포인트를 추가
-            console.log("랭킹 포인트 업데이트 성공");
+            console.log("머니헌터 랭킹 포인트 업데이트 성공");
           }
         } catch (error) {
           console.error("업데이트 또는 친구 추가 실패:", error);
@@ -144,7 +153,7 @@ const FinalResult: React.FC<FinalResultProps> = ({
       {/* 메인 페이지로 돌아가는 버튼 */}
       <div className="fixed bottom-10">
         <button
-          onClick={onBackToMain}
+          onClick={handleBackToMain}
           className="three-d-button reset"
           style={{ fontFamily: "DungGeunMo" }}
         >

@@ -3,6 +3,8 @@ import BaseModal from "../home/BaseModal";
 import randomMatch from "../../assets/randomMatch.webp";
 import loveMatch from "../../assets/loveMatch.webp";
 import premiumMatch from "../../assets/premiumMatch.webp";
+import { useRecoilValue } from "recoil";
+import { userInfo } from "../../atom/store";
 
 interface GameModeSelectionProps {
   isOpen: boolean;
@@ -20,6 +22,7 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
   selectedPosition,
 }) => {
   const [selectedMode, setSelectedMode] = useState<string>("");
+  const user = useRecoilValue(userInfo);
 
   const handleModeSelect = (mode: string) => {
     setSelectedMode(mode);
@@ -32,13 +35,25 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
     }
   };
 
+  const isEligibleToStart = () => {
+    if (!user) return false; // user 정보가 없는 경우 false 반환
+    if (selectedMode === "random" && user.gamePoint >= 100) return true;
+    if (selectedMode === "love" && user.gamePoint >= 500) return true;
+    if (selectedMode === "top30" && user.gamePoint >= 1000) return true;
+    return false;
+  };
+
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="게임 모드 선택">
       <div
         className="flex flex-col items-center"
         style={{ fontFamily: "DungGeunMo" }}
       >
+        {!isEligibleToStart() && selectedMode && (
+          <p className="text-red-500">포인트가 부족합니다.</p>
+        )}
         <p className="mb-4 text-xl">현재 포지션: {selectedPosition}</p>
+
         <div className="mb-6 flex w-full">
           <div
             className={`mr-8 cursor-pointer rounded-md shadow-btn hover:scale-110 ${selectedMode == "일반" ? "scale-110 bg-custom-purple-color text-white" : "bg-white"}`}
@@ -84,9 +99,9 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
           </button>
           <button
             onClick={handleConfirm}
-            disabled={!selectedMode}
+            disabled={!selectedMode || !isEligibleToStart()}
             className={`rounded px-4 py-2 text-white ${
-              selectedMode
+              selectedMode && isEligibleToStart()
                 ? "bg-green-500 hover:bg-green-600"
                 : "cursor-not-allowed bg-gray-300"
             }`}
