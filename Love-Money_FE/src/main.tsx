@@ -22,6 +22,7 @@ import GameHome from "./pages/GameHome.tsx";
 import Room from "./pages/room/Room.tsx";
 import LoginHandler from "./pages/login/LoginHandler.tsx";
 import SignUpPage from "./pages/signUp/SignUpPage.tsx";
+import AudioPlayer from "./components/audio/AudioPlayer.tsx";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <RecoilRoot>
+      <AudioPlayer/>
       <RouterProvider router={router} />
     </RecoilRoot>
   </QueryClientProvider>
