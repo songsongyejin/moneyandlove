@@ -15,19 +15,10 @@ import lombok.ToString;
 @Builder
 public class ReadGameHistoryResponse {
 	private Long gameHistoryId;
-	private Long fromUserId;
-	private Long toUserId;
+	private String fromUserNickname;
+	private String toUserNickname;
 	private SelectType fromUserSelectType;
 	private SelectType toUserSelectType;
 	private LocalDateTime createdAt;
 
-	public static ReadGameHistoryResponse from(GameHistory gameHistory){
-		return ReadGameHistoryResponse.builder()
-			.createdAt(gameHistory.getCreatedAt())
-			.fromUserId(gameHistory.getFromUser().getId())
-			.toUserId(gameHistory.getToUser().getId())
-			.gameHistoryId(gameHistory.getId())
-			.fromUserSelectType(gameHistory.getFromUserSelectType())
-			.toUserSelectType(gameHistory.getToUserSelectType()).build();
-	}
 }

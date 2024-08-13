@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { selectedPositionState } from "../../atom/store";
+import { useWordCards } from "../../hooks/useWordCards";
+import { Session } from "openvidu-browser";
 
 import Intro from "../whats-it-to-ya/Intro";
 import SelectTurn from "../whats-it-to-ya/SelectTurn";
@@ -22,9 +26,6 @@ import Discussion from "../whats-it-to-ya/Discussion";
 import FinalSelection from "../whats-it-to-ya/FinalSelection";
 import FinalResult from "../whats-it-to-ya/FinalResult";
 
-import { useWordCards } from "../../hooks/useWordCards";
-import { Session } from "openvidu-browser";
-
 interface CardType {
   id: string;
   number: number;
@@ -39,6 +40,9 @@ interface WordCard {
 
 const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
   const navigate = useNavigate();
+  // 사용자가 처음 선택한 포지션
+  const myFirstPosition = useRecoilValue(selectedPositionState);
+
   // Intro 화면 표시 여부를 관리하는 state
   const [showIntro, setShowIntro] = useState(true);
   // 사용자의 플레이 순서를 관리하는 state

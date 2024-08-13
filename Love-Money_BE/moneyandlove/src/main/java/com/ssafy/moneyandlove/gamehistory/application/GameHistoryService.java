@@ -34,13 +34,6 @@ public class GameHistoryService {
 	}
 
 	public List<ReadGameHistoryResponse> readAllGameHistory(Long fromUserId) {
-		List<GameHistory> gameHistories = gameHistoryRepository.findByFromUserId(fromUserId);
-		return gameHistories.stream()
-			.map(ReadGameHistoryResponse::from)
-			.collect(Collectors.toList());
-	}
-
-	public ReadGameHistoryResponse readDetailGameHistory(Long gameHistoryId) {
-		return ReadGameHistoryResponse.from(gameHistoryRepository.findById(gameHistoryId).get());
+		return gameHistoryRepository.findGameHistoriesByFromUserId(fromUserId);
 	}
 }

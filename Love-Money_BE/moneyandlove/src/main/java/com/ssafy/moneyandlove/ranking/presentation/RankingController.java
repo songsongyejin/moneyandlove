@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rankings")
+@RequestMapping("/api/rankings")
 public class RankingController {
 
 	private final RankingService rankingService;
@@ -36,13 +36,7 @@ public class RankingController {
 
 	@GetMapping
 	public ResponseEntity<Map<String, Object>> getRankings(@LoginUser User loginUser) {
-		List<RankingUserResponse> rankList = rankingService.getTopRankings();
-		RankingUserResponse myRank = rankingService.getMyRanking(loginUser.getId());
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("rankList", rankList);
-		response.put("myRank", myRank);
-
+		Map<String, Object> response = rankingService.getTopRankings(20, loginUser.getId());
 		return ResponseEntity.ok(response);
 	}
 
