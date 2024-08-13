@@ -5,18 +5,25 @@ import * as tf from '@tensorflow/tfjs'; // 명시적으로 tfjs를 import
 import * as faceapi from 'face-api.js';
 import { userInfo } from "../../atom/store";
 import { useRecoilState } from "recoil";
+import { userToken } from "../../atom/store";
+import { useRecoilValue } from "recoil";
+import { useMutation } from "@tanstack/react-query";
+import axios, { AxiosResponse, AxiosError } from "axios";
+import { v4 as uuidv4 } from 'uuid';
+import { Buffer } from 'buffer';
+
+const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
 interface FaceVerificationProps {
   isOpen: boolean;
   onClose: () => void;
-  onVerificationComplete: () => void;
 }
 
 const FaceVerification: React.FC<FaceVerificationProps> = ({
   isOpen,
-  onClose,
-  onVerificationComplete,
+  onClose
 }) => {
+  const token = useRecoilValue(userToken);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [facePreview, setFacePreview] = useState<string | null>(null); // 추출된 얼굴 이미지를 저장할 상태
   const [emojiMosaic, setEmojiMosaic] = useState<string | null>(null); // 이모티콘 모자이크 이미지를 저장할 상태
@@ -287,6 +294,73 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
     return finalScore;
   };
 
+  const mutation = useMutation<AxiosResponse, AxiosError, number>({
+    mutationFn: (faceScore: number) =>
+      axios.put(`${APPLICATION_SERVER_URL}face/score`, { faceScore }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // 사용자 JWT를 헤더에 포함
+        },
+      }),
+    onSuccess: (data) => {
+      console.log('인증 점수가 성공적으로 전송되었습니다:', data);
+      // 모달 닫기
+    },
+    onError: (error) => {
+      console.error('점수 전송 중 오류가 발생했습니다:', error);
+      alert('점수 전송 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    },
+  });
+
+  const uploadImageToS3 = async (imageUrl: string, imageData: string) => {
+    try {
+      const base64ImageData = imageData.replace(/^data:image\/\w+;base64,/, '');
+        
+        // Convert the Base64 string to binary data
+      const binaryImageData = Buffer.from(base64ImageData, 'base64');
+      await axios.put(imageUrl, binaryImageData, {
+        headers: {
+          'Content-Type': 'image/png', // 이미지의 MIME 타입 지정
+        },
+      });
+      console.log('Image uploaded successfully!');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+  
+  const fetchS3Url = async () => {
+    const imageName = `${uuidv4()}.png`;
+    const prefix = 'montage';
+    const response = await axios.get(`${APPLICATION_SERVER_URL}face`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`, // 사용자 JWT를 헤더에 포함
+      },
+      params: {
+        imageName,
+        prefix,
+      },
+    });
+    return response.data.url;
+  };
+
+  const onVerificationComplete = async() => {
+    if (finalScore !== null && emojiMosaic) {
+      try {
+        mutation.mutate(Math.ceil(finalScore));
+        const s3Url = await fetchS3Url();
+        console.log(emojiMosaic)
+        await uploadImageToS3(s3Url, emojiMosaic);
+      } catch (error) {
+        console.error('Verification process failed:', error);
+        alert('인증 과정 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      }
+    } else {
+      alert('인증 과정 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    }
+  }
+
   const handleVerification = () => {
     if (imagePreview) {
       onVerificationComplete();
@@ -298,14 +372,17 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="얼굴 인증">
       <div className="flex flex-col items-center">
-        <p className="mb-6 text-center text-lg">
+        <p style={{fontFamily: "DNFBitBitv2", fontSize: '20px'}} className="mb-4 text-center text-lg">
           인증되지 않은 사용자는 첫 인증 후 play 할 수 있습니다.
         </p>
         <div className="mb-4">
           <video ref={videoRef} className="mb-4 max-w-xs max-h-xs" />
           <button
             onClick={captureImage}
-            className="rounded bg-blue-500 px-6 py-2 text-white hover:bg-blue-600"
+            className={`active:brightness-90" rounded-lg bg-custom-purple-color px-8 py-3 text-lg text-white transition-all duration-300 ease-in-out hover:brightness-110`}
+              style={{
+                fontFamily: "DNFBitBitv2",
+              }}
           >
             사진 촬영
           </button>
@@ -315,7 +392,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
 
         {imagePreview && (
           <div className="mb-4">
-            <p>원본 이미지:</p>
+            <p style={{fontFamily: "DNFBitBitv2", fontSize: '18px'}}>원본 이미지</p>
             <img
               id="image-preview"
               src={imagePreview}
@@ -327,7 +404,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
 
         {facePreview && (
           <div className="mb-4">
-            <p>추출된 얼굴 이미지:</p>
+            <p style={{fontFamily: "DNFBitBitv2", fontSize: '18px'}}>추출된 얼굴 이미지</p>
             <img
               id="face-preview"
               src={facePreview}
@@ -339,7 +416,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
 
         {emojiMosaic && (
           <div className="mb-4">
-            <p>이모티콘 모자이크 이미지:</p>
+            <p style={{fontFamily: "DNFBitBitv2", fontSize: '18px'}}>이모티콘 모자이크 이미지</p>
             <img
               id="emoji-mosaic-preview"
               src={emojiMosaic}
@@ -351,14 +428,22 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
 
         {finalScore !== null && (
           <div className="mb-4">
-            <p>종합 점수: {finalScore.toFixed(2)}</p> {/* 종합 점수만 표시 */}
+            <p style={{fontFamily: "DNFBitBitv2", fontSize: '18px'}}>얼굴 점수: {Math.ceil(finalScore)}</p> {/* 종합 점수만 표시 */}
           </div>
         )}
 
         <div className="flex space-x-4">
           <button
             onClick={handleVerification}
-            className="rounded bg-blue-500 px-6 py-2 text-white hover:bg-blue-600"
+            disabled={!emojiMosaic}
+            className={`active:brightness-90" rounded-lg bg-custom-purple-color px-8 py-3 text-lg text-white transition-all duration-300 ease-in-out hover:brightness-110 ${
+            emojiMosaic
+              ? "bg-custom-purple-color hover:bg-purple-950"
+              : "cursor-not-allowed bg-gray-300"
+            }`}
+            style={{
+              fontFamily: "DNFBitBitv2",
+            }}
           >
             인증하기
           </button>
@@ -367,7 +452,10 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
               onClose();
               resetState(); // 모달을 닫을 때 상태를 초기화
             }}
-            className="rounded bg-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-400"
+            className={`active:brightness-90" rounded-lg bg-custom-purple-color px-8 py-3 text-lg text-white transition-all duration-300 ease-in-out hover:brightness-110`}
+              style={{
+                fontFamily: "DNFBitBitv2",
+              }}
           >
             뒤로가기
           </button>
