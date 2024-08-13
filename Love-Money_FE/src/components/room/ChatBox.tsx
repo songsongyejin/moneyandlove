@@ -168,7 +168,7 @@ const ChatBox = ({
             mode === "chat" ? "" : "hidden"
           } mx-auto h-full w-[800px] flex-col items-center rounded-2xl pt-5`}
         >
-          <div className="scrollbar h-5/6 overflow-y-auto bg-transparent p-2">
+          <div className="scrollbar h-[600px] overflow-y-auto bg-transparent p-2">
             {messages.map((msg, i) => {
               const isMyMessage = msg.user === myUserName;
               return (
