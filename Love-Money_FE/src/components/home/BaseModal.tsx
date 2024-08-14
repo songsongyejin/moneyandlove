@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react";
-import { IoClose } from "react-icons/io5";
-
+import close from "../../assets/close.png";
 // 공통모달창
 interface BaseModalProps {
   isOpen: boolean;
@@ -22,8 +21,9 @@ const BaseModal: React.FC<BaseModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       {/* 모달창 배경 */}
+
       <div
-        className="relative flex h-[500px] w-[750px] flex-col justify-between overflow-hidden rounded-[20px]"
+        className="relative flex h-[500px] w-[750px] flex-col justify-between overflow-hidden rounded-[20px] border-4 border-black shadow-custom"
         style={{
           backgroundColor: "#F0E9F6",
           opacity: "var(--sds-size-stroke-border)",
@@ -31,13 +31,11 @@ const BaseModal: React.FC<BaseModalProps> = ({
       >
         {/* 모달창 헤더 */}
         <div
-          className="relative flex w-full items-center justify-between rounded-t-[8px] p-4"
+          className="relative flex w-full items-center justify-between rounded-t-[8px] border-b-4 border-black p-4"
           style={{
             backgroundColor: "#8B6CAC",
           }}
         >
-          {/* 왼쪽 여백을 위한 빈 div */}
-          <div className="w-24"></div>
           {/* 모달창 제목 */}
           <h2
             className="flex-grow text-center text-2xl text-white"
@@ -46,12 +44,12 @@ const BaseModal: React.FC<BaseModalProps> = ({
             {title}
           </h2>
           {/* 모달창 닫기버튼 */}
-          <div className="flex w-24 items-center justify-end">
+          <div className="flex items-center justify-end">
             <button
               className="flex items-center justify-center text-white"
               onClick={onClose}
             >
-              <IoClose size={32} />
+              <img src={close} alt="" className="w-8" />
             </button>
           </div>
         </div>
