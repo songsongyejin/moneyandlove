@@ -99,7 +99,6 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
   };
 
   const startCamera = async () => {
-    console.log("sss")
     if (videoRef.current) {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       videoRef.current.srcObject = stream;

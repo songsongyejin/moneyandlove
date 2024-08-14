@@ -10,7 +10,8 @@ export const useAudio = (audioSrc: string) => {
       console.log("Creating new Audio object");
       const audio = new Audio(audioSrc);
       audio.loop = true;
-      setAudioData({ audio, isPlaying: true });
+      audio.volume = audioData.volume ?? 0.1; // 초기 볼륨 설정 (기본값 1.0)
+      setAudioData({ audio, isPlaying: true, volume: audio.volume });
       audio.play();
     } else {
       console.log("Resuming audio playback");
@@ -43,5 +44,12 @@ export const useAudio = (audioSrc: string) => {
     }
   };
 
-  return { play, pause, isPlaying: audioData.isPlaying };
+  const setVolume = (volume: number) => {
+    if (audioData.audio) {
+      audioData.audio.volume = volume;
+      setAudioData((prevState) => ({ ...prevState, volume }));
+    }
+  };
+
+  return { play, pause, isPlaying: audioData.isPlaying, volume: audioData.volume, setVolume };
 };
