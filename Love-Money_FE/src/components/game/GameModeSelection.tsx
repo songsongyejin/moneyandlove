@@ -4,6 +4,8 @@ import randomMode from "../../assets/randomMode.png";
 import loveMode from "../../assets/loveMode.png";
 import premiumMode from "../../assets/premiumMode.png";
 import GameStartModal from "../home/gameStartModal";
+import { useRecoilValue } from "recoil";
+import { userInfo } from "../../atom/store";
 
 interface GameModeSelectionProps {
   isOpen: boolean;
