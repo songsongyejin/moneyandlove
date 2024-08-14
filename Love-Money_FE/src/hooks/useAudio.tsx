@@ -46,8 +46,18 @@ export const useAudio = (audioSrc: string) => {
 
   const setVolume = (volume: number) => {
     if (audioData.audio) {
-      audioData.audio.volume = volume;
-      setAudioData((prevState) => ({ ...prevState, volume }));
+      if (!audioData.isPlaying) {
+        // Create a new Audio object if the audio is not playing
+        const audio = new Audio(audioSrc);
+        audio.loop = true;
+        audio.volume = volume;
+        setAudioData({ audio, isPlaying: true, volume });
+        audio.play();
+      } else {
+        // Adjust volume of the existing audio object
+        audioData.audio.volume = volume;
+        setAudioData((prevState) => ({ ...prevState, volume }));
+      }
     }
   };
 
