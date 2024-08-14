@@ -152,6 +152,7 @@ const GameView = ({
         newMessage={newMessage}
         setNewMessage={setNewMessage}
         sendMessage={sendMessage}
+        matchData={matchData}
       />
       <button
         onClick={() => setIsModalOpen(true)}

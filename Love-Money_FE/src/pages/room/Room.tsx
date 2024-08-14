@@ -83,6 +83,7 @@ const Room: React.FC = () => {
       setMySessionId(matchData.sessionId);
       console.log("매치데이터", matchData);
     }
+    console.log("매치데이터", matchData);
   }, [matchData]);
 
   useEffect(() => {

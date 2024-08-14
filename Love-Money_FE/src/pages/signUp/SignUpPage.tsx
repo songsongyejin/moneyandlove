@@ -35,7 +35,7 @@ const SignUpPage: React.FC = () => {
       }),
     onSuccess: (data) => {
       console.log(data);
-      navigate("/main");
+      navigate("/");
     },
     onError: (error) => {
       console.error("Error during user registration:", error);

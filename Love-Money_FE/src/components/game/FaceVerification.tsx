@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import BaseModal from "../home/BaseModal";
+import BiggerModal from "../home/BiggerModal";
 import * as tmImage from '@teachablemachine/image';
 import * as tf from '@tensorflow/tfjs'; // 명시적으로 tfjs를 import
 import * as faceapi from 'face-api.js';
@@ -11,6 +12,9 @@ import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { v4 as uuidv4 } from 'uuid';
 import { Buffer } from 'buffer';
+import "./matching.css";
+import heart from "../../assets/start_heart_icon.svg";
+import { useNavigate } from 'react-router-dom';
 
 const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
@@ -23,16 +27,18 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
   isOpen,
   onClose
 }) => {
-  const token = useRecoilValue(userToken);
+  const [loading, setLoading] = useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [facePreview, setFacePreview] = useState<string | null>(null); // 추출된 얼굴 이미지를 저장할 상태
   const [emojiMosaic, setEmojiMosaic] = useState<string | null>(null); // 이모티콘 모자이크 이미지를 저장할 상태
   const [finalScore, setFinalScore] = useState<number | null>(null); // 종합 점수를 저장할 상태
   const [model, setModel] = useState<any>(null);
   const [user] = useRecoilState(userInfo);
+  const token = useRecoilValue(userToken)
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const hiddenCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen) {
@@ -44,12 +50,13 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
     }
   }, [isOpen]);
 
-  const resetState = () => {
+  const resetState = async() => {
     setImagePreview(null);
     setFacePreview(null);
     setEmojiMosaic(null);
     setFinalScore(null);
-    setModel(null);
+    await stopCamera();
+    onClose()
   };
 
   const loadFaceApiModels = async () => {
@@ -92,6 +99,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
   };
 
   const startCamera = async () => {
+    console.log("sss")
     if (videoRef.current) {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       videoRef.current.srcObject = stream;
@@ -99,7 +107,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
     }
   };
 
-  const stopCamera = () => {
+  const stopCamera = async () => {
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach((track) => track.stop());
@@ -123,6 +131,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
   };
 
   const processImage = async (imageDataUrl: string) => {
+    setLoading(true);
     setTimeout(async () => {
       const imgElement = new Image();
       imgElement.src = imageDataUrl;
@@ -161,15 +170,18 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
                   model.predict(faceImg).then((prediction: any) => {
                     const finalScore = calculateFinalScore(prediction);
                     setFinalScore(finalScore);
+                    setLoading(false);
                   });
                 });
               };
             }
           } else {
             alert("얼굴을 감지하지 못했습니다. 다시 시도해 주세요.");
+            setLoading(false);
           }
         } else {
           console.error('Model not loaded');
+          setLoading(false);
         }
       };
     }, 100); // Delay to ensure the img element is rendered
@@ -345,6 +357,18 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
     return response.data.url;
   };
 
+  const retakeImage = () => {
+    setImagePreview(null);
+    setFacePreview(null);
+    setEmojiMosaic(null);
+    setFinalScore(null);
+    setLoading(false);
+    stopCamera();
+    setTimeout(() => {
+      startCamera();
+    }, 100);
+  };
+
   const onVerificationComplete = async() => {
     if (finalScore !== null && emojiMosaic) {
       try {
@@ -352,6 +376,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
         const s3Url = await fetchS3Url();
         console.log(emojiMosaic)
         await uploadImageToS3(s3Url, emojiMosaic);
+        resetState()
       } catch (error) {
         console.error('Verification process failed:', error);
         alert('인증 과정 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -368,7 +393,88 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
       alert("사진을 촬영해 주세요.");
     }
   };
+  return (
+    <BiggerModal isOpen={isOpen} onClose={onClose} title="얼굴 인증">
+      <div className="flex flex-col items-center">
 
+        <div className="mb-4">
+          {!imagePreview ? (
+            <>
+              <p style={{ fontFamily: "DNFBitBitv2", fontSize: '24px' }} className="mb-12 text-center text-lg">
+              인증되지 않은 사용자는 첫 인증 후 play 할 수 있습니다.
+              </p>
+              <div className="flex justify-center">
+              <video ref={videoRef} className="mb-6 max-w-xs max-h-xs border-8 border-purple-500 rounded" />
+              </div>
+              <div className="mt-10">
+                <button
+                  onClick={captureImage}
+                  className={`active:brightness-90 rounded-lg bg-custom-purple-color px-8 py-3 text-lg text-white transition-all duration-300 ease-in-out hover:brightness-110`}
+                  style={{ fontFamily: "DNFBitBitv2" }}
+                  >
+                사진 촬영
+              </button>
+              </div>
+            </>
+          ) : (
+            <>
+              {loading ? (
+                <div className="flex justify-center items-center h-40">
+                  <div className="spinning-coin-fall-container">
+                    <div className="spinning-coin-fall">
+                      <img src={heart} alt="" style={{ width: '80px', height: '80px' }}/>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {finalScore !== null && (
+                    <div className="mb-4">
+                      <p style={{ fontFamily: "DNFBitBitv2", fontSize: '24px' }} className="mb-12 text-center text-lg">당신의 얼굴점수는 {Math.ceil(finalScore)} 입니다. </p> {/* 종합 점수만 표시 */}
+                    </div>
+                  )}
+                  <div className="flex justify-center mb-4">
+                  <img
+                      id="face-preview"
+                      src={facePreview!}
+                      alt="Face Preview"
+                      className="mb-4 max-w-xs max-h-xs ml-2"
+                    />
+                    <img
+                      id="emoji-mosaic-preview"
+                      src={emojiMosaic!}
+                      alt="Emoji Mosaic Preview"
+                      className="mb-4 max-w-xs max-h-xs mr-2"
+                    />
+                  </div>
+                  <div className="flex justify-center space-x-4">
+                    <button
+                      onClick={retakeImage}
+                      className={`active:brightness-90 rounded-lg bg-custom-purple-color px-8 py-3 text-lg text-white transition-all duration-300 ease-in-out hover:brightness-110`}
+                      style={{ fontFamily: "DNFBitBitv2" }}
+                    >
+                      다시 촬영
+                    </button>
+                    <button
+                      onClick={handleVerification}
+                      className={`active:brightness-90 rounded-lg bg-custom-purple-color px-8 py-3 text-lg text-white transition-all duration-300 ease-in-out hover:brightness-110`}
+                      style={{ fontFamily: "DNFBitBitv2" }}
+                    >
+                      인증하기
+                    </button>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </div>
+
+        <canvas ref={canvasRef} style={{ display: 'none' }} />
+        <canvas ref={hiddenCanvasRef} style={{ display: 'none' }} />
+
+      </div>
+    </BiggerModal>
+/*
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="얼굴 인증">
       <div className="flex flex-col items-center">
@@ -428,7 +534,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
 
         {finalScore !== null && (
           <div className="mb-4">
-            <p style={{fontFamily: "DNFBitBitv2", fontSize: '18px'}}>얼굴 점수: {Math.ceil(finalScore)}</p> {/* 종합 점수만 표시 */}
+            <p style={{fontFamily: "DNFBitBitv2", fontSize: '18px'}}>얼굴 점수: {Math.ceil(finalScore)}</p> 
           </div>
         )}
 
@@ -462,6 +568,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
         </div>
       </div>
     </BaseModal>
+*/
   );
 };
 
