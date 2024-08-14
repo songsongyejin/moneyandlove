@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BaseModal from "./BaseModal";
 import RankingItem from "./RankingItem";
+import WantedPoster from './WantedPoster';
 //
 import { userToken } from "../../atom/store"; //회원 토큰 가져오기
 import { useRecoilState } from "recoil"; //상태관리
@@ -37,6 +38,8 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
   const [ranking, setRanking] = useState<RankItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [token, setToken] = useRecoilState(userToken);
+  const [selectedMontage, setSelectedMontage] = useState<string | null>(null);
+  const [isPosterOpen, setIsPosterOpen] = useState(false);
 
   const { data: s } = useQuery({
     queryKey: ["rankings", token],
@@ -55,6 +58,11 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
     }
   }, [s]); // 의존성 배열에 s를 추가하여 s가 변경될 때만 실행되도록 합니다.
 
+  const handleItemClick = (montage: string) => {
+    setSelectedMontage(montage);
+    setIsPosterOpen(true);
+  };
+
   const renderContent = () => {
     if (isLoading) {
       return <p>로딩 중...</p>;
@@ -64,6 +72,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
         {/* 랭킹 박스 */}
         <div className="flex-1 overflow-y-auto rounded-lg bg-white shadow-inner scrollbar-thin scrollbar-webkit">
           {ranking.map((item) => (
+            <div onClick={() => handleItemClick(item.montage)} key={item.rankingId}>
             <RankingItem
               key={item.rankingId}
               rank={item.rankNumber}
@@ -74,6 +83,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
               }
               rankPoint={item.rankPoint}
             />
+          </div>
           ))}
         </div>
         {/* 내 랭킹 */}
@@ -98,6 +108,10 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="RANKING">
       {renderContent()}
+      {selectedMontage &&
+      <WantedPoster montage={selectedMontage} 
+      isOpen={isPosterOpen}
+      onClose={() => setIsPosterOpen(false)}/>}
     </BaseModal>
   );
 };

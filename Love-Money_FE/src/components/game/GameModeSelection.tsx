@@ -21,6 +21,7 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
   selectedPosition,
 }) => {
   const [selectedMode, setSelectedMode] = useState<string>("");
+  const user = useRecoilValue(userInfo);
 
   const handleModeSelect = (mode: string) => {
     setSelectedMode(mode);
@@ -31,6 +32,14 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
       onModeSelect(selectedMode);
       setSelectedMode("");
     }
+  };
+
+  const isEligibleToStart = () => {
+    if (!user) return false; // user 정보가 없는 경우 false 반환
+    if (selectedMode === "random" && user.gamePoint >= 100) return true;
+    if (selectedMode === "love" && user.gamePoint >= 500) return true;
+    if (selectedMode === "top30" && user.gamePoint >= 1000) return true;
+    return false;
   };
 
   return (

@@ -16,8 +16,13 @@ import useSessionHandlers from "../../hooks/useSessionHandlers";
 import JoinSessionForm from "../../components/room/JoinSessionForm";
 import GameView from "../../components/room/GameView";
 import { createSession, createToken } from "../../utils/api";
-import { useRecoilValue } from "recoil";
-import { maxExpressionState, userToken } from "../../atom/store";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  maxExpressionState,
+  userToken,
+  userInfo,
+  UserInfo,
+} from "../../atom/store";
 import mainBg from "../../assets/main_bg.png";
 import { useLocation } from "react-router-dom";
 import { updateGamePoints } from "../../utils/updateGamePoints";
@@ -27,6 +32,7 @@ const Room: React.FC = () => {
   //recoil 전역변수
   const maxExpression = useRecoilValue(maxExpressionState);
   const token = useRecoilValue(userToken);
+  const setUserInfo = useSetRecoilState(userInfo);
 
   //감정을 이모지로 변환
   const expressionToEmoji = (expression: string): string => {
@@ -92,10 +98,44 @@ const Room: React.FC = () => {
 
   // 포인트 차감 함수
   const deductPoints = async () => {
-    if (token) {
+    if (token && matchData) {
       try {
-        await updateGamePoints({ gamePoint: -100, token });
-        console.log("매칭으로 인한 포인트 차감 성공");
+        // matchingMode에 따른 포인트 결정
+        let gamePoint = -100; // 기본 차감 포인트
+
+        switch (matchData.fromUser.matchingMode) {
+          case "random":
+            gamePoint = -100;
+            break;
+          case "love":
+            gamePoint = -500;
+            break;
+          case "top30":
+            gamePoint = -1000;
+            break;
+          default:
+            console.warn(
+              "알 수 없는 매칭 모드:",
+              matchData.fromUser.matchingMode
+            );
+        }
+
+        await updateGamePoints({ gamePoint, token });
+
+        // Recoil 상태 업데이트
+        setUserInfo((prevUserInfo: UserInfo | null) => {
+          if (prevUserInfo) {
+            return {
+              ...prevUserInfo,
+              gamePoint: prevUserInfo.gamePoint + gamePoint, // 포인트 차감
+            };
+          }
+          return prevUserInfo;
+        });
+
+        console.log(
+          `${matchData.fromUser.matchingMode} 매칭으로 인한 ${gamePoint} 차감 완료`
+        );
       } catch (error) {
         console.error("매칭으로 인한 포인트 차감 실패", error);
       }
@@ -211,22 +251,24 @@ const Room: React.FC = () => {
       />
       <div className="absolute inset-0 -z-10 bg-black opacity-40"></div>
 
-      <GameView
-        mode={mode}
-        setMode={setMode}
-        mainStreamManager={mainStreamManager}
-        subscriber={subscriber}
-        messages={messages}
-        newMessage={newMessage}
-        setNewMessage={setNewMessage}
-        sendMessage={sendMessage}
-        leaveSession={leaveSession}
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        myUserName={myUserName}
-        session={session}
-        matchData={matchData}
-      />
+      {session && (
+        <GameView
+          mode={mode}
+          setMode={setMode}
+          mainStreamManager={mainStreamManager}
+          subscriber={subscriber}
+          messages={messages}
+          newMessage={newMessage}
+          setNewMessage={setNewMessage}
+          sendMessage={sendMessage}
+          leaveSession={leaveSession}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+          myUserName={myUserName}
+          session={session}
+          matchData={matchData}
+        />
+      )}
     </div>
   );
 };
