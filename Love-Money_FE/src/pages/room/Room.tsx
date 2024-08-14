@@ -24,7 +24,7 @@ import {
   UserInfo,
 } from "../../atom/store";
 import mainBg from "../../assets/main_bg.png";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useBlocker } from "react-router-dom";
 import { updateGamePoints } from "../../utils/updateGamePoints";
 
 // Room 컴포넌트
@@ -72,13 +72,16 @@ const Room: React.FC = () => {
     setMessages
   );
 
+  const navigate = useNavigate();
   //matching 성공 시
   const location = useLocation();
+
   const matchData = location.state?.matchData;
   useEffect(() => {
     if (matchData) {
       setMyUserName(matchData.fromUser.nickname);
       setMySessionId(matchData.sessionId);
+      console.log("매치데이터", matchData);
     }
   }, [matchData]);
 
@@ -87,8 +90,6 @@ const Room: React.FC = () => {
       joinSession();
     }
   }, [myUserName, mySessionId]);
-
-  console.log("매치데이터", matchData);
 
   // 페이지를 떠날 때 세션 종료
   useEffect(() => {
@@ -101,6 +102,7 @@ const Room: React.FC = () => {
   const deductPoints = async () => {
     if (token && matchData) {
       try {
+        console.log("매칭에 들어와서 포인트 차감");
         // matchingMode에 따른 포인트 결정
         let gamePoint = -100; // 기본 차감 포인트
 
@@ -160,6 +162,8 @@ const Room: React.FC = () => {
     const session = OV.initSession();
 
     setSession(session);
+    // 세션 연결 성공적으로 완료된 후 포인트 차감
+    deductPoints();
 
     try {
       const token = await getToken();
@@ -172,6 +176,7 @@ const Room: React.FC = () => {
         return device.kind === "videoinput"; // 이 부분도 return을 추가하여 올바르게 필터링되도록 수정
       });
       console.log("비디오디바이스", videoDevices);
+
       // 첫 번째 사용 가능한 비디오 장치 선택
       const selectedDevice = videoDevices.length > 0 ? videoDevices[0] : null;
       const videoSource = selectedDevice ? selectedDevice.deviceId : undefined;
@@ -196,12 +201,10 @@ const Room: React.FC = () => {
       currentVideoDevice.current = videoDevices.find(
         (device) => device.deviceId === currentVideoDeviceId
       );
+
       console.log(publisher);
       setPublisher(publisher);
       setMainStreamManager(publisher);
-
-      // 세션 연결 및 퍼블리셔 설정이 성공적으로 완료된 후 포인트 차감
-      deductPoints();
     } catch (error) {
       const typedError = error as { code: string; message: string }; // 오류 타입 명시
       console.error(

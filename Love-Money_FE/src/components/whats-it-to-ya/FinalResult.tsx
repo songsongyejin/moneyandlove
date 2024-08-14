@@ -142,11 +142,11 @@ const FinalResult: React.FC<FinalResultProps> = ({
       >
         <div>
           <p className="deep-3d-text text-3xl">{getResultMessage()}</p>
-          <p className="deep-3d-text mt-4 text-4xl">
+          {/* <p className="deep-3d-text mt-4 text-4xl">
             {gamePoint > 0
               ? `+${gamePoint} 포인트 획득!`
               : `${gamePoint} 포인트 차감`}
-          </p>
+          </p> */}
         </div>
       </div>
 

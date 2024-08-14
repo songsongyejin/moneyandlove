@@ -5,6 +5,10 @@ import ChatBox from "./ChatBox";
 import { StreamManager, Session } from "openvidu-browser";
 import CafeBackground from "../../assets/cafe-background.jpg";
 import WhatsItToYa from "./WhatsItToYa";
+import { useNavigate } from "react-router-dom";
+import { userToken, userInfo, UserInfo } from "../../atom/store";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { updateGamePoints } from "../../utils/updateGamePoints";
 
 // 게임 뷰 컴포넌트
 const GameView = ({
@@ -38,6 +42,106 @@ const GameView = ({
   session: Session; // 추가: OpenVidu 세션 객체
   matchData: any;
 }) => {
+  const navigate = useNavigate();
+  const token = useRecoilValue(userToken);
+  const setUserInfo = useSetRecoilState(userInfo);
+
+  // 포인트 복구 함수
+  const restorePoints = async () => {
+    if (token && matchData) {
+      try {
+        console.log("포인트 복구 중...");
+        // 복구할 포인트 결정 (deductPoints에서 차감한 포인트와 동일한 값을 사용)
+        let gamePoint = 100; // 기본 복구 포인트
+
+        switch (matchData.fromUser.matchingMode) {
+          case "random":
+            gamePoint = 100;
+            break;
+          case "love":
+            gamePoint = 500;
+            break;
+          case "top30":
+            gamePoint = 1000;
+            break;
+          default:
+            console.warn(
+              "알 수 없는 매칭 모드:",
+              matchData.fromUser.matchingMode
+            );
+        }
+
+        await updateGamePoints({ gamePoint, token });
+
+        // Recoil 상태 업데이트
+        setUserInfo((prevUserInfo: UserInfo | null) => {
+          if (prevUserInfo) {
+            return {
+              ...prevUserInfo,
+              gamePoint: prevUserInfo.gamePoint + gamePoint, // 포인트 복구
+            };
+          }
+          return prevUserInfo;
+        });
+
+        console.log(`${gamePoint} 포인트 복구 완료`);
+      } catch (error) {
+        console.error("포인트 복구 실패", error);
+      }
+    }
+  };
+
+  // 이전 remoteConnections.size 값을 저장하기 위한 useRef
+  const prevRemoteConnectionsSize = useRef<number>(
+    session.remoteConnections.size
+  );
+
+  useEffect(() => {
+    const checkRemoteConnections = () => {
+      // console.log("Current session state:", session);
+      if (session) {
+        // console.log("Remote Connections Size:", session.remoteConnections.size);
+
+        // 이전 remoteConnections.size가 1이고, 현재 값이 0이면 상대방이 나간 것
+        if (
+          prevRemoteConnectionsSize.current === 1 &&
+          session.remoteConnections.size === 0
+        ) {
+          alert("상대방이 세션에서 나갔습니다.");
+          restorePoints();
+          leaveSession();
+          navigate("/main"); // /main으로 리디렉션
+        }
+
+        // 현재 값을 이전 값으로 업데이트
+        prevRemoteConnectionsSize.current = session.remoteConnections.size;
+      }
+    };
+
+    const intervalId = setInterval(checkRemoteConnections, 5000); // 5초마다 체크
+
+    return () => clearInterval(intervalId); // 컴포넌트가 언마운트될 때 interval을 정리
+  }, [session]);
+
+  useEffect(() => {
+    if (session) {
+      const onConnectionDestroyed = () => {
+        if (
+          prevRemoteConnectionsSize.current === 1 &&
+          session.remoteConnections.size === 0
+        ) {
+          alert("상대방이 세션에서 나갔습니다.");
+        }
+      };
+
+      session.on("connectionDestroyed", onConnectionDestroyed);
+
+      return () => {
+        session.off("connectionDestroyed", onConnectionDestroyed);
+      };
+    }
+  }, [session]);
+
   const renderChatMode = () => (
     <>
       {/* 채팅 모드일 때의 UI */}
@@ -62,13 +166,22 @@ const GameView = ({
     /* 화상 채팅 모드일 때의 UI */
   }
   const renderFaceChatMode = () => (
-    <div
-      className="absolute inset-0 bg-cover"
-      style={{
-        backgroundImage: `url(${CafeBackground})`,
-        backgroundPosition: "center bottom",
-      }}
-    >
+    // <div
+    //   className="absolute inset-0 bg-cover"
+    //   style={{
+    //     backgroundImage: `url(${CafeBackground})`,
+    //     backgroundPosition: "center bottom",
+    //   }}
+    // >
+    <div className="relative h-full w-full">
+      {/* 배경 이미지 */}
+      {/* 빠른 배경 이미지 렌더링 위해 img 태그 사용 */}
+      <img
+        src={CafeBackground}
+        alt="Cafe Background"
+        className="absolute inset-0 h-full w-full object-cover"
+        style={{ objectPosition: "center bottom" }}
+      />
       {/* 본인 캠화면 (왼쪽하단에 위치) */}
       {mainStreamManager && (
         <div
@@ -82,7 +195,6 @@ const GameView = ({
           <UserVideoComponent streamManager={mainStreamManager} />
         </div>
       )}
-
       {/* 상대방 캠화면 (가운데 상단에 위치) */}
       {subscriber && (
         <div
@@ -101,6 +213,7 @@ const GameView = ({
           </div>
         </div>
       )}
+
       {/* WhatsItToYa 게임 화면 */}
       <div className="absolute inset-0 z-50 flex items-center justify-center">
         <WhatsItToYa

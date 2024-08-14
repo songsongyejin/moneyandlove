@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "../index.css"; // 필요한 CSS 파일 import
 import { useRecoilState } from "recoil";
 import { userInfo } from "../atom/store"; // .ts 확장자는 생략 가능
@@ -8,6 +8,7 @@ import kakaoLoginImage from "../assets/kakao_login_large_wide.png";
 import useFullscreen from "../utils/useFullScreen";
 import { KAKAO_AUTH_URL } from "../utils/OAuth";
 import mainBg from "../assets/main_bg.png";
+
 const Home: React.FC = () => {
   //유저 로그인 정보
   const [user, setUser] = useRecoilState(userInfo);
@@ -33,6 +34,7 @@ const Home: React.FC = () => {
         alt=""
         className={`absolute inset-0 h-screen w-screen bg-cover bg-center`}
       />
+
       <div className="absolute inset-0 bg-black opacity-20"></div>
       <div className="relative z-10 flex h-full items-center justify-center">
         <div className="flex flex-col items-center justify-center text-center">
