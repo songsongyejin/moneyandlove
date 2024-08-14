@@ -30,7 +30,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       <header className="fixed left-0 top-0 z-10 block w-screen">
-        <div className="absolute left-0 top-0 h-full w-full bg-black bg-opacity-25"></div>
+        <div className="absolute left-0 top-0 h-full w-full bg-black"></div>
 
         <div className="relative flex w-full items-center justify-between px-4 py-4 text-white">
           <h2 className="ml-8 text-2xl" style={{ fontFamily: "DNFBitBitv2" }}>

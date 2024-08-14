@@ -74,6 +74,7 @@ const Room: React.FC = () => {
       setMyUserName(matchData.fromUser.nickname);
       setMySessionId(matchData.sessionId);
     }
+    console.log("매치데이터", matchData);
   }, [matchData]);
 
   useEffect(() => {
@@ -81,8 +82,6 @@ const Room: React.FC = () => {
       joinSession();
     }
   }, [myUserName, mySessionId]);
-
-  console.log("매치데이터", matchData);
 
   // 페이지를 떠날 때 세션 종료
   useEffect(() => {

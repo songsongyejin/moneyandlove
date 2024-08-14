@@ -5,7 +5,7 @@ import { userInfo, userToken } from "../atom/store";
 // 필요한 아이콘과 CSS 파일을 import
 import heartIcon from "../assets/start_heart_icon.svg";
 import "../index.css";
-import mainBg from "../assets/main_bg.png";
+import mainBg from "../assets/moveBg2.gif";
 import mainBgMoney from "../assets/mafia_bg.png";
 import mainBgLove from "../assets/love_bg.jpg";
 
@@ -91,7 +91,7 @@ const GameHome: React.FC = () => {
     if (selectedPosition === "LOVE") return mainBgLove;
     return mainBg;
   };
-
+  const [isHovered, setIsHovered] = useState(false);
   return (
     <div className="relative h-screen">
       <Navbar />
@@ -102,9 +102,9 @@ const GameHome: React.FC = () => {
       <img
         src={getBackgroundClass()}
         alt=""
-        className={`absolute inset-0 h-screen w-screen bg-cover bg-center`}
+        className={`absolute inset-0 h-screen w-screen object-center`}
       />
-      <div className="absolute inset-0 bg-black opacity-20"></div>
+      <div className="absolute inset-0 bg-black opacity-35"></div>
       {/* 메인 콘텐츠 영역 */}
       <div className="relative flex h-full items-center justify-center">
         <FriendsSideBar />
@@ -127,30 +127,23 @@ const GameHome: React.FC = () => {
               WebkitTextStroke: "0.01px #8B6CAC",
             }}
           >
-            진정한 사랑을 찾는 새로운 러브 심리 게임
+            진정한 사랑을 찾는 새로운 연애 심리 게임
           </p>
           {/* 게임 시작 버튼 */}
-          <div className="hvr-float-shadow relative mt-12 inline-block">
-            <img
-              src={heartIcon}
-              alt="Heart Icon"
-              className="absolute -left-16 top-2/3 h-24 w-24 -translate-y-1/2 transform"
-            />
+          <div className="hvr-float-shadow fixed right-[11%] top-[52%] inline-block rotate-12 transform">
             <button
               onClick={handleGameStart}
-              className="mt-10 h-16 w-40 rounded-md bg-custom-purple-color py-3 font-bold text-white shadow-btn text-stroke-custom"
-              style={{
-                borderRadius: "10px 50px 50px 10px",
-                opacity: "var(--sds-size-stroke-border)",
-              }}
+              className="mt-10 h-16 w-40 rounded-md bg-transparent py-3 font-bold text-white text-stroke-custom hover:scale-110"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
             >
               <span
-                className="text-xl"
+                className={`text-3xl ${isHovered ? "" : "text-flicker-in-glow"}`}
                 style={{
                   fontFamily: "DNFBitBitv2",
                 }}
               >
-                게임 시작
+                Game Start
               </span>
             </button>
           </div>
