@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Buffer } from 'buffer';
 import "./matching.css";
 import heart from "../../assets/start_heart_icon.svg";
+import { useNavigate } from 'react-router-dom';
 
 const APPLICATION_SERVER_URL = import.meta.env.VITE_REACT_APP_SERVER_URL;
 
@@ -37,6 +38,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const hiddenCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen) {
@@ -48,12 +50,13 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
     }
   }, [isOpen]);
 
-  const resetState = () => {
+  const resetState = async() => {
     setImagePreview(null);
     setFacePreview(null);
     setEmojiMosaic(null);
     setFinalScore(null);
-    setModel(null);
+    await stopCamera();
+    onClose()
   };
 
   const loadFaceApiModels = async () => {
@@ -104,7 +107,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
     }
   };
 
-  const stopCamera = () => {
+  const stopCamera = async () => {
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach((track) => track.stop());
@@ -373,6 +376,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
         const s3Url = await fetchS3Url();
         console.log(emojiMosaic)
         await uploadImageToS3(s3Url, emojiMosaic);
+        resetState()
       } catch (error) {
         console.error('Verification process failed:', error);
         alert('인증 과정 중 오류가 발생했습니다. 다시 시도해 주세요.');
@@ -418,7 +422,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
                 <div className="flex justify-center items-center h-40">
                   <div className="spinning-coin-fall-container">
                     <div className="spinning-coin-fall">
-                      <img src={heart} alt="" />
+                      <img src={heart} alt="" style={{ width: '80px', height: '80px' }}/>
                     </div>
                   </div>
                 </div>
