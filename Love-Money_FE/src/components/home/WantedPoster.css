@@ -1,0 +1,51 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    position: relative;
+    background-color: #F4EBD2;
+    padding: 10px; /* 패딩 축소 */
+    border-radius: 10px;
+    max-width: 400px; /* 최대 너비 축소 */
+    width: 80%; /* 너비 조정 */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 5px; /* 위치 조정 */
+    right: 5px; /* 위치 조정 */
+    background: none;
+    border: none;
+    font-size: 16px; /* 폰트 크기 축소 */
+    cursor: pointer;
+  }
+  
+  .wanted-poster {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 150%; /* Aspect ratio */
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .poster-image {
+    position: absolute;
+    top: 58%; /* 상단에서부터 40% 위치 */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%; /* 이미지 크기를 적절하게 조정 */
+    height: auto;
+    border-radius: 10px;
+  }
