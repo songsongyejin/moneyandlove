@@ -191,7 +191,7 @@ const SecondPlayerPlay: React.FC<SecondPlayerPlayProps> = ({
         {/* 드래그 앤 드롭 영역 */}
         <div
           className="drop-table-container animate-fadeIn rounded-lg"
-          style={{ position: "fixed", bottom: "8%" }}
+          style={{ position: "fixed", bottom: "7%" }}
         >
           <div
             className="drop-card-container flex justify-center"

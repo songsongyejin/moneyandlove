@@ -54,6 +54,9 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
         >
           게임모드를 선택해주세요!
         </p>
+        {!isEligibleToStart() && selectedMode && (
+          <p className="bg-custom-purple-color">포인트가 부족합니다.</p>
+        )}
         <div className="flex w-full justify-center">
           <div
             className={`-mr-24 -translate-x-1/2 rotate-[-15deg] transform cursor-pointer transition-transform duration-300 hover:z-10 hover:scale-110 ${
@@ -108,7 +111,7 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
             onClick={handleConfirm}
             disabled={!selectedMode}
             className={`rounded px-4 py-2 text-white shadow-btn ${
-              selectedMode
+              selectedMode && isEligibleToStart()
                 ? "bg-custom-purple-color hover:bg-purple-950"
                 : "cursor-not-allowed bg-gray-300"
             }`}
