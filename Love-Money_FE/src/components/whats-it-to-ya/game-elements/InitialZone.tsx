@@ -18,13 +18,14 @@ const InitialZone: React.FC<InitialZoneProps> = ({ id, cards, onDrop }) => {
   }));
 
   return cards.length > 0 ? (
-    <div
-      ref={drop}
-      className="absolute right-5 top-[38%] flex -translate-y-1/2 transform flex-col space-y-3 rounded-lg bg-white bg-opacity-80 px-6 py-6 shadow-lg"
-    >
-      {cards.map((card) => (
-        <Card key={card.id} id={card.id} number={card.number} />
-      ))}
+    <div ref={drop} className="initial-zone-container fixed bottom-3 right-1">
+      <div className="initial-zone-cards flex flex-row space-x-1 rounded-lg bg-opacity-80 px-1 py-1 shadow-lg">
+        {cards.map((card) => (
+          <div key={card.id} className="initial-card">
+            <Card key={card.id} id={card.id} number={card.number} />
+          </div>
+        ))}
+      </div>
     </div>
   ) : null;
 };

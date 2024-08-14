@@ -7,22 +7,26 @@ import FirstTurnFirstPlayerPlay from "../../components/whats-it-to-ya/first-turn
 import FirstTurnFirstPlayerWait from "../../components/whats-it-to-ya/first-turn/FirstPlayerWait";
 import FirstTurnSecondPlayerWait from "../../components/whats-it-to-ya/first-turn/SecondPlayerWait";
 import FirstTurnSecondPlayerPlay from "../../components/whats-it-to-ya/first-turn/SecondPlayerPlay";
-import FirstTurnScoreBoard from "../../components/whats-it-to-ya/first-turn/Score";
-import FirstTurnTempScoreBoard from "../../components/whats-it-to-ya/first-turn/TempScore";
+import FirstTurnScoreBoard from "../../components/whats-it-to-ya/first-turn/FirstPlayerScoreBoard";
+import FirstTurnTempScoreBoard from "../../components/whats-it-to-ya/first-turn/SecondPlayerScoreBoard";
 import SecondTurnFirstPlayerWait from "../../components/whats-it-to-ya/second-turn/FirstPlayerWait";
 import SecondTurnFirstPlayerPlay from "../../components/whats-it-to-ya/second-turn/FirstPlayerPlay";
-import SecondTurnScoreBoard from "../../components/whats-it-to-ya/second-turn/Score";
-import Winner from "../../components/whats-it-to-ya/Winner";
+import SecondTurnScoreBoard from "../../components/whats-it-to-ya/second-turn/FirstPlayerScoreBoard";
+import Winner from "../../components/whats-it-to-ya/Result";
 import SecondTurnSecondPlayerPlay from "../../components/whats-it-to-ya/second-turn/SecondPlayerPlay";
 import SecondTurnSecondPlayerWait from "../../components/whats-it-to-ya/second-turn/SecondPlayerWait";
-import SecondTurnTempScoreBoard from "../../components/whats-it-to-ya/second-turn/TempScore";
+import SecondTurnTempScoreBoard from "../../components/whats-it-to-ya/second-turn/SecondPlayerScoreBoard";
+import { useWordCards } from "../../hooks/useWordCards"; // 5개의 단어카드 커스텀훅 임포트
+import CafeBackground from "../../assets/cafe-background.jpg";
+import aiBot from "../../assets/ai_bot.gif";
+import { Session } from "openvidu-browser";
 
 interface CardType {
   id: string;
   number: number;
 }
 
-const WhatsItToYa: React.FC = () => {
+const WhatsItToYa: React.FC<{ session: Session }> = ({ session }) => {
   // Intro 화면 표시 여부를 관리하는 state
   const [showIntro, setShowIntro] = useState(true);
   // 사용자의 플레이 순서를 관리하는 state
@@ -30,6 +34,7 @@ const WhatsItToYa: React.FC = () => {
   // 게임 단계 관리 state
   const [gamePhase, setGamePhase] = useState("SELECT_TURN");
 
+  const { wordCards, loading, error } = useWordCards(); // 단어 카드를 로드
   // 첫번째 게임
   // 플레이어1의 드롭존 상태
   const [player1DropZones, setPlayer1DropZones] = useState<CardType[][]>(
@@ -82,9 +87,22 @@ const WhatsItToYa: React.FC = () => {
   // 플레이어1 시점
   // 첫번째 게임
   // 플레이어1이 우선순위 선택 완료 시 호출되는 함수
+  // Player 1의 선택 완료 시 데이터 전송
   const handleFirstTurnFirstPlayerFinalize = (newDropZones: CardType[][]) => {
     setPlayer1DropZones(newDropZones);
-    setGamePhase("FIRST_TURN_FIRST_PLAYER_WAIT");
+    session
+      .signal({
+        data: JSON.stringify(newDropZones),
+        to: [],
+        type: "player1DropZones",
+      })
+      .then(() => {
+        console.log("Player 1's drop zones sent:", newDropZones);
+        setGamePhase("FIRST_TURN_FIRST_PLAYER_WAIT");
+      })
+      .catch((error) => {
+        console.error("Error sending player1DropZones:", error);
+      });
   };
 
   // 플레이어 2의 GuessZones를 하드코딩하여 테스트
@@ -184,35 +202,17 @@ const WhatsItToYa: React.FC = () => {
   // ------------------------------------------------------------------- //
   // 플레이어2 시점
   // 플레이어 2가 플레이어1의 우선순위 선택을 기다리는 중
-  // 서버에서 플레이어1의 데이터를 받은 것처럼 시뮬레이션하는 상태
-  const [firstTurnPlayer1dataReceived, setfirstTurnPlayer1dataReceived] =
-    useState(false);
-  // 서버에서 데이터를 받은 것처럼 상태를 변경
-  useEffect(() => {
-    if (gamePhase === "FIRST_TURN_SECOND_PLAYER_WAIT") {
-      const dataFetchTimer = setTimeout(() => {
-        setfirstTurnPlayer1dataReceived(true); // 데이터 수신 완료로 상태 변경
-      }, 5000); // 5초 후 데이터 수신 시뮬레이션
 
-      return () => clearTimeout(dataFetchTimer);
-    }
-  }, [gamePhase]);
-
-  // 플레이어1의 선택 데이터를 받았으면, 본인의 예측 플레이 단계로 이동
+  // 세션에서 플레이어1의 드롭존 우선순위를 받음
   useEffect(() => {
-    if (firstTurnPlayer1dataReceived) {
+    session.on("signal:player1DropZones", (event: any) => {
+      const receivedData = JSON.parse(event.data);
+      setPlayer1DropZones(receivedData);
+      console.log("Player 1's drop zones received:", receivedData);
       setGamePhase("FIRST_TURN_SECOND_PLAYER_PLAY");
-    }
-  }, [firstTurnPlayer1dataReceived]);
+    });
+  }, [session]);
 
-  // 플레이어 1의 DropZones를 하드코딩하여 테스트
-  const mockPlayer1DropZones: CardType[][] = [
-    [{ id: "card-1", number: 1 }],
-    [{ id: "card-2", number: 2 }],
-    [{ id: "card-3", number: 3 }],
-    [{ id: "card-4", number: 4 }],
-    [{ id: "card-5", number: 5 }],
-  ];
   // 플레이어 2가 예측을 완료한 후 호출되는 함수
   const handleFirstTurnSecondPlayerFinalize = (newGuessZones: CardType[][]) => {
     setPlayer2GuessZones(newGuessZones);
@@ -262,37 +262,60 @@ const WhatsItToYa: React.FC = () => {
     }
   }, [secondTurnPlayer1dataReceived]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <DndProvider backend={HTML5Backend}>
       {/* // 배경 이미지와 레이아웃을 설정하는 컨테이너 */}
-      <div className="absolute inset-0 bg-main-bg bg-cover bg-center">
-        {/* 반투명한 검은색 오버레이 */}
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      <div
+        className="absolute inset-0 bg-cover"
+        style={{
+          backgroundImage: `url(${CafeBackground})`,
+          backgroundPosition: "center bottom",
+        }}
+      >
+        <div className="absolute inset-0"></div>
         {/* 게임 컴포넌트를 중앙에 배치하는 컨테이너 */}
         <div className="pt-30 fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute left-5 top-5 flex items-start">
+            <img src={aiBot} alt="" className="z-10 w-24" />
+          </div>
+
           {/* 조건부 렌더링: 인트로 화면, 턴 선택 화면 또는 (사용자의 플레이 순서에 따른) 플레이 화면 */}
           {showIntro ? (
             <Intro />
           ) : gamePhase === "SELECT_TURN" ? (
-            <SelectTurn onTurnSelected={handleTurnSelected} />
+            <SelectTurn onTurnSelected={handleTurnSelected} session={session} />
           ) : gamePhase === "FIRST_TURN_FIRST_PLAYER_PLAY" ? (
             <FirstTurnFirstPlayerPlay
               onFinalize={handleFirstTurnFirstPlayerFinalize}
+              wordCards={wordCards}
             />
           ) : gamePhase === "FIRST_TURN_FIRST_PLAYER_WAIT" ? (
-            <FirstTurnFirstPlayerWait dropZones={player1DropZones} />
+            <FirstTurnFirstPlayerWait
+              dropZones={player1DropZones}
+              wordCards={wordCards}
+            />
           ) : gamePhase === "FIRST_TURN_SCORE" ? (
             <FirstTurnScoreBoard
               player1DropZones={player1DropZones}
               player2GuessZones={mockPlayer2GuessZones}
               onScoreCalculated={handlePlayer2ScoreCalculated} // 콜백 함수 전달
               onNextPhase={handlePlayer1NextTurn} // 다음 단계로 넘어가기 위한 콜백 전달
+              wordCards={wordCards}
             />
           ) : gamePhase === "SECOND_TURN_FIRST_PLAYER_WAIT" ? (
-            <SecondTurnFirstPlayerWait />
+            <SecondTurnFirstPlayerWait wordCards={wordCards} />
           ) : gamePhase === "SECOND_TURN_FIRST_PLAYER_PLAY" ? (
             <SecondTurnFirstPlayerPlay
               onFinalize={handleSecondTurnFirstPlayerFinalize}
+              wordCards={wordCards}
             />
           ) : gamePhase === "SECOND_TURN_SCORE" ? (
             <SecondTurnScoreBoard
@@ -300,32 +323,40 @@ const WhatsItToYa: React.FC = () => {
               player2DropZones={mockPlayer2DropZones}
               onScoreCalculated={handlePlayer1ScoreCalculated} // 콜백 함수 전달
               onNextPhase={handleWinnerPhase}
+              wordCards={wordCards}
             />
           ) : gamePhase === "FIRST_TURN_SECOND_PLAYER_WAIT" ? (
-            <FirstTurnSecondPlayerWait />
+            <FirstTurnSecondPlayerWait wordCards={wordCards} />
           ) : gamePhase === "FIRST_TURN_SECOND_PLAYER_PLAY" ? (
             <FirstTurnSecondPlayerPlay
               onFinalize={handleFirstTurnSecondPlayerFinalize}
+              wordCards={wordCards}
             />
           ) : gamePhase === "FIRST_TURN_TEMPSCORE" ? (
             <FirstTurnTempScoreBoard
-              player1DropZones={mockPlayer1DropZones}
+              player1DropZones={player1DropZones}
               player2GuessZones={player2GuessZones}
               onScoreCalculated={handlePlayer2ScoreCalculated} // 콜백 함수 전달
               onNextPhase={handlePlayer2NextTurn} // 다음 단계로 넘어가기 위한 콜백 전달
+              wordCards={wordCards}
             />
           ) : gamePhase === "SECOND_TURN_SECOND_PLAYER_PLAY" ? (
             <SecondTurnSecondPlayerPlay
               onFinalize={handleSecondTurnSecondPlayerFinalize}
+              wordCards={wordCards}
             />
           ) : gamePhase === "SECOND_TURN_SECOND_PLAYER_WAIT" ? (
-            <SecondTurnSecondPlayerWait dropZones={player2DropZones} />
+            <SecondTurnSecondPlayerWait
+              dropZones={player2DropZones}
+              wordCards={wordCards}
+            />
           ) : gamePhase === "SECOND_TURN_TEMPSCORE" ? (
             <SecondTurnTempScoreBoard
               player1GuessZones={mockPlayer1GuessZones}
               player2DropZones={player2DropZones}
               onScoreCalculated={handlePlayer1ScoreCalculated} // 콜백 함수 전달
               onNextPhase={handleWinnerPhase}
+              wordCards={wordCards}
             />
           ) : gamePhase === "WINNER" ? (
             <Winner

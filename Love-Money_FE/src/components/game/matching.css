@@ -1,0 +1,99 @@
+@-webkit-keyframes spinning-coin-fall {
+  0% {
+    -webkit-transform: translate(-50%, -50%) perspective(160px) rotateY(0deg)
+      rotateX(0deg);
+    transform: translate(-50%, -50%) perspective(160px) rotateY(0deg)
+      rotateX(0deg);
+  }
+  10% {
+    opacity: 1;
+    -webkit-transform: translate(-50%, -50%) perspective(160px) rotateY(-65deg)
+      rotateX(0deg);
+    transform: translate(-50%, -50%) perspective(160px) rotateY(-65deg)
+      rotateX(0deg);
+  }
+  70% {
+    opacity: 1;
+    -webkit-transform: translate(-50%, -50%) perspective(160px) rotateY(1440deg)
+      rotateX(0deg);
+    transform: translate(-50%, -50%) perspective(160px) rotateY(1440deg)
+      rotateX(0deg);
+  }
+  90%,
+  100% {
+    opacity: 1;
+    -webkit-transform: translate(-50%, -50%) perspective(160px) rotateY(2880deg)
+      rotateX(90deg);
+    transform: translate(-50%, -50%) perspective(160px) rotateY(2880deg)
+      rotateX(90deg);
+  }
+}
+@keyframes spinning-coin-fall {
+  0% {
+    -webkit-transform: translate(-50%, -50%) perspective(160px) rotateY(0deg)
+      rotateX(0deg);
+    transform: translate(-50%, -50%) perspective(160px) rotateY(0deg)
+      rotateX(0deg);
+  }
+  10% {
+    opacity: 1;
+    -webkit-transform: translate(-50%, -50%) perspective(160px) rotateY(-65deg)
+      rotateX(0deg);
+    transform: translate(-50%, -50%) perspective(160px) rotateY(-65deg)
+      rotateX(0deg);
+  }
+  70% {
+    opacity: 1;
+    -webkit-transform: translate(-50%, -50%) perspective(160px) rotateY(1440deg)
+      rotateX(0deg);
+    transform: translate(-50%, -50%) perspective(160px) rotateY(1440deg)
+      rotateX(0deg);
+  }
+  90%,
+  100% {
+    opacity: 1;
+    -webkit-transform: translate(-50%, -50%) perspective(160px) rotateY(2880deg)
+      rotateX(90deg);
+    transform: translate(-50%, -50%) perspective(160px) rotateY(2880deg)
+      rotateX(90deg);
+  }
+}
+
+.spinning-coin-fall {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background-color: #8b6cac; /* 코인 색상: 금색 */
+  background: radial-gradient(
+    circle at 50% 50%,
+    #8b6cac,
+    #8b6cac
+  ); /* 코인 그라데이션 */
+  border-radius: 50%; /* 코인 모양을 둥글게 */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* 입체감을 위한 그림자 */
+  border: 2px solid rgb(162 28 175 / var(--tw-bg-opacity)); /* 테두리 색상 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+  -webkit-animation: spinning-coin-fall 3s infinite;
+  animation: spinning-coin-fall 3s infinite;
+  left: 50%;
+}
+
+.spinning-coin-fall-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: auto;
+  top: 20%;
+  transform: translateY(-50%);
+}
+.spinning-coin-fall img {
+  width: 70%;
+  height: 70%;
+  object-fit: cover; /* 이미지가 코인 내부에 잘 맞도록 */
+}

@@ -17,14 +17,17 @@ import JoinSessionForm from "../../components/room/JoinSessionForm";
 import GameView from "../../components/room/GameView";
 import { createSession, createToken } from "../../utils/api";
 import { useRecoilValue } from "recoil";
-import { maxExpressionState, userToken, warning } from "../../atom/store";
-import ai_face from "../../assets/ai_face.gif";
+import { maxExpressionState, userToken } from "../../atom/store";
+import mainBg from "../../assets/main_bg.png";
+import { useLocation } from "react-router-dom";
+import { updateGamePoints } from "../../utils/updateGamePoints";
+
 // Room 컴포넌트
 const Room: React.FC = () => {
   //recoil 전역변수
   const maxExpression = useRecoilValue(maxExpressionState);
-  const warningMsg = useRecoilValue(warning);
   const token = useRecoilValue(userToken);
+
   //감정을 이모지로 변환
   const expressionToEmoji = (expression: string): string => {
     const emojis: { [key: string]: string } = {
@@ -42,10 +45,8 @@ const Room: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [mode, setMode] = useState<string>("chat");
-  const [mySessionId, setMySessionId] = useState<string>("SessionA");
-  const [myUserName, setMyUserName] = useState<string>(
-    "Participant" + Math.floor(Math.random() * 100)
-  );
+  const [mySessionId, setMySessionId] = useState<string>("");
+  const [myUserName, setMyUserName] = useState<string>("");
   const [session, setSession] = useState<Session | undefined>();
   const [mainStreamManager, setMainStreamManager] = useState<
     StreamManager | undefined
@@ -65,6 +66,24 @@ const Room: React.FC = () => {
     setMessages
   );
 
+  //matching 성공 시
+  const location = useLocation();
+  const matchData = location.state?.matchData;
+  useEffect(() => {
+    if (matchData) {
+      setMyUserName(matchData.fromUser.nickname);
+      setMySessionId(matchData.sessionId);
+    }
+  }, [matchData]);
+
+  useEffect(() => {
+    if (myUserName && mySessionId) {
+      joinSession();
+    }
+  }, [myUserName, mySessionId]);
+
+  console.log("매치데이터", matchData);
+
   // 페이지를 떠날 때 세션 종료
   useEffect(() => {
     const handleBeforeUnload = () => leaveSession();
@@ -72,13 +91,17 @@ const Room: React.FC = () => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [session]);
 
-  // 세션 ID 변경 핸들러
-  const handleChangeSessionId = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setMySessionId(e.target.value);
-
-  // 사용자 이름 변경 핸들러
-  const handleChangeUserName = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setMyUserName(e.target.value);
+  // 포인트 차감 함수
+  const deductPoints = async () => {
+    if (token) {
+      try {
+        await updateGamePoints({ gamePoint: -100, token });
+        console.log("매칭으로 인한 포인트 차감 성공");
+      } catch (error) {
+        console.error("매칭으로 인한 포인트 차감 실패", error);
+      }
+    }
+  };
 
   // 메인 비디오 스트림 설정 핸들러
   // const handleMainVideoStream = (stream: StreamManager) => {
@@ -92,8 +115,7 @@ const Room: React.FC = () => {
   }, [mySessionId]);
 
   // 세션 참가 함수
-  const joinSession = async (e: FormEvent) => {
-    e.preventDefault();
+  const joinSession = async () => {
     const OV = new OpenVidu();
     const session = OV.initSession();
 
@@ -101,12 +123,22 @@ const Room: React.FC = () => {
 
     try {
       const token = await getToken();
-      console.log(token);
+      console.log("토큰", token);
       await session.connect(token, { clientData: myUserName });
+      const devices = await OV.getDevices();
+      console.log(devices + " :::::devices");
+      const videoDevices = devices.filter((device) => {
+        console.log(device + " :::::::device");
+        return device.kind === "videoinput"; // 이 부분도 return을 추가하여 올바르게 필터링되도록 수정
+      });
+      console.log("비디오디바이스", videoDevices);
+      // 첫 번째 사용 가능한 비디오 장치 선택
+      const selectedDevice = videoDevices.length > 0 ? videoDevices[0] : null;
+      const videoSource = selectedDevice ? selectedDevice.deviceId : undefined;
 
       const publisher = await OV.initPublisherAsync(undefined, {
         audioSource: undefined,
-        videoSource: undefined,
+        videoSource: videoSource,
         publishAudio: true,
         publishVideo: true,
         resolution: "640x480",
@@ -117,10 +149,6 @@ const Room: React.FC = () => {
 
       session.publish(publisher);
 
-      const devices = await OV.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
       const currentVideoDeviceId = publisher.stream
         .getMediaStream()
         .getVideoTracks()[0]
@@ -131,6 +159,9 @@ const Room: React.FC = () => {
       console.log(publisher);
       setPublisher(publisher);
       setMainStreamManager(publisher);
+
+      // 세션 연결 및 퍼블리셔 설정이 성공적으로 완료된 후 포인트 차감
+      deductPoints();
     } catch (error) {
       const typedError = error as { code: string; message: string }; // 오류 타입 명시
       console.error(
@@ -146,8 +177,8 @@ const Room: React.FC = () => {
     if (session) session.disconnect();
     setSession(undefined);
     setSubscriber(undefined);
-    setMySessionId("SessionA");
-    setMyUserName("Participant" + Math.floor(Math.random() * 100));
+    setMySessionId("");
+    setMyUserName("");
     setMainStreamManager(undefined);
     setPublisher(undefined);
   };
@@ -174,43 +205,29 @@ const Room: React.FC = () => {
 
   return (
     <div className="relative min-h-screen">
-      <div className="absolute inset-0 -z-10 bg-main-bg bg-cover bg-center"></div>
+      <img
+        src={mainBg}
+        alt=""
+        className={`absolute inset-0 -z-10 h-screen w-screen bg-cover bg-center`}
+      />
       <div className="absolute inset-0 -z-10 bg-black opacity-40"></div>
-      {mode === "chat" && warningMsg && (
-        <div className="absolute right-4 top-12 z-50 flex h-5/6 w-96 flex-col justify-center whitespace-pre-line rounded bg-red-500 text-center text-white">
-          <div className="bg-white">
-            <img src={ai_face} alt="" className="mx-auto h-44" />
-          </div>
 
-          <p style={{ fontFamily: "DungGeunMo" }} className="block">
-            {warningMsg}
-          </p>
-        </div>
-      )}
-      {session === undefined ? (
-        <JoinSessionForm
-          joinSession={joinSession}
-          myUserName={myUserName}
-          mySessionId={mySessionId}
-          handleChangeUserName={handleChangeUserName}
-          handleChangeSessionId={handleChangeSessionId}
-        />
-      ) : (
-        <GameView
-          mode={mode}
-          setMode={setMode}
-          mainStreamManager={mainStreamManager}
-          subscriber={subscriber}
-          messages={messages}
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          sendMessage={sendMessage}
-          leaveSession={leaveSession}
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
-          myUserName={myUserName}
-        />
-      )}
+      <GameView
+        mode={mode}
+        setMode={setMode}
+        mainStreamManager={mainStreamManager}
+        subscriber={subscriber}
+        messages={messages}
+        newMessage={newMessage}
+        setNewMessage={setNewMessage}
+        sendMessage={sendMessage}
+        leaveSession={leaveSession}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        myUserName={myUserName}
+        session={session}
+        matchData={matchData}
+      />
     </div>
   );
 };

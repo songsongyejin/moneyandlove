@@ -17,8 +17,8 @@ const PositionSelection: React.FC<PositionSelectionProps> = ({
   onPositionSelect,
 }) => {
   const positions = [
-    { name: "MONEY", icon: moneyIcon },
-    { name: "LOVE", icon: loveIcon },
+    { name: "money", icon: moneyIcon },
+    { name: "love", icon: loveIcon },
   ];
   const [tempSelectedPosition, setTempSelectedPosition] = useState<
     string | null

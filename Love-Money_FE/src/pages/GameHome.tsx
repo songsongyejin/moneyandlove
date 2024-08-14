@@ -20,11 +20,11 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchUserData } from "../utils/user";
 
 import { fetchFriendsListData } from "../utils/friends";
+import { matching } from "../utils/matchingAPI";
 
 const GameHome: React.FC = () => {
   // Recoil을 사용하여 사용자 정보 상태를 가져옴
   const token = useRecoilValue(userToken);
-
   const [user, setUser] = useRecoilState(userInfo);
   type friendProfile = {
     followerId: number;
@@ -40,11 +40,13 @@ const GameHome: React.FC = () => {
     queryFn: () => fetchUserData(token as string),
     enabled: !!token,
   });
+
   const { data: friendsList } = useQuery({
     queryKey: ["friendsList", token],
     queryFn: () => fetchFriendsListData(token as string),
     enabled: !!token,
   });
+
   useEffect(() => {
     if (data) {
       setUser(data);
@@ -66,6 +68,7 @@ const GameHome: React.FC = () => {
     showPositionSelection, // 포지션 선택 모달의 표시 여부
     setShowPositionSelection,
     selectedPosition, // 현재 선택된 포지션
+    gameMode,
     setSelectedPosition,
     showGameModeSelection, // 게임 모드 선택 모달의 표시 여부
     setShowGameModeSelection,
@@ -88,6 +91,7 @@ const GameHome: React.FC = () => {
     if (selectedPosition === "LOVE") return mainBgLove;
     return mainBg;
   };
+
   return (
     <div className="relative h-screen">
       <Navbar />
@@ -184,7 +188,16 @@ const GameHome: React.FC = () => {
       />
 
       {/* 매칭 모달 */}
-      <Matching isOpen={showMatching} onClose={handleMatchingCancel} />
+
+      {selectedPosition && gameMode && token && (
+        <Matching
+          isOpen={showMatching}
+          onClose={handleMatchingCancel}
+          token={token}
+          selectedPosition={selectedPosition}
+          gameMode={gameMode}
+        />
+      )}
     </div>
   );
 };
