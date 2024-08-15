@@ -31,7 +31,7 @@ public class FriendService {
 	private final UserRepository userRepository;
 	private final ChatRoomRepository chatRoomRepository;
 
-	@Transactional(isolation = SERIALIZABLE)
+	@Transactional
 	public void addFriend(CreateFriendRequest createFriendRequest) {
 		log.info("안녕하세요 여기서 친구 추가가 돼요");
 		Long followerId = createFriendRequest.getFollowerId();
