@@ -73,6 +73,11 @@ const GameHome: React.FC = () => {
     return mainBg;
   };
 
+  const handleFaceVerificationComplete = () => {
+    setShowFaceVerification(false);
+    setShowPositionSelection(true); // 얼굴 인증 완료 후 포지션 선택 모달 띄움
+  };
+
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -145,6 +150,11 @@ const GameHome: React.FC = () => {
         isOpen={isNoticeModalOpen}
         onClose={() => setIsNoticeModalOpen(false)}
         title="공지사항"
+      />
+      <FaceVerification
+        isOpen={showFaceVerification}
+        onClose={() => setShowFaceVerification(false)}
+        onComplete={handleFaceVerificationComplete}
       />
 
       {/* 포지션 선택 모달 */}

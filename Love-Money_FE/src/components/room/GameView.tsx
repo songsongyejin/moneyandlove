@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import UserVideoComponent from "./UserVideoComponent";
 import AgreeFaceChatModal from "./AgreeFaceChatModal";
 import ChatBox from "./ChatBox";
@@ -10,7 +10,9 @@ import { userToken, userInfo, UserInfo } from "../../atom/store";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { updateGamePoints } from "../../utils/updateGamePoints";
 import coffee from "../../assets/coffee.png";
+import { useAudio } from "../../hooks/useAudio"; // Import the useAudio hook
 
+// 게임 뷰 컴포넌트
 const GameView = ({
   mode,
   setMode,
@@ -46,6 +48,67 @@ const GameView = ({
   const token = useRecoilValue(userToken);
   const setUserInfo = useSetRecoilState(userInfo);
   const [firstModal, setFirstModal] = useState(true);
+
+  const { play, pause } = useAudio("/path/to/your/music.mp3");
+  const prevMode = useRef(mode); // 이전 모드를 추적하기 위해 useRef 사용
+
+  useEffect(() => {
+    if (prevMode.current !== mode) {
+      // 모드가 변경되었을 때만 실행
+      if (mode === "chat") {
+        play();
+      } else if (mode === "faceChat") {
+        pause();
+      }
+      prevMode.current = mode; // 이전 모드를 현재 모드로 업데이트
+    }
+  }, [mode, play, pause]);
+
+  // 포인트 복구 함수
+  const restorePoints = async () => {
+    if (token && matchData) {
+      try {
+        console.log("포인트 복구 중...");
+        // 복구할 포인트 결정 (deductPoints에서 차감한 포인트와 동일한 값을 사용)
+        let gamePoint = 100; // 기본 복구 포인트
+
+        switch (matchData.fromUser.matchingMode) {
+          case "random":
+            gamePoint = 100;
+            break;
+          case "love":
+            gamePoint = 500;
+            break;
+          case "top30":
+            gamePoint = 1000;
+            break;
+          default:
+            console.warn(
+              "알 수 없는 매칭 모드:",
+              matchData.fromUser.matchingMode
+            );
+        }
+
+        await updateGamePoints({ gamePoint, token });
+
+        // Recoil 상태 업데이트
+        setUserInfo((prevUserInfo: UserInfo | null) => {
+          if (prevUserInfo) {
+            return {
+              ...prevUserInfo,
+              gamePoint: prevUserInfo.gamePoint + gamePoint, // 포인트 복구
+            };
+          }
+          return prevUserInfo;
+        });
+
+        console.log(`${gamePoint} 포인트 복구 완료`);
+      } catch (error) {
+        console.error("포인트 복구 실패", error);
+      }
+    }
+  };
+
   const [hasLeft, setHasLeft] = useState(false);
   const [isNormalExit, setIsNormalExit] = useState(false);
 
@@ -67,7 +130,9 @@ const GameView = ({
       const handleConnectionDestroyed = () => {
         if (!hasLeft && session.remoteConnections.size === 0 && !isNormalExit) {
           setHasLeft(true);
-          alert("상대방이 나갔습니다. 소모한 포인트는 다시 회수됩니다.");
+          alert(
+            "상대방의 연결이 끊어졌습니다. 사용하신 포인트는 원상태로 복원됩니다."
+          );
           handleOpponentLeft();
         }
       };
@@ -103,48 +168,6 @@ const GameView = ({
     await restorePoints();
     leaveSession();
     navigate("/main");
-  };
-
-  const restorePoints = async () => {
-    if (token && matchData) {
-      try {
-        console.log("포인트 복구 중...");
-        let gamePoint = 100;
-
-        switch (matchData.fromUser.matchingMode) {
-          case "random":
-            gamePoint = 100;
-            break;
-          case "love":
-            gamePoint = 500;
-            break;
-          case "top30":
-            gamePoint = 1000;
-            break;
-          default:
-            console.warn(
-              "알 수 없는 매칭 모드:",
-              matchData.fromUser.matchingMode
-            );
-        }
-
-        await updateGamePoints({ gamePoint, token });
-
-        setUserInfo((prevUserInfo: UserInfo | null) => {
-          if (prevUserInfo) {
-            return {
-              ...prevUserInfo,
-              gamePoint: prevUserInfo.gamePoint + gamePoint,
-            };
-          }
-          return prevUserInfo;
-        });
-
-        console.log(`${gamePoint} 포인트 복구 완료`);
-      } catch (error) {
-        console.error("포인트 복구 실패", error);
-      }
-    }
   };
 
   const renderChatMode = () => (
