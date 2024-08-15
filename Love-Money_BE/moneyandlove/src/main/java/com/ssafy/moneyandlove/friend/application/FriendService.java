@@ -52,8 +52,7 @@ public class FriendService {
 		//이미 저장된 채팅방 이름이 있다면 삭제 후 저장
 		Optional<ChatRoom> existingChatRoom = chatRoomRepository.findChatRoomByUsers(follower.getId(), following.getId());
 		if (existingChatRoom.isPresent()) {
-			chatRoomRepository.delete(existingChatRoom.orElseThrow());
-			log.info("이미 방이 있어서 삭제했어요");
+			return;
 		}
 		log.info("안녕하세요 여기서 방이 추가 돼요");
 
