@@ -56,9 +56,7 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
         >
           게임모드를 선택해주세요!
         </p>
-        {!isEligibleToStart() && selectedMode && (
-          <p className="bg-custom-purple-color">포인트가 부족합니다.</p>
-        )}
+
         <div className="flex w-full justify-center">
           <div
             className={`-mr-24 -translate-x-1/2 rotate-[-15deg] transform cursor-pointer transition-transform duration-300 hover:z-10 hover:scale-110 ${
@@ -102,6 +100,21 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
           </div>
         </div>
 
+        {/* 포인트 부족 메시지 */}
+        {!isEligibleToStart() && selectedMode && (
+          <p
+            className="z-50 rounded p-2 text-red-700"
+            style={{
+              position: "absolute",
+              bottom: "0%", // 화면 하단에 배치
+              left: "50%",
+              transform: "translateX(-50%)", // 가운데 정렬
+            }}
+          >
+            포인트가 부족합니다.
+          </p>
+        )}
+
         <div className="flex space-x-4">
           <button
             onClick={onBackToPositionSelect}
@@ -111,7 +124,7 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
           </button>
           <button
             onClick={handleConfirm}
-            disabled={!selectedMode}
+            disabled={!selectedMode || !isEligibleToStart()}
             className={`rounded px-4 py-2 text-white shadow-btn ${
               selectedMode && isEligibleToStart()
                 ? "bg-custom-purple-color hover:bg-purple-950"
