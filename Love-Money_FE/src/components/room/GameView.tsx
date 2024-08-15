@@ -50,9 +50,13 @@ const GameView = ({
 
   const { play, pause } = useAudio("/path/to/your/music.mp3");
   const prevMode = useRef(mode); // 이전 모드를 추적하기 위해 useRef 사용
+  const [isReady, setIsReady] = useState(false); // 현재 사용자의 준비 상태
+  const [opponentReady, setOpponentReady] = useState(false); // 상대방의 준비 상태
+  const [waitingForOpponent, setWaitingForOpponent] = useState(false); // 상대방 기다리는 중 상태
 
   useEffect(() => {
-    if (prevMode.current !== mode) { // 모드가 변경되었을 때만 실행
+    if (prevMode.current !== mode) {
+      // 모드가 변경되었을 때만 실행
       if (mode === "chat") {
         play();
       } else if (mode === "faceChat") {
@@ -62,6 +66,56 @@ const GameView = ({
     }
   }, [mode, play, pause]);
 
+  // 상대방의 준비 상태를 수신
+  useEffect(() => {
+    if (session) {
+      const handleOpponentReady = (event: any) => {
+        const data = JSON.parse(event.data);
+        const senderConnectionId = event.from.connectionId; // 신호를 보낸 사람의 connectionId
+
+        // 디버깅용 로그 추가
+        console.log("내 connectionId:", session.connection.connectionId);
+        console.log("신호를 보낸 connectionId:", senderConnectionId);
+
+        // 본인이 보낸 신호는 무시하고, 상대방이 보낸 신호만 처리
+        if (senderConnectionId !== session.connection.connectionId) {
+          console.log("상대방이 준비 완료");
+          setOpponentReady(true);
+        } else {
+          console.log("자신이 보낸 신호를 무시합니다.");
+        }
+      };
+
+      session.on("signal:ready", handleOpponentReady);
+
+      return () => {
+        session.off("signal:ready", handleOpponentReady);
+      };
+    }
+  }, [session]);
+
+  // 본인과 상대방 모두 준비된 경우 faceChat 모드로 전환
+  useEffect(() => {
+    if (isReady && opponentReady) {
+      console.log(
+        "두 사용자가 모두 준비되었습니다. 모드를 faceChat으로 전환합니다."
+      );
+      setMode("faceChat");
+    }
+  }, [isReady, opponentReady, setMode]);
+
+  // "만나러가기" 버튼 클릭 시 호출되는 함수
+  const handleReady = () => {
+    console.log("사용자가 '만나러가기' 버튼을 눌렀습니다."); // 클릭 로그
+    setWaitingForOpponent(true); // 상대방 기다리는 중 상태로 설정
+    setIsReady(true); // 현재 사용자를 준비 상태로 설정
+
+    // 상대방에게 준비 상태를 알림
+    session.signal({
+      type: "ready",
+      data: JSON.stringify({ ready: true }),
+    });
+  };
 
   // 포인트 복구 함수
   const restorePoints = async () => {
@@ -171,14 +225,16 @@ const GameView = ({
         matchData={matchData}
       />
 
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="shake-left absolute top-1/2 z-50 mr-10 flex items-center rounded bg-transparent p-4 text-2xl font-bold text-white hover:scale-110"
-        style={{ fontFamily: "DungGeunMo" }}
-      >
-        <img src={coffee} alt="" className="w-16" />
-        <p>다음 단계로 넘어가기!</p>
-      </button>
+      {!waitingForOpponent && ( // 상대방 기다리는 중일 때 버튼 숨기기
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="shake-left absolute top-1/2 z-50 mr-10 flex items-center rounded bg-transparent p-4 text-2xl font-bold text-white hover:scale-110"
+          style={{ fontFamily: "DungGeunMo" }}
+        >
+          <img src={coffee} alt="" className="w-16" />
+          <p>다음 단계로 넘어가기!</p>
+        </button>
+      )}
     </>
   );
 
@@ -193,6 +249,7 @@ const GameView = ({
     //     backgroundPosition: "center bottom",
     //   }}
     // >
+
     <div className="relative h-full w-full">
       {/* 배경 이미지 */}
       {/* 빠른 배경 이미지 렌더링 위해 img 태그 사용 */}
@@ -254,6 +311,17 @@ const GameView = ({
     >
       {mode === "chat" ? renderChatMode() : renderFaceChatMode()}
 
+      {waitingForOpponent && !opponentReady && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <p
+            className="text-4xl text-white"
+            style={{ fontFamily: "DungGeunMo" }}
+          >
+            상대방 기다리는중...
+          </p>
+        </div>
+      )}
+
       <AgreeFaceChatModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -263,7 +331,7 @@ const GameView = ({
             <button
               onClick={() => {
                 setIsModalOpen(false);
-                setMode("faceChat");
+                handleReady(); // "만나러가기" 버튼 클릭 시 ready 상태로 전환
               }}
               className="rounded bg-transparent px-4 py-2 text-white hover:bg-black"
             >

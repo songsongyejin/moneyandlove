@@ -93,11 +93,11 @@ const SelectTurn: React.FC<SelectTurnProps> = ({ onTurnSelected, session }) => {
           top: "65%", // 텍스트 위치를 적절히 조정
         }}
       >
-        <p className="deep-3d-text mb-3 text-6xl">
-          왓츠잇투야 게임이 곧 시작됩니다!
+        <p className="deep-3d-text mb-3 text-2xl">
+          간단한 카드 게임을 통해 서로의 가치관을 탐색해보세요.
         </p>
         <p className="deep-3d-text text-2xl">
-          게임의 순서를 위해 카드를 골라주세요
+          게임의 순서를 위해 카드를 골라주세요.
         </p>
       </div>
       {/* 카드 선택 영역 */}

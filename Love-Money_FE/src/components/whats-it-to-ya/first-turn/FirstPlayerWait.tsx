@@ -26,10 +26,10 @@ const FirstPlayerWait: React.FC<FirstPlayerWaitProps> = ({
         }}
       >
         <div>
-          <p className="deep-3d-text mb-3 text-4xl">
+          <p className="deep-3d-text mb-3 text-2xl">
             상대방이 당신의 우선순위를 맞추는 중입니다.
           </p>
-          <p className="deep-3d-text mb-3 text-4xl">잠시만 기다려주세요!</p>
+          <p className="deep-3d-text mb-3 text-2xl">잠시만 기다려주세요.</p>
         </div>
       </div>
 

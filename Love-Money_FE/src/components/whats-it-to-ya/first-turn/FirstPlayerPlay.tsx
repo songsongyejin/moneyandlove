@@ -134,9 +134,14 @@ const FirstPlayerPlay: React.FC<FirstPlayerPlayProps> = ({
           }}
         >
           <div>
-            <p className="deep-3d-text mb-3 text-4xl">당신이 선입니다!</p>
-            <p className="deep-3d-text text-4xl">
-              다섯 개의 단어 카드를 보고 당신의 우선순위를 정해주세요
+            <p className="deep-3d-text mb-3 text-2xl">
+              먼저 다섯 개의 단어 카드를 보고 당신의 우선순위를 정해보세요.
+            </p>
+            <p className="deep-3d-text mb-3 text-2xl">
+              오른쪽 하단에 있는 하트 카드를 드래그해서 카드 밑에 배치해주세요.{" "}
+            </p>
+            <p className="deep-3d-text mb-3 text-2xl">
+              하단의 단어카드에 커서를 올려 자세히 확인해보세요.
             </p>
           </div>
         </div>
