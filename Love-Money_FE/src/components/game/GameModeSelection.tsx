@@ -54,7 +54,7 @@ const GameModeSelection: React.FC<GameModeSelectionProps> = ({
           className="mb-10 text-xl font-bold"
           style={{ fontFamily: "DungGeunMo" }}
         >
-          게임모드를 선택해주세요!
+          매칭모드를 선택해주세요!
         </p>
 
         <div className="flex w-full justify-center">
