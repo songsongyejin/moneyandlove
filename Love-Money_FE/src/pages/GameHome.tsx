@@ -1,15 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useGameLogic } from "../hooks/useGameLogic";
 import { userInfo, userToken } from "../atom/store";
-// 필요한 아이콘과 CSS 파일을 import
 import heartIcon from "../assets/start_heart_icon.svg";
 import "../index.css";
 import mainBg from "../assets/moveBg2.gif";
 import mainBgMoney from "../assets/mafia_bg.png";
 import mainBgLove from "../assets/love_bg.jpg";
-
-// 필요한 컴포넌트들을 import
+import cat from "../assets/cat.png";
+import exclamation from "../assets/exclamation.png";
 import FriendsSideBar from "../components/FriendsSideBar/FriendsSideBar";
 import FaceVerification from "../components/game/FaceVerification";
 import PositionSelection from "../components/game/PositionSelection";
@@ -18,24 +17,16 @@ import Matching from "../components/game/Matching";
 import Navbar from "../components/Header/Navbar";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserData } from "../utils/user";
-
 import { fetchFriendsListData } from "../utils/friends";
 import { matching } from "../utils/matchingAPI";
+import NoticeModal from "../components/home/NoticeModal";
 
 const GameHome: React.FC = () => {
-  // Recoil을 사용하여 사용자 정보 상태를 가져옴
   const token = useRecoilValue(userToken);
   const [user, setUser] = useRecoilState(userInfo);
-  type friendProfile = {
-    followerId: number;
-    nickname: string;
-    age: number;
-    gender: string;
-    img: string;
-    chatRoomId: number;
-  };
+  const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false); // NoticeModal 상태 관리
 
-  const { data, error, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["userData", token],
     queryFn: () => fetchUserData(token as string),
     enabled: !!token,
@@ -53,39 +44,29 @@ const GameHome: React.FC = () => {
     }
   }, [data, setUser]);
 
-  //Chat Socket 통신
-  type chatType = {
-    roomId: number;
-    senderId: number;
-    message: string;
-    createdAt: string;
-  };
-
-  // useGameLogic 훅을 사용하여 게임 로직 관련 상태와 함수들을 가져옴
   const {
-    showFaceVerification, // 얼굴 인증 모달의 표시 여부
+    showFaceVerification,
     setShowFaceVerification,
-    showPositionSelection, // 포지션 선택 모달의 표시 여부
+    showPositionSelection,
     setShowPositionSelection,
-    selectedPosition, // 현재 선택된 포지션
+    selectedPosition,
     gameMode,
     setSelectedPosition,
-    showGameModeSelection, // 게임 모드 선택 모달의 표시 여부
+    showGameModeSelection,
     setShowGameModeSelection,
-    showMatching, // 매칭 모달의 표시 여부
+    showMatching,
     setShowMatching,
-    handleGameStart, // 게임 시작 버튼 클릭 시 호출되는 함수
+    handleGameStart,
     handleGameModeSelectionClose,
-    handlePositionSelect, // 포지션 선택 시 호출되는 함수
-    handleGameModeSelect, // 게임 모드 선택 시 호출되는 함수
-    handleBackToPositionSelect, // 게임 모드 선택에서 포지션 선택으로 되돌아가는 함수
-    handleMatchStart, // 매칭 시작 시 호출되는 함수
-    handleMatchingCancel, // 매칭 취소 시 호출되는 함수
+    handlePositionSelect,
+    handleGameModeSelect,
+    handleBackToPositionSelect,
+    handleMatchStart,
+    handleMatchingCancel,
     showMatchComplete,
     handleMatchComplete,
   } = useGameLogic();
 
-  // 선택된 포지션에 따라 배경 클래스를 결정하는 함수
   const getBackgroundClass = () => {
     if (selectedPosition === "MONEY") return mainBgLove;
     if (selectedPosition === "LOVE") return mainBgLove;
@@ -98,20 +79,16 @@ const GameHome: React.FC = () => {
   };
 
   const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div className="relative h-screen">
       <Navbar />
-      {/* <div
-        className={`absolute inset-0 ${getBackgroundClass()} bg-cover bg-center`}
-        style={{ backgroundImage: `url(${imageUrl})` }}
-      ></div> */}
       <img
         src={getBackgroundClass()}
         alt=""
         className={`absolute inset-0 h-screen w-screen object-center`}
       />
       <div className="absolute inset-0 bg-black opacity-35"></div>
-      {/* 메인 콘텐츠 영역 */}
       <div className="relative flex h-full items-center justify-center">
         <FriendsSideBar />
 
@@ -154,8 +131,26 @@ const GameHome: React.FC = () => {
             </button>
           </div>
         </div>
+        {/* 고양이 이미지가 있는 div 클릭 시 NoticeModal을 열기 */}
+        <div
+          className="absolute bottom-5 left-96 flex w-24 cursor-pointer hover:scale-110"
+          onClick={() => setIsNoticeModalOpen(true)}
+        >
+          <img src={cat} alt="cat" />
+          <img
+            src={exclamation}
+            alt="exclamation"
+            className="blink-1 -ml-7 -mt-7 h-14 w-14"
+          />
+        </div>
       </div>
 
+      {/* NoticeModal */}
+      <NoticeModal
+        isOpen={isNoticeModalOpen}
+        onClose={() => setIsNoticeModalOpen(false)}
+        title="공지사항"
+      />
       <FaceVerification
         isOpen={showFaceVerification}
         onClose={() => setShowFaceVerification(false)}
@@ -167,10 +162,9 @@ const GameHome: React.FC = () => {
         isOpen={showPositionSelection}
         onClose={() => {
           setShowPositionSelection(false);
-          // setSelectedPosition(null);
         }}
         selectedPosition={selectedPosition}
-        onPositionSelect={handlePositionSelect} // 포지션이 선택되면, 포지션 선택 시 호출되는 함수 실행
+        onPositionSelect={handlePositionSelect}
       />
 
       {/* 게임 모드 선택 모달 */}
@@ -179,11 +173,10 @@ const GameHome: React.FC = () => {
         onClose={handleGameModeSelectionClose}
         onModeSelect={handleGameModeSelect}
         onBackToPositionSelect={handleBackToPositionSelect}
-        selectedPosition={selectedPosition || ""} // 게임모드 선택 시 현재 포지션 전달
+        selectedPosition={selectedPosition || ""}
       />
 
       {/* 매칭 모달 */}
-
       {selectedPosition && gameMode && token && (
         <Matching
           isOpen={showMatching}

@@ -178,6 +178,7 @@ const GameView = ({
     });
   };
 
+
   useEffect(() => {
     // 15초 후에 버튼을 보여줌
     const timer = setTimeout(() => {
