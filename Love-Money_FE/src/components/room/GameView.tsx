@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import UserVideoComponent from "./UserVideoComponent";
 import AgreeFaceChatModal from "./AgreeFaceChatModal";
 import ChatBox from "./ChatBox";
@@ -10,6 +10,7 @@ import { userToken, userInfo, UserInfo } from "../../atom/store";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { updateGamePoints } from "../../utils/updateGamePoints";
 import coffee from "../../assets/coffee.png";
+import { useAudio } from "../../hooks/useAudio"; // Import the useAudio hook
 
 const GameView = ({
   mode,
@@ -46,11 +47,136 @@ const GameView = ({
   const token = useRecoilValue(userToken);
   const setUserInfo = useSetRecoilState(userInfo);
   const [firstModal, setFirstModal] = useState(true);
+
+  const { play, pause } = useAudio("/path/to/your/music.mp3");
+  const prevMode = useRef(mode); // 이전 모드를 추적하기 위해 useRef 사용
+  const [isReady, setIsReady] = useState(false); // 현재 사용자의 준비 상태
+  const [opponentReady, setOpponentReady] = useState(false); // 상대방의 준비 상태
+  const [waitingForOpponent, setWaitingForOpponent] = useState(false); // 상대방 기다리는 중 상태
+
+  useEffect(() => {
+    if (prevMode.current !== mode) {
+      // 모드가 변경되었을 때만 실행
+      if (mode === "chat") {
+        play();
+      } else if (mode === "faceChat") {
+        pause();
+      }
+      prevMode.current = mode; // 이전 모드를 현재 모드로 업데이트
+    }
+  }, [mode, play, pause]);
+
+  // 상대방의 준비 상태를 수신
+  useEffect(() => {
+    if (session) {
+      const handleOpponentReady = (event: any) => {
+        const data = JSON.parse(event.data);
+        const senderConnectionId = event.from.connectionId; // 신호를 보낸 사람의 connectionId
+
+        // 디버깅용 로그 추가
+        console.log("내 connectionId:", session.connection.connectionId);
+        console.log("신호를 보낸 connectionId:", senderConnectionId);
+
+        // 본인이 보낸 신호는 무시하고, 상대방이 보낸 신호만 처리
+        if (senderConnectionId !== session.connection.connectionId) {
+          console.log("상대방이 준비 완료");
+          setOpponentReady(true);
+        } else {
+          console.log("자신이 보낸 신호를 무시합니다.");
+        }
+      };
+
+      session.on("signal:ready", handleOpponentReady);
+
+      return () => {
+        session.off("signal:ready", handleOpponentReady);
+      };
+    }
+  }, [session]);
+
+  // 본인과 상대방 모두 준비된 경우 faceChat 모드로 전환
+  useEffect(() => {
+    if (isReady && opponentReady) {
+      console.log(
+        "두 사용자가 모두 준비되었습니다. 모드를 faceChat으로 전환합니다."
+      );
+      setMode("faceChat");
+    }
+  }, [isReady, opponentReady, setMode]);
+
+  // 포인트 복구 함수
+  const restorePoints = async () => {
+    if (token && matchData) {
+      try {
+        console.log("포인트 복구 중...");
+        // 복구할 포인트 결정 (deductPoints에서 차감한 포인트와 동일한 값을 사용)
+        let gamePoint = 100; // 기본 복구 포인트
+
+        switch (matchData.fromUser.matchingMode) {
+          case "random":
+            gamePoint = 100;
+            break;
+          case "love":
+            gamePoint = 500;
+            break;
+          case "top30":
+            gamePoint = 1000;
+            break;
+          default:
+            console.warn(
+              "알 수 없는 매칭 모드:",
+              matchData.fromUser.matchingMode
+            );
+        }
+
+        await updateGamePoints({ gamePoint, token });
+
+        // Recoil 상태 업데이트
+        setUserInfo((prevUserInfo: UserInfo | null) => {
+          if (prevUserInfo) {
+            return {
+              ...prevUserInfo,
+              gamePoint: prevUserInfo.gamePoint + gamePoint, // 포인트 복구
+            };
+          }
+          return prevUserInfo;
+        });
+
+        console.log(`${gamePoint} 포인트 복구 완료`);
+      } catch (error) {
+        console.error("포인트 복구 실패", error);
+      }
+    }
+  };
+
   const [hasLeft, setHasLeft] = useState(false);
   const [isNormalExit, setIsNormalExit] = useState(false);
 
   // 버튼이 나타날 시간을 관리하는 상태
   const [showNextStepButton, setShowNextStepButton] = useState(false);
+
+  useEffect(() => {
+    // 15초 후에 버튼을 보여줌
+    const timer = setTimeout(() => {
+      setShowNextStepButton(true);
+    }, 15000);
+
+    // 컴포넌트 언마운트 시 타이머 정리
+    return () => clearTimeout(timer);
+  }, []);
+
+  // "만나러가기" 버튼 클릭 시 호출되는 함수
+  const handleReady = () => {
+    console.log("사용자가 '만나러가기' 버튼을 눌렀습니다."); // 클릭 로그
+    setWaitingForOpponent(true); // 상대방 기다리는 중 상태로 설정
+    setIsReady(true); // 현재 사용자를 준비 상태로 설정
+
+    // 상대방에게 준비 상태를 알림
+    session.signal({
+      type: "ready",
+      data: JSON.stringify({ ready: true }),
+    });
+  };
 
   useEffect(() => {
     // 15초 후에 버튼을 보여줌
@@ -103,48 +229,6 @@ const GameView = ({
     await restorePoints();
     leaveSession();
     navigate("/main");
-  };
-
-  const restorePoints = async () => {
-    if (token && matchData) {
-      try {
-        console.log("포인트 복구 중...");
-        let gamePoint = 100;
-
-        switch (matchData.fromUser.matchingMode) {
-          case "random":
-            gamePoint = 100;
-            break;
-          case "love":
-            gamePoint = 500;
-            break;
-          case "top30":
-            gamePoint = 1000;
-            break;
-          default:
-            console.warn(
-              "알 수 없는 매칭 모드:",
-              matchData.fromUser.matchingMode
-            );
-        }
-
-        await updateGamePoints({ gamePoint, token });
-
-        setUserInfo((prevUserInfo: UserInfo | null) => {
-          if (prevUserInfo) {
-            return {
-              ...prevUserInfo,
-              gamePoint: prevUserInfo.gamePoint + gamePoint,
-            };
-          }
-          return prevUserInfo;
-        });
-
-        console.log(`${gamePoint} 포인트 복구 완료`);
-      } catch (error) {
-        console.error("포인트 복구 실패", error);
-      }
-    }
   };
 
   const renderChatMode = () => (
