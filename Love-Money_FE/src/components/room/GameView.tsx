@@ -104,19 +104,6 @@ const GameView = ({
     }
   }, [isReady, opponentReady, setMode]);
 
-  // "만나러가기" 버튼 클릭 시 호출되는 함수
-  const handleReady = () => {
-    console.log("사용자가 '만나러가기' 버튼을 눌렀습니다."); // 클릭 로그
-    setWaitingForOpponent(true); // 상대방 기다리는 중 상태로 설정
-    setIsReady(true); // 현재 사용자를 준비 상태로 설정
-
-    // 상대방에게 준비 상태를 알림
-    session.signal({
-      type: "ready",
-      data: JSON.stringify({ ready: true }),
-    });
-  };
-
   // 포인트 복구 함수
   const restorePoints = async () => {
     if (token && matchData) {
@@ -164,6 +151,31 @@ const GameView = ({
 
   const [hasLeft, setHasLeft] = useState(false);
   const [isNormalExit, setIsNormalExit] = useState(false);
+  // 타이머 관련 상태
+  const [showNextStepButton, setShowNextStepButton] = useState(false);
+
+  useEffect(() => {
+    // 15초 후에 버튼을 보여줌
+    const timer = setTimeout(() => {
+      setShowNextStepButton(true);
+    }, 15000);
+
+    // 컴포넌트 언마운트 시 타이머 정리
+    return () => clearTimeout(timer);
+  }, []);
+
+  // "만나러가기" 버튼 클릭 시 호출되는 함수
+  const handleReady = () => {
+    console.log("사용자가 '만나러가기' 버튼을 눌렀습니다."); // 클릭 로그
+    setWaitingForOpponent(true); // 상대방 기다리는 중 상태로 설정
+    setIsReady(true); // 현재 사용자를 준비 상태로 설정
+
+    // 상대방에게 준비 상태를 알림
+    session.signal({
+      type: "ready",
+      data: JSON.stringify({ ready: true }),
+    });
+  };
 
   useEffect(() => {
     if (session) {
@@ -225,16 +237,17 @@ const GameView = ({
         matchData={matchData}
       />
 
-      {!waitingForOpponent && ( // 상대방 기다리는 중일 때 버튼 숨기기
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="shake-left absolute top-1/2 z-50 mr-10 flex items-center rounded bg-transparent p-4 text-2xl font-bold text-white hover:scale-110"
-          style={{ fontFamily: "DungGeunMo" }}
-        >
-          <img src={coffee} alt="" className="w-16" />
-          <p>다음 단계로 넘어가기!</p>
-        </button>
-      )}
+      {!waitingForOpponent &&
+        showNextStepButton && ( // 상대방 기다리는 중일 때 버튼 숨기기
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="shake-left absolute top-1/2 z-50 mr-10 flex items-center rounded bg-transparent p-4 text-2xl font-bold text-white hover:scale-110"
+            style={{ fontFamily: "DungGeunMo" }}
+          >
+            <img src={coffee} alt="" className="w-16" />
+            <p>다음 단계로 넘어가기!</p>
+          </button>
+        )}
     </>
   );
 
