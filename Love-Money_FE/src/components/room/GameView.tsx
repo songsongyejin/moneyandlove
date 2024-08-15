@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import UserVideoComponent from "./UserVideoComponent";
 import AgreeFaceChatModal from "./AgreeFaceChatModal";
 import ChatBox from "./ChatBox";
@@ -10,6 +10,7 @@ import { userToken, userInfo, UserInfo } from "../../atom/store";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { updateGamePoints } from "../../utils/updateGamePoints";
 import coffee from "../../assets/coffee.png";
+import { useAudio } from "../../hooks/useAudio"; // Import the useAudio hook
 
 const GameView = ({
   mode,
@@ -177,8 +178,6 @@ const GameView = ({
     });
   };
 
-  // 버튼이 나타날 시간을 관리하는 상태
-  const [showNextStepButton, setShowNextStepButton] = useState(false);
 
   useEffect(() => {
     // 15초 후에 버튼을 보여줌
@@ -231,48 +230,6 @@ const GameView = ({
     await restorePoints();
     leaveSession();
     navigate("/main");
-  };
-
-  const restorePoints = async () => {
-    if (token && matchData) {
-      try {
-        console.log("포인트 복구 중...");
-        let gamePoint = 100;
-
-        switch (matchData.fromUser.matchingMode) {
-          case "random":
-            gamePoint = 100;
-            break;
-          case "love":
-            gamePoint = 500;
-            break;
-          case "top30":
-            gamePoint = 1000;
-            break;
-          default:
-            console.warn(
-              "알 수 없는 매칭 모드:",
-              matchData.fromUser.matchingMode
-            );
-        }
-
-        await updateGamePoints({ gamePoint, token });
-
-        setUserInfo((prevUserInfo: UserInfo | null) => {
-          if (prevUserInfo) {
-            return {
-              ...prevUserInfo,
-              gamePoint: prevUserInfo.gamePoint + gamePoint,
-            };
-          }
-          return prevUserInfo;
-        });
-
-        console.log(`${gamePoint} 포인트 복구 완료`);
-      } catch (error) {
-        console.error("포인트 복구 실패", error);
-      }
-    }
   };
 
   const renderChatMode = () => (
