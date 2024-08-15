@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserVideoComponent from "./UserVideoComponent";
 import AgreeFaceChatModal from "./AgreeFaceChatModal";
 import ChatBox from "./ChatBox";
@@ -10,9 +10,7 @@ import { userToken, userInfo, UserInfo } from "../../atom/store";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { updateGamePoints } from "../../utils/updateGamePoints";
 import coffee from "../../assets/coffee.png";
-import { useAudio } from "../../hooks/useAudio"; // Import the useAudio hook
 
-// 게임 뷰 컴포넌트
 const GameView = ({
   mode,
   setMode,
@@ -152,7 +150,8 @@ const GameView = ({
 
   const [hasLeft, setHasLeft] = useState(false);
   const [isNormalExit, setIsNormalExit] = useState(false);
-  // 타이머 관련 상태
+
+  // 버튼이 나타날 시간을 관리하는 상태
   const [showNextStepButton, setShowNextStepButton] = useState(false);
 
   useEffect(() => {
@@ -196,9 +195,7 @@ const GameView = ({
       const handleConnectionDestroyed = () => {
         if (!hasLeft && session.remoteConnections.size === 0 && !isNormalExit) {
           setHasLeft(true);
-          alert(
-            "상대방의 연결이 끊어졌습니다. 사용하신 포인트는 원상태로 복원됩니다."
-          );
+          alert("상대방이 나갔습니다. 소모한 포인트는 다시 회수됩니다.");
           handleOpponentLeft();
         }
       };
@@ -236,6 +233,48 @@ const GameView = ({
     navigate("/main");
   };
 
+  const restorePoints = async () => {
+    if (token && matchData) {
+      try {
+        console.log("포인트 복구 중...");
+        let gamePoint = 100;
+
+        switch (matchData.fromUser.matchingMode) {
+          case "random":
+            gamePoint = 100;
+            break;
+          case "love":
+            gamePoint = 500;
+            break;
+          case "top30":
+            gamePoint = 1000;
+            break;
+          default:
+            console.warn(
+              "알 수 없는 매칭 모드:",
+              matchData.fromUser.matchingMode
+            );
+        }
+
+        await updateGamePoints({ gamePoint, token });
+
+        setUserInfo((prevUserInfo: UserInfo | null) => {
+          if (prevUserInfo) {
+            return {
+              ...prevUserInfo,
+              gamePoint: prevUserInfo.gamePoint + gamePoint,
+            };
+          }
+          return prevUserInfo;
+        });
+
+        console.log(`${gamePoint} 포인트 복구 완료`);
+      } catch (error) {
+        console.error("포인트 복구 실패", error);
+      }
+    }
+  };
+
   const renderChatMode = () => (
     <>
       <ChatBox
@@ -248,29 +287,20 @@ const GameView = ({
         matchData={matchData}
       />
 
-      {!waitingForOpponent &&
-        showNextStepButton && ( // 상대방 기다리는 중일 때 버튼 숨기기
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="shake-left absolute top-1/2 z-50 mr-10 flex items-center rounded bg-transparent p-4 text-2xl font-bold text-white hover:scale-110"
-            style={{ fontFamily: "DungGeunMo" }}
-          >
-            <img src={coffee} alt="" className="w-16" />
-            <p>다음 단계로 넘어가기!</p>
-          </button>
-        )}
+      {showNextStepButton && (
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="shake-left absolute top-1/2 z-50 mr-10 flex items-center rounded bg-transparent p-4 text-2xl font-bold text-white hover:scale-110"
+          style={{ fontFamily: "DungGeunMo" }}
+        >
+          <img src={coffee} alt="" className="w-16" />
+          <p>다음 단계로 넘어가기!</p>
+        </button>
+      )}
     </>
   );
 
   const renderFaceChatMode = () => (
-    // <div
-    //   className="absolute inset-0 bg-cover"
-    //   style={{
-    //     backgroundImage: `url(${CafeBackground})`,
-    //     backgroundPosition: "center bottom",
-    //   }}
-    // >
-
     <div className="relative h-full w-full">
       <img
         src={CafeBackground}
@@ -326,18 +356,24 @@ const GameView = ({
       }`}
     >
       {mode === "chat" ? renderChatMode() : renderFaceChatMode()}
-
-      {waitingForOpponent && !opponentReady && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <p
-            className="text-4xl text-white"
-            style={{ fontFamily: "DungGeunMo" }}
-          >
-            상대방 기다리는중...
-          </p>
-        </div>
-      )}
-
+      <AgreeFaceChatModal
+        isOpen={firstModal}
+        onClose={() => setFirstModal(false)}
+        title={""}
+      >
+        <p className="mb-4">서로 얼굴을 보기 전, 가볍게 진심을 나눠보세요.</p>
+        <p className="mb-4">
+          얼굴을 가리면 감정은 더 잘 숨겨지겠지만, 표정리더기가 당신의 얼굴을
+          읽어낼 것입니다.
+        </p>
+        <p className="mb-4">
+          만약 상대를 속이고 싶다면, 표정 연기를 더욱 잘해야겠죠?
+        </p>
+        <p className="mb-4">
+          가벼운 이모티콘 채팅이지만, 이 안에 담긴 진심이 중요한 순간입니다.
+        </p>
+        <p> 자신이 Love 임을 어필해보세요.</p>
+      </AgreeFaceChatModal>
       <AgreeFaceChatModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -347,7 +383,7 @@ const GameView = ({
             <button
               onClick={() => {
                 setIsModalOpen(false);
-                handleReady(); // "만나러가기" 버튼 클릭 시 ready 상태로 전환
+                setMode("faceChat");
               }}
               className="rounded bg-transparent px-4 py-2 text-white hover:bg-black"
             >
