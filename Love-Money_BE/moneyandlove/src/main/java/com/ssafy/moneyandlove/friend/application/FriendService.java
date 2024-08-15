@@ -1,5 +1,7 @@
 package com.ssafy.moneyandlove.friend.application;
 
+import static org.springframework.transaction.annotation.Isolation.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +31,7 @@ public class FriendService {
 	private final UserRepository userRepository;
 	private final ChatRoomRepository chatRoomRepository;
 
-	@Transactional
+	@Transactional(isolation = SERIALIZABLE)
 	public void addFriend(CreateFriendRequest createFriendRequest) {
 		log.info("안녕하세요 여기서 친구 추가가 돼요");
 		Long followerId = createFriendRequest.getFollowerId();
