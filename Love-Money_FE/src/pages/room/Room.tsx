@@ -92,13 +92,6 @@ const Room: React.FC = () => {
     }
   }, [myUserName, mySessionId]);
 
-  // 페이지를 떠날 때 세션 종료
-  useEffect(() => {
-    const handleBeforeUnload = () => leaveSession();
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [session]);
-
   // 포인트 차감 함수
   const deductPoints = async () => {
     if (token && matchData) {
@@ -218,13 +211,15 @@ const Room: React.FC = () => {
 
   // 세션 떠나기 함수
   const leaveSession = () => {
-    if (session) session.disconnect();
-    setSession(undefined);
-    setSubscriber(undefined);
-    setMySessionId("");
-    setMyUserName("");
-    setMainStreamManager(undefined);
-    setPublisher(undefined);
+    if (session) {
+      session.disconnect();
+      setSession(undefined);
+      setSubscriber(undefined);
+      setMySessionId("");
+      setMyUserName("");
+      setMainStreamManager(undefined);
+      setPublisher(undefined);
+    }
   };
 
   // 메시지 전송 함수
@@ -246,6 +241,61 @@ const Room: React.FC = () => {
       setNewMessage("");
     }
   };
+
+  // 페이지를 떠날 때 세션 종료
+  // useEffect(() => {
+  //   const handleBeforeUnload = () => leaveSession();
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+  //   return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  // }, [session]);
+  // const handleBeforeUnload = useCallback((e: BeforeUnloadEvent) => {
+  //   e.preventDefault();
+  //   e.returnValue = "정말로 나가시겠습니까?";
+  // }, []);
+
+  // 사용자가 뒤로가기, 새로고침, 닫기와 같이 강제로 페이지를 떠나려고 할 때
+  const handleBeforeUnload = useCallback((e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = "정말로 나가시겠습니까? 소모한 포인트는 회수되지않습니다.";
+  }, []);
+
+  const blockNavigation = useCallback(() => {
+    if (
+      window.confirm("정말로 나가시겠습니까? 소모한 포인트는 회수되지않습니다.")
+    ) {
+      leaveSession();
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      return true;
+    }
+    return false;
+  }, [leaveSession, handleBeforeUnload]);
+
+  useEffect(() => {
+    window.history.pushState(null, "", location.pathname);
+
+    const handlePopState = () => {
+      window.history.pushState(null, "", location.pathname);
+      if (blockNavigation()) {
+        navigate(-1);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    const handleBeforeUnloadWrapper = (e: BeforeUnloadEvent) => {
+      handleBeforeUnload(e);
+      if (blockNavigation()) {
+        leaveSession();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnloadWrapper);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("beforeunload", handleBeforeUnloadWrapper);
+    };
+  }, [navigate, location, blockNavigation, handleBeforeUnload, leaveSession]);
 
   return (
     <div className="relative min-h-screen">

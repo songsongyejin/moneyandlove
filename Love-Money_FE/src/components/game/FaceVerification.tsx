@@ -99,7 +99,6 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
   };
 
   const startCamera = async () => {
-    console.log("sss")
     if (videoRef.current) {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       videoRef.current.srcObject = stream;
@@ -112,6 +111,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach((track) => track.stop());
       videoRef.current.srcObject = null;
+      console.log("닫힘")
     }
   };
 
@@ -376,6 +376,7 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
         const s3Url = await fetchS3Url();
         console.log(emojiMosaic)
         await uploadImageToS3(s3Url, emojiMosaic);
+        await stopCamera();
         resetState()
       } catch (error) {
         console.error('Verification process failed:', error);
@@ -393,8 +394,14 @@ const FaceVerification: React.FC<FaceVerificationProps> = ({
       alert("사진을 촬영해 주세요.");
     }
   };
+
+  const handleClose = async () => {
+    await stopCamera(); // 카메라 스트림을 먼저 종료
+    onClose(); // 모달을 닫기
+  };
+
   return (
-    <BiggerModal isOpen={isOpen} onClose={onClose} title="얼굴 인증">
+    <BiggerModal isOpen={isOpen} onClose={handleClose} title="얼굴 인증">
       <div className="flex flex-col items-center">
 
         <div className="mb-4">

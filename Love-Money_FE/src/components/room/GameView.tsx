@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import UserVideoComponent from "./UserVideoComponent";
 import AgreeFaceChatModal from "./AgreeFaceChatModal";
 import ChatBox from "./ChatBox";
@@ -91,56 +91,53 @@ const GameView = ({
     }
   };
 
-  // 이전 remoteConnections.size 값을 저장하기 위한 useRef
-  const prevRemoteConnectionsSize = useRef<number>(
-    session.remoteConnections.size
-  );
-
-  useEffect(() => {
-    const checkRemoteConnections = () => {
-      // console.log("Current session state:", session);
-      if (session) {
-        // console.log("Remote Connections Size:", session.remoteConnections.size);
-
-        // 이전 remoteConnections.size가 1이고, 현재 값이 0이면 상대방이 나간 것
-        if (
-          prevRemoteConnectionsSize.current === 1 &&
-          session.remoteConnections.size === 0
-        ) {
-          alert("상대방이 세션에서 나갔습니다.");
-          restorePoints();
-          leaveSession();
-          navigate("/main"); // /main으로 리디렉션
-        }
-
-        // 현재 값을 이전 값으로 업데이트
-        prevRemoteConnectionsSize.current = session.remoteConnections.size;
-      }
-    };
-
-    const intervalId = setInterval(checkRemoteConnections, 5000); // 5초마다 체크
-
-    return () => clearInterval(intervalId); // 컴포넌트가 언마운트될 때 interval을 정리
-  }, [session]);
+  const [hasLeft, setHasLeft] = useState(false);
+  const [isNormalExit, setIsNormalExit] = useState(false);
 
   useEffect(() => {
     if (session) {
-      const onConnectionDestroyed = () => {
-        if (
-          prevRemoteConnectionsSize.current === 1 &&
-          session.remoteConnections.size === 0
-        ) {
-          alert("상대방이 세션에서 나갔습니다.");
+      const handleConnectionDestroyed = () => {
+        if (!hasLeft && session.remoteConnections.size === 0 && !isNormalExit) {
+          setHasLeft(true);
+          alert("상대방이 나갔습니다. 소모한 포인트는 다시 회수됩니다.");
+          handleOpponentLeft();
         }
       };
 
-      session.on("connectionDestroyed", onConnectionDestroyed);
+      session.on("connectionDestroyed", handleConnectionDestroyed);
 
       return () => {
-        session.off("connectionDestroyed", onConnectionDestroyed);
+        session.off("connectionDestroyed", handleConnectionDestroyed);
       };
     }
-  }, [session]);
+  }, [session, hasLeft]);
+
+  // 상대방이 보낸 "정상 종료" 신호를 받았을 때 처리하는 로직
+  useEffect(() => {
+    if (session) {
+      const handleUserLeaving = (event: any) => {
+        const data = JSON.parse(event.data);
+        if (data.userId === matchData.toUser.userId) {
+          // 상대방이 정상적으로 나가는 경우
+          console.log("상대방이 정상적으로 세션을 종료했습니다.");
+          setIsNormalExit(true);
+          setHasLeft(true);
+        }
+      };
+
+      session.on("signal:user-leaving", handleUserLeaving);
+
+      return () => {
+        session.off("signal:user-leaving", handleUserLeaving);
+      };
+    }
+  }, [session, matchData]);
+
+  const handleOpponentLeft = async () => {
+    await restorePoints();
+    leaveSession();
+    navigate("/main");
+  };
 
   const renderChatMode = () => (
     <>

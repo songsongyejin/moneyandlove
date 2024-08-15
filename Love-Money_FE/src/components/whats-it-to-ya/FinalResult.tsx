@@ -5,6 +5,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { updateGamePoints } from "../../utils/updateGamePoints";
 import { addFriend } from "../../utils/friends";
 import { updateRankScore } from "../../utils/rankingAPI";
+import { Session } from "openvidu-browser";
 
 interface FinalResultProps {
   myFinalPosition: "Love" | "Money" | null;
@@ -13,6 +14,7 @@ interface FinalResultProps {
   fromUserId: number;
   toUserId: number;
   leaveSession: () => void;
+  session: Session;
 }
 
 const FinalResult: React.FC<FinalResultProps> = ({
@@ -22,14 +24,25 @@ const FinalResult: React.FC<FinalResultProps> = ({
   fromUserId,
   toUserId,
   leaveSession,
+  session,
 }) => {
   const token = useRecoilValue(userToken);
   const setUserInfo = useSetRecoilState(userInfo);
   let gamePoint = 0;
 
+  // 사용자가 "메인 페이지로 돌아가기" 버튼을 클릭할 때, 세션을 떠나기 전에 "정상 종료" 신호를 상대방에게 보냄
   const handleBackToMain = () => {
-    leaveSession();
-    onBackToMain();
+    // "정상 종료" 신호 전송
+    session.signal({
+      type: "user-leaving",
+      data: JSON.stringify({ userId: fromUserId }),
+    });
+
+    // 잠시 대기 후 세션 종료
+    setTimeout(() => {
+      leaveSession();
+      onBackToMain();
+    }, 1000); // 1초 대기
   };
 
   console.log("from", fromUserId);
