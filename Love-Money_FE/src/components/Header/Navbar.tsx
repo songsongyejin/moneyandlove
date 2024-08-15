@@ -23,7 +23,9 @@ const Navbar: React.FC = () => {
     face: false,
   });
 
-  const { play, pause, setVolume, volume } = useAudio("/path/to/your/audio.mp3"); // Use the useAudio hook
+  const { play, pause, setVolume, volume } = useAudio(
+    "/path/to/your/audio.mp3"
+  ); // Use the useAudio hook
 
   const openModal = (modal: string) => setModals({ ...modals, [modal]: true });
   const closeModal = (modal: string) =>
@@ -125,6 +127,7 @@ const Navbar: React.FC = () => {
       <FaceVerification
         isOpen={modals.face}
         onClose={() => closeModal("face")}
+        onComplete={() => closeModal("face")}
       />
     </>
   );

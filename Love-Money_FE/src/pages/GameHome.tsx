@@ -91,6 +91,12 @@ const GameHome: React.FC = () => {
     if (selectedPosition === "LOVE") return mainBgLove;
     return mainBg;
   };
+
+  const handleFaceVerificationComplete = () => {
+    setShowFaceVerification(false);
+    setShowPositionSelection(true); // 얼굴 인증 완료 후 포지션 선택 모달 띄움
+  };
+
   const [isHovered, setIsHovered] = useState(false);
   return (
     <div className="relative h-screen">
@@ -150,15 +156,11 @@ const GameHome: React.FC = () => {
         </div>
       </div>
 
-      {/* 얼굴 인증 모달
       <FaceVerification
         isOpen={showFaceVerification}
         onClose={() => setShowFaceVerification(false)}
-        onVerificationComplete={() => {
-          setShowFaceVerification(false);
-          setShowPositionSelection(true);
-        }}
-      /> */}
+        onComplete={handleFaceVerificationComplete}
+      />
 
       {/* 포지션 선택 모달 */}
       <PositionSelection
