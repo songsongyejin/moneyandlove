@@ -103,6 +103,10 @@ const Navbar: React.FC = () => {
                 value={volume}
                 onChange={handleVolumeChange}
                 className="w-24"
+                style={{
+                  accentColor: '#a855f7',
+                  background: 'linear-gradient(to right, #a855f7, #a855f7)',
+                }}
               />
             </div>
           </nav>

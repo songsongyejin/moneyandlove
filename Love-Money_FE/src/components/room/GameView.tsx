@@ -10,6 +10,8 @@ import { userToken, userInfo, UserInfo } from "../../atom/store";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { updateGamePoints } from "../../utils/updateGamePoints";
 import coffee from "../../assets/coffee.png";
+import { useAudio } from "../../hooks/useAudio"; // Import the useAudio hook
+
 // 게임 뷰 컴포넌트
 const GameView = ({
   mode,
@@ -45,6 +47,21 @@ const GameView = ({
   const navigate = useNavigate();
   const token = useRecoilValue(userToken);
   const setUserInfo = useSetRecoilState(userInfo);
+
+  const { play, pause } = useAudio("/path/to/your/music.mp3");
+  const prevMode = useRef(mode); // 이전 모드를 추적하기 위해 useRef 사용
+
+  useEffect(() => {
+    if (prevMode.current !== mode) { // 모드가 변경되었을 때만 실행
+      if (mode === "chat") {
+        play();
+      } else if (mode === "faceChat") {
+        pause();
+      }
+      prevMode.current = mode; // 이전 모드를 현재 모드로 업데이트
+    }
+  }, [mode, play, pause]);
+
 
   // 포인트 복구 함수
   const restorePoints = async () => {
