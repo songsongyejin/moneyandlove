@@ -30,7 +30,7 @@ public class SignUpRequest {
 			.email(signUpRequest.getEmail())
 			.nickname(signUpRequest.getNickname())
 			.gender(signUpRequest.getGender())
-			.gamePoint(signUpRequest.getGamePoint())
+			.gamePoint(1000)
 			.gender(signUpRequest.getGender())
 			.region(signUpRequest.getRegion())
 			.age(signUpRequest.getAge())
