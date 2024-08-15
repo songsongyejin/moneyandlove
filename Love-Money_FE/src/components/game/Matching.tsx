@@ -74,7 +74,8 @@ const Matching: React.FC<MatchingProps> = ({
           WebkitTextStroke: "0.01px #8B6CAC",
         }}
       >
-        <p className="mb-24 text-2xl">상대방을 찾고 있습니다</p>
+        <p className="text-2xl">상대방을 찾고 있습니다</p>
+        <p className="mb-24">우리는 진정한 사랑이 될 수 있을까요?</p>
         {!matchData && (
           <div className="spinning-coin-fall-container">
             <div className="spinning-coin-fall">
