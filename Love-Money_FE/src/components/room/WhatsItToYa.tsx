@@ -572,6 +572,7 @@ const WhatsItToYa: React.FC<{
           toUserId={matchData.toUser.userId}
           leaveSession={leaveSession}
           session={session}
+          myFirstPosition={myFirstPosition}
         />
       ) : null}
     </DndProvider>

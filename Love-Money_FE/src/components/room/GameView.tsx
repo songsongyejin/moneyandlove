@@ -99,7 +99,9 @@ const GameView = ({
       const handleConnectionDestroyed = () => {
         if (!hasLeft && session.remoteConnections.size === 0 && !isNormalExit) {
           setHasLeft(true);
-          alert("상대방이 나갔습니다. 소모한 포인트는 다시 회수됩니다.");
+          alert(
+            "상대방의 연결이 끊어졌습니다. 사용하신 포인트는 원상태로 복원됩니다."
+          );
           handleOpponentLeft();
         }
       };
