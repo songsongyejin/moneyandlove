@@ -148,15 +148,24 @@ public class MatchingService {
 	}
 
 	private boolean checkMatchingStatus(Map<String, Object> response, Long userId) {
+
 		Set<String> matchKeys = redisTemplate.keys(MATCHING_RESULT_PREFIX + "*");
 		String userIdStr = userId.toString();
 		for (String matchKey : matchKeys) {
 			String[] ids = matchKey.replace(MATCHING_RESULT_PREFIX, "").split("-");
 			if (ids.length == 2 && (ids[0].equals(userIdStr) || ids[1].equals(userIdStr))) {
 				Map<String, Object> matchInfo = (Map<String, Object>) redisTemplate.opsForValue().get(matchKey);
+
+				// Check which user ID matches and assign appropriately
+				if (userIdStr.equals(((MatchingUserRequest)matchInfo.get("fromUser")).getUserId().toString())) {
+					response.put("fromUser", matchInfo.get("fromUser"));
+					response.put("toUser", matchInfo.get("toUser"));
+				} else {
+					response.put("fromUser", matchInfo.get("toUser"));
+					response.put("toUser", matchInfo.get("fromUser"));
+				}
+
 				response.put("status", "success");
-				response.put("fromUser", matchInfo.get("toUser"));
-				response.put("toUser", matchInfo.get("fromUser"));
 				response.put("sessionId", matchInfo.get("sessionId"));
 				return true;
 			}
