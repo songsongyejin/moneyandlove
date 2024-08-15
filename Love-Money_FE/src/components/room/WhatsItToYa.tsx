@@ -159,7 +159,7 @@ const WhatsItToYa: React.FC<{
   useEffect(() => {
     if (allParticipantsReady && !isIntroCompleted.current) {
       console.log(
-        "모든 참가자가 Intro에 접속했습니다. 3초 후에 화면을 전환합니다..."
+        "모든 참가자가 Intro에 접속했습니다. 5초 후에 화면을 전환합니다..."
       );
 
       setTimeout(() => {
@@ -167,7 +167,7 @@ const WhatsItToYa: React.FC<{
         isIntroCompleted.current = true; // Intro 완료 상태 설정
         setShowIntro(false);
         setGamePhase("SELECT_TURN");
-      }, 3000);
+      }, 7000);
     }
   }, [allParticipantsReady, setShowIntro, setGamePhase]);
 

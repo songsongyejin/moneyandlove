@@ -51,6 +51,9 @@ const GameView = ({
 
   const { play, pause } = useAudio("/path/to/your/music.mp3");
   const prevMode = useRef(mode); // 이전 모드를 추적하기 위해 useRef 사용
+  const [isReady, setIsReady] = useState(false); // 현재 사용자의 준비 상태
+  const [opponentReady, setOpponentReady] = useState(false); // 상대방의 준비 상태
+  const [waitingForOpponent, setWaitingForOpponent] = useState(false); // 상대방 기다리는 중 상태
 
   useEffect(() => {
     if (prevMode.current !== mode) {
@@ -63,6 +66,44 @@ const GameView = ({
       prevMode.current = mode; // 이전 모드를 현재 모드로 업데이트
     }
   }, [mode, play, pause]);
+
+  // 상대방의 준비 상태를 수신
+  useEffect(() => {
+    if (session) {
+      const handleOpponentReady = (event: any) => {
+        const data = JSON.parse(event.data);
+        const senderConnectionId = event.from.connectionId; // 신호를 보낸 사람의 connectionId
+
+        // 디버깅용 로그 추가
+        console.log("내 connectionId:", session.connection.connectionId);
+        console.log("신호를 보낸 connectionId:", senderConnectionId);
+
+        // 본인이 보낸 신호는 무시하고, 상대방이 보낸 신호만 처리
+        if (senderConnectionId !== session.connection.connectionId) {
+          console.log("상대방이 준비 완료");
+          setOpponentReady(true);
+        } else {
+          console.log("자신이 보낸 신호를 무시합니다.");
+        }
+      };
+
+      session.on("signal:ready", handleOpponentReady);
+
+      return () => {
+        session.off("signal:ready", handleOpponentReady);
+      };
+    }
+  }, [session]);
+
+  // 본인과 상대방 모두 준비된 경우 faceChat 모드로 전환
+  useEffect(() => {
+    if (isReady && opponentReady) {
+      console.log(
+        "두 사용자가 모두 준비되었습니다. 모드를 faceChat으로 전환합니다."
+      );
+      setMode("faceChat");
+    }
+  }, [isReady, opponentReady, setMode]);
 
   // 포인트 복구 함수
   const restorePoints = async () => {
@@ -111,6 +152,31 @@ const GameView = ({
 
   const [hasLeft, setHasLeft] = useState(false);
   const [isNormalExit, setIsNormalExit] = useState(false);
+  // 타이머 관련 상태
+  const [showNextStepButton, setShowNextStepButton] = useState(false);
+
+  useEffect(() => {
+    // 15초 후에 버튼을 보여줌
+    const timer = setTimeout(() => {
+      setShowNextStepButton(true);
+    }, 15000);
+
+    // 컴포넌트 언마운트 시 타이머 정리
+    return () => clearTimeout(timer);
+  }, []);
+
+  // "만나러가기" 버튼 클릭 시 호출되는 함수
+  const handleReady = () => {
+    console.log("사용자가 '만나러가기' 버튼을 눌렀습니다."); // 클릭 로그
+    setWaitingForOpponent(true); // 상대방 기다리는 중 상태로 설정
+    setIsReady(true); // 현재 사용자를 준비 상태로 설정
+
+    // 상대방에게 준비 상태를 알림
+    session.signal({
+      type: "ready",
+      data: JSON.stringify({ ready: true }),
+    });
+  };
 
   // 버튼이 나타날 시간을 관리하는 상태
   const [showNextStepButton, setShowNextStepButton] = useState(false);
@@ -182,20 +248,29 @@ const GameView = ({
         matchData={matchData}
       />
 
-      {showNextStepButton && (
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="shake-left absolute top-1/2 z-50 mr-10 flex items-center rounded bg-transparent p-4 text-2xl font-bold text-white hover:scale-110"
-          style={{ fontFamily: "DungGeunMo" }}
-        >
-          <img src={coffee} alt="" className="w-16" />
-          <p>다음 단계로 넘어가기!</p>
-        </button>
-      )}
+      {!waitingForOpponent &&
+        showNextStepButton && ( // 상대방 기다리는 중일 때 버튼 숨기기
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="shake-left absolute top-1/2 z-50 mr-10 flex items-center rounded bg-transparent p-4 text-2xl font-bold text-white hover:scale-110"
+            style={{ fontFamily: "DungGeunMo" }}
+          >
+            <img src={coffee} alt="" className="w-16" />
+            <p>다음 단계로 넘어가기!</p>
+          </button>
+        )}
     </>
   );
 
   const renderFaceChatMode = () => (
+    // <div
+    //   className="absolute inset-0 bg-cover"
+    //   style={{
+    //     backgroundImage: `url(${CafeBackground})`,
+    //     backgroundPosition: "center bottom",
+    //   }}
+    // >
+
     <div className="relative h-full w-full">
       <img
         src={CafeBackground}
@@ -251,24 +326,18 @@ const GameView = ({
       }`}
     >
       {mode === "chat" ? renderChatMode() : renderFaceChatMode()}
-      <AgreeFaceChatModal
-        isOpen={firstModal}
-        onClose={() => setFirstModal(false)}
-        title={""}
-      >
-        <p className="mb-4">서로 얼굴을 보기 전, 가볍게 진심을 나눠보세요.</p>
-        <p className="mb-4">
-          얼굴을 가리면 감정은 더 잘 숨겨지겠지만, 표정리더기가 당신의 얼굴을
-          읽어낼 것입니다.
-        </p>
-        <p className="mb-4">
-          만약 상대를 속이고 싶다면, 표정 연기를 더욱 잘해야겠죠?
-        </p>
-        <p className="mb-4">
-          가벼운 이모티콘 채팅이지만, 이 안에 담긴 진심이 중요한 순간입니다.
-        </p>
-        <p> 자신이 Love 임을 어필해보세요.</p>
-      </AgreeFaceChatModal>
+
+      {waitingForOpponent && !opponentReady && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <p
+            className="text-4xl text-white"
+            style={{ fontFamily: "DungGeunMo" }}
+          >
+            상대방 기다리는중...
+          </p>
+        </div>
+      )}
+
       <AgreeFaceChatModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -278,7 +347,7 @@ const GameView = ({
             <button
               onClick={() => {
                 setIsModalOpen(false);
-                setMode("faceChat");
+                handleReady(); // "만나러가기" 버튼 클릭 시 ready 상태로 전환
               }}
               className="rounded bg-transparent px-4 py-2 text-white hover:bg-black"
             >

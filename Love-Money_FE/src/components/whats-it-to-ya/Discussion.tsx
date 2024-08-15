@@ -11,16 +11,17 @@ const Discussion: React.FC<DiscussionProps> = ({ onNextPhase }) => {
         className="absolute flex -translate-y-1/2 transform animate-fadeIn items-center whitespace-nowrap text-center text-white"
         style={{
           fontFamily: "DungGeunMo",
-          bottom: "17%",
+          bottom: "11%",
         }}
       >
         <div>
-          <p className="deep-3d-text mb-3 text-4xl">
-            이제 서로 대화하는 시간을 가져보세요
-          </p>
-
+          <p className="deep-3d-text mb-3 text-2xl">게임이 종료되었습니다.</p>
           <p className="deep-3d-text mb-3 text-2xl">
-            TIP: 자신의 포지션 선택에 대해 어필해보세요!
+            이야기하며 서로에 대해 더욱 자세히 알아보세요.
+          </p>
+          <p className="deep-3d-text mb-3 text-2xl">
+            TIP: 자신이 Love임을 어필할 마지막 기회이자, 상대방이 Love를
+            선택하도록 유도할 마지막 기회입니다.
           </p>
         </div>
       </div>
