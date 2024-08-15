@@ -49,7 +49,7 @@ const Room: React.FC = () => {
   };
   // 상태 변수 설정
 
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [mode, setMode] = useState<string>("chat");
   const [mySessionId, setMySessionId] = useState<string>("");
   const [myUserName, setMyUserName] = useState<string>("");

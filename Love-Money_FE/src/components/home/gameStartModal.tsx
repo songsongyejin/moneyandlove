@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import "./position.css";
 import close from "../../assets/close.png";
+
 // 공통모달창
 interface BaseModalProps {
   isOpen: boolean;
@@ -18,13 +19,16 @@ const gameStartModal: React.FC<BaseModalProps> = ({
   footer,
 }) => {
   if (!isOpen) return null;
-  console.log(title);
+
+  // Determine if the fade-in-bottom class should be applied
+  const modalClass = title === "포지션 선택" ? "fade-in-bottom" : "";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       {/* 모달창 배경 */}
 
       <div
-        className="outLine fade-in-bottom relative flex h-[600px] w-[850px] flex-col items-center justify-center overflow-hidden border-4 border-black p-8"
+        className={`outLine ${modalClass} relative flex h-[600px] w-[850px] flex-col items-center justify-center overflow-hidden border-4 border-black p-8`}
         style={{
           backgroundColor: "#3d2368",
           opacity: "var(--sds-size-stroke-border)",
@@ -36,7 +40,7 @@ const gameStartModal: React.FC<BaseModalProps> = ({
             className="flex items-center justify-center text-white"
             onClick={onClose}
           >
-            <img src={close} alt="" className="w-8" />
+            <img src={close} alt="닫기" className="w-8" />
           </button>
         </div>
         {/* 모달창 내용 */}

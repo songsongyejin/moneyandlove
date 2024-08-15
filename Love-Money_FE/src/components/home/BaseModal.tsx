@@ -23,7 +23,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
       {/* 모달창 배경 */}
 
       <div
-        className="relative flex h-[500px] w-[750px] flex-col justify-between overflow-hidden rounded-[20px] border-4 border-black shadow-custom"
+        className="shadow-custom relative flex h-[500px] w-[750px] flex-col justify-between overflow-hidden rounded-[20px] border-4 border-black"
         style={{
           backgroundColor: "#F0E9F6",
           opacity: "var(--sds-size-stroke-border)",
@@ -36,6 +36,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
             backgroundColor: "#8B6CAC",
           }}
         >
+          <div className="w-8"></div>
           {/* 모달창 제목 */}
           <h2
             className="flex-grow text-center text-2xl text-white"

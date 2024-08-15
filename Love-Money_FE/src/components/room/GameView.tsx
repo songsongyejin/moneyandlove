@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { userToken, userInfo, UserInfo } from "../../atom/store";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { updateGamePoints } from "../../utils/updateGamePoints";
-
+import coffee from "../../assets/coffee.png";
 // 게임 뷰 컴포넌트
 const GameView = ({
   mode,
@@ -154,11 +154,14 @@ const GameView = ({
         sendMessage={sendMessage}
         matchData={matchData}
       />
+
       <button
         onClick={() => setIsModalOpen(true)}
-        className="z-50 rounded text-white"
+        className="shake-left absolute top-1/2 z-50 mr-10 flex items-center rounded bg-transparent p-4 text-2xl font-bold text-white hover:scale-110"
+        style={{ fontFamily: "DungGeunMo" }}
       >
-        Open Face Chat Agreement
+        <img src={coffee} alt="" className="w-16" />
+        <p>다음 단계로 넘어가기!</p>
       </button>
     </>
   );
@@ -240,26 +243,36 @@ const GameView = ({
         onClose={() => setIsModalOpen(false)}
         title="Agree to Face Chat"
         footer={
-          <div className="mx-auto flex w-1/2 justify-between">
+          <div className="mx-auto mb-2 flex w-1/2 justify-between">
             <button
               onClick={() => {
                 setIsModalOpen(false);
                 setMode("faceChat");
               }}
-              className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-700"
+              className="rounded bg-transparent px-4 py-2 text-white hover:bg-black"
             >
-              진행
+              만나러가기
             </button>
             <button
-              onClick={leaveSession}
-              className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-700"
+              onClick={() => {
+                leaveSession();
+                navigate("/main");
+              }}
+              className="rounded bg-transparent px-4 py-2 text-white hover:bg-black"
             >
-              거부
+              도망가기
             </button>
           </div>
         }
       >
-        <p>상대방과 화상채팅을 진행하시겠습니까?</p>
+        <p className="mb-4">
+          어느덧 꽤 시간이 흘렀고, 이제 우리는 다음 단계로 나아갈 준비가
+          되었습니다.
+        </p>
+        <p className="mb-4">
+          이제는 가상에서 현실로, 이모티콘에서 실제로, 서로를 마주할 시간입니다.
+        </p>
+        <p>*진행시 화상 캠이 연결됩니다*</p>
       </AgreeFaceChatModal>
     </div>
   );
