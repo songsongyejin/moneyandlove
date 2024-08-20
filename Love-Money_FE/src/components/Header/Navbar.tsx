@@ -11,10 +11,10 @@ import ProfileModal from "../home/ProfileModal";
 import FaceVerification from "../game/FaceVerification";
 import { LiaCoinsSolid } from "react-icons/lia";
 import { FaPlusCircle, FaCoins } from "react-icons/fa";
+import { useAudio } from "../../hooks/useAudio"; // Import the useAudio hook
 
 const Navbar: React.FC = () => {
   const [user, setUser] = useRecoilState(userInfo);
-
   const [modals, setModals] = useState({
     rulebook: false,
     ranking: false,
@@ -23,14 +23,22 @@ const Navbar: React.FC = () => {
     face: false,
   });
 
+  const { play, pause, setVolume, volume } = useAudio(
+    "/path/to/your/audio.mp3"
+  ); // Use the useAudio hook
+
   const openModal = (modal: string) => setModals({ ...modals, [modal]: true });
   const closeModal = (modal: string) =>
     setModals({ ...modals, [modal]: false });
 
+  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setVolume(parseFloat(event.target.value));
+  };
+
   return (
     <>
       <header className="fixed left-0 top-0 z-10 block w-screen">
-        <div className="absolute left-0 top-0 h-full w-full bg-black bg-opacity-25"></div>
+        <div className="absolute left-0 top-0 h-full w-full bg-black"></div>
 
         <div className="relative flex w-full items-center justify-between px-4 py-4 text-white">
           <h2 className="ml-8 text-2xl" style={{ fontFamily: "DNFBitBitv2" }}>
@@ -55,12 +63,6 @@ const Navbar: React.FC = () => {
             >
               랭킹
             </button>
-            {/* <button
-              className="hover:scale-105"
-              onClick={() => openModal("attendance")}
-            >
-              출석체크
-            </button> */}
             <button
               className="flex flex-row items-center hover:scale-105"
               onClick={() => openModal("attendance")}
@@ -87,6 +89,26 @@ const Navbar: React.FC = () => {
                 onClick={() => openModal("profile")}
               />
             </div>
+            {/* Volume Control Slider */}
+            <div className="flex items-center space-x-2">
+              <label htmlFor="volume-slider" className="text-sm">
+                Volume:
+              </label>
+              <input
+                id="volume-slider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={handleVolumeChange}
+                className="w-24"
+                style={{
+                  accentColor: '#a855f7',
+                  background: 'linear-gradient(to right, #a855f7, #a855f7)',
+                }}
+              />
+            </div>
           </nav>
         </div>
       </header>
@@ -109,6 +131,7 @@ const Navbar: React.FC = () => {
       <FaceVerification
         isOpen={modals.face}
         onClose={() => closeModal("face")}
+        onComplete={() => closeModal("face")}
       />
     </>
   );

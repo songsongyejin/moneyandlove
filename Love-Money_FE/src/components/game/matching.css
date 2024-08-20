@@ -82,6 +82,7 @@
   -webkit-animation: spinning-coin-fall 3s infinite;
   animation: spinning-coin-fall 3s infinite;
   left: 50%;
+  top: 50%;
 }
 
 .spinning-coin-fall-container {
@@ -89,7 +90,7 @@
   width: 100px;
   height: 100px;
   margin: auto;
-  top: 20%;
+  top: 50%;
   transform: translateY(-50%);
 }
 .spinning-coin-fall img {

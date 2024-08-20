@@ -8,6 +8,7 @@ export default {
       },
       boxShadow: {
         btn: "4px 4px 5px 2px rgba(0, 0, 0, 0.40)",
+        custom: "12px 12px 2px 1px black;",
       },
       backgroundImage: {
         "main-bg": "url('./src/assets/main_bg.png')",

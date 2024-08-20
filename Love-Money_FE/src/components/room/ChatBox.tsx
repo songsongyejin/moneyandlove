@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
-import aiBot from "../../assets/ai_bot.gif";
 import "./chatBox.css";
 import * as faceapi from "face-api.js";
 import Webcam from "react-webcam";
@@ -13,7 +12,14 @@ import boy_fearful from "../../assets/boy_fearful.png";
 import boy_happy from "../../assets/boy_happy.png";
 import boy_sad from "../../assets/boy_sad.png";
 import boy_surprised from "../../assets/boy_surprised.png";
-import girl from "../../assets/girl.png";
+import girl_neutral from "../../assets/girl_neutral.png";
+import girl_angry from "../../assets/girl_angry.png";
+import girl_disgusted from "../../assets/girl_disgusted.png";
+import girl_fearful from "../../assets/girl_fearful.png";
+import girl_happy from "../../assets/girl_happy.png";
+import girl_sad from "../../assets/girl_sad.png";
+import girl_surprised from "../../assets/girl_surprised.png";
+
 import ai_face from "../../assets/ai_face.gif";
 
 const ChatBox = ({
@@ -23,6 +29,7 @@ const ChatBox = ({
   setNewMessage,
   sendMessage,
   myUserName,
+  matchData,
 }: {
   mode: string;
   messages: { user: string; text: string; Emoji: string }[];
@@ -30,13 +37,8 @@ const ChatBox = ({
   setNewMessage: React.Dispatch<React.SetStateAction<string>>;
   sendMessage: () => void;
   myUserName: string;
+  matchData: any;
 }) => {
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      sendMessage();
-    }
-  };
-
   const webcamRef = useRef<Webcam>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -44,6 +46,17 @@ const ChatBox = ({
   const [warningMsg, setWarningMsg] = useState("");
   const [loading, setLoading] = useState(true);
   const [noFaceDetectedCount, setNoFaceDetectedCount] = useState(0);
+  const [myGender, setMyGender] = useState<"boy" | "girl">("boy"); // 기본값 설정
+
+  useEffect(() => {
+    if (matchData) {
+      if (matchData.fromUser.gender === "MALE") {
+        setMyGender("boy");
+      } else if (matchData.fromUser.gender === "FEMALE") {
+        setMyGender("girl");
+      }
+    }
+  }, [matchData]);
 
   useEffect(() => {
     const loadModels = async () => {
@@ -113,25 +126,58 @@ const ChatBox = ({
   }, [messages]);
 
   // 감정에 따라 boy 이미지 매핑
-  const getImageForExpression = (expression: string) => {
-    switch (expression) {
-      case "happy":
-        return boy_happy;
-      case "sad":
-        return boy_sad;
-      case "angry":
-        return boy_angry;
-      case "surprised":
-        return boy_surprised;
-      case "disgusted":
-        return boy_disgusted;
-      case "fearful":
-        return boy_fearful;
-      case "neutral":
-      default:
-        return boy_neutral;
+  const images = {
+    boy: {
+      happy: boy_happy,
+      sad: boy_sad,
+      angry: boy_angry,
+      surprised: boy_surprised,
+      disgusted: boy_disgusted,
+      fearful: boy_fearful,
+      neutral: boy_neutral,
+    },
+    girl: {
+      happy: girl_happy,
+      sad: girl_sad,
+      angry: girl_angry,
+      surprised: girl_surprised,
+      disgusted: girl_disgusted,
+      fearful: girl_fearful,
+      neutral: girl_neutral,
+    },
+  } as const; // 객체를 as const로 선언
+  const getOppositeGenderImage = (gender: "boy" | "girl") => {
+    return gender === "boy" ? girl_happy : boy_happy;
+  };
+  const getImageForExpression = (
+    expression: keyof typeof images.boy,
+    gender: keyof typeof images
+  ) => {
+    return images[gender][expression];
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      sendMessage();
     }
   };
+
+  // 안전한 maxExpression 타입 검사를 위해 validExpressions 사용
+  const validExpressions: (keyof typeof images.boy)[] = [
+    "happy",
+    "sad",
+    "angry",
+    "surprised",
+    "disgusted",
+    "fearful",
+    "neutral",
+  ];
+
+  const expression: keyof typeof images.boy = validExpressions.includes(
+    maxExpression as keyof typeof images.boy
+  )
+    ? (maxExpression as keyof typeof images.boy)
+    : "neutral";
 
   return (
     <div className="absolute h-screen w-screen">
@@ -180,7 +226,9 @@ const ChatBox = ({
                 >
                   {isMyMessage ? (
                     <>
-                      <div className="speech-bubble2 mr-2 p-2">{msg.text}</div>
+                      <div className="speech-bubble2 mr-2 flex items-center p-2">
+                        {msg.text}
+                      </div>
                       <p className="my-auto text-6xl">{msg.Emoji}</p>
                     </>
                   ) : (
@@ -189,7 +237,7 @@ const ChatBox = ({
                         <p className="ml-10 text-white"> {msg.user}</p>
                         <div className="flex">
                           <p className="my-auto text-6xl">{msg.Emoji}</p>
-                          <div className="speech-bubble ml-2 p-2">
+                          <div className="speech-bubble ml-2 flex items-center p-2">
                             {msg.text}
                           </div>
                         </div>
@@ -202,7 +250,11 @@ const ChatBox = ({
             <div ref={messagesEndRef} /> {/* 스크롤 위치 참조점 */}
           </div>
           <div className="fixed bottom-0 flex w-[800px] justify-between">
-            <img src={girl} alt="" className="w-32" />
+            <img
+              src={getOppositeGenderImage(myGender)}
+              alt=""
+              className="w-32"
+            />
             <div className="mx-8 mt-10 flex w-full items-center bg-transparent">
               <input
                 type="text"
@@ -220,7 +272,7 @@ const ChatBox = ({
               </div>
             </div>
             <img
-              src={getImageForExpression(maxExpression || "neutral")}
+              src={getImageForExpression(expression, myGender)}
               alt="Emotion"
               className="w-32"
             />
