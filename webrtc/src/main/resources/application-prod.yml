@@ -1,0 +1,10 @@
+server:
+  port: 5442
+
+OPENVIDU:
+  URL: http://localhost:5443
+  SECRET: test
+
+logging:
+  level:
+    root: info
