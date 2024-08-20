@@ -123,9 +123,6 @@ const FreindsSideBar: React.FC = () => {
                 />
               );
             })}
-          <li>
-            <FiPlusCircle className="mx-auto mb-4 cursor-pointer text-center text-6xl text-white hover:scale-110" />
-          </li>
         </ul>
       </nav>
       {selectedFriend && (

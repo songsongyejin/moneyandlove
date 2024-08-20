@@ -127,9 +127,12 @@ const SecondPlayerPlay: React.FC<SecondPlayerPlayProps> = ({
           }}
         >
           <div>
-            <p className="deep-3d-text mb-3 text-4xl">당신의 차례입니다</p>
-            <p className="deep-3d-text text-4xl">
-              다섯 개의 단어 카드를 보고 상대방의 우선순위를 맞춰보세요!
+            <p className="deep-3d-text mb-3 text-2xl">당신의 차례입니다.</p>
+            <p className="deep-3d-text mb-3 text-2xl">
+              다섯 개의 단어 카드를 보고 상대방의 우선순위를 맞춰보세요.
+            </p>
+            <p className="deep-3d-text text-2xl">
+              오른쪽 하단에 있는 하트 카드를 드래그해서 카드 밑에 배치해주세요.{" "}
             </p>
           </div>
         </div>

@@ -73,17 +73,17 @@ const RankingModal: React.FC<RankingModalProps> = ({ isOpen, onClose }) => {
         <div className="flex-1 overflow-y-auto rounded-lg bg-white shadow-inner scrollbar-thin scrollbar-webkit">
           {ranking.map((item) => (
             <div onClick={() => handleItemClick(item.montage)} key={item.rankingId}>
-              <RankingItem
-                key={item.rankingId}
-                rank={item.rankNumber}
-                nickName={
-                  item.nickName.length > 2
-                    ? `${item.nickName.slice(0, 2)}${"*".repeat(item.nickName.length - 2)}`
-                    : item.nickName
-                }
-                rankPoint={item.rankPoint}
-              />
-            </div>
+            <RankingItem
+              key={item.rankingId}
+              rank={item.rankNumber}
+              nickName={
+                item.nickName.length > 2
+                  ? `${item.nickName.slice(0, 2)}${"*".repeat(item.nickName.length - 2)}`
+                  : item.nickName
+              }
+              rankPoint={item.rankPoint}
+            />
+          </div>
           ))}
         </div>
         {/* 내 랭킹 */}

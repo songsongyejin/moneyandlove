@@ -38,10 +38,11 @@ interface WordCard {
   textColor: string;
 }
 
-const WhatsItToYa: React.FC<{ session: Session; matchData: any }> = ({
-  session,
-  matchData,
-}) => {
+const WhatsItToYa: React.FC<{
+  session: Session;
+  matchData: any;
+  leaveSession: () => void;
+}> = ({ session, matchData, leaveSession }) => {
   const navigate = useNavigate();
   // 사용자가 처음 선택한 포지션
   const myFirstPosition = useRecoilValue(selectedPositionState);
@@ -57,8 +58,8 @@ const WhatsItToYa: React.FC<{ session: Session; matchData: any }> = ({
   // 훅에서 카드를 가져옴 (플레이어 1용)
   const { wordCards: generatedWordCards, loading, error } = useWordCards();
   const [introParticipants, setIntroParticipants] = useState(new Set<string>());
-  // Intro 완료 상태
-  const isIntroCompleted = useRef(false);
+  const isIntroCompleted = useRef(false); // Intro가 완료되었는지 여부
+  const [allParticipantsReady, setAllParticipantsReady] = useState(false); // 모든 참가자가 준비되었는지 여부
 
   // 첫번째 게임
   // 플레이어1의 드롭존 상태
@@ -83,6 +84,19 @@ const WhatsItToYa: React.FC<{ session: Session; matchData: any }> = ({
   );
   // 두번째 게임 점수 상태
   const [player1Score, setPlayer1Score] = useState<number>(0);
+
+  useEffect(() => {
+    // 세션이 새로 시작될 때 또는 세션이 변경될 때 상태를 초기화
+    setPlayer1DropZones(Array.from({ length: 5 }, () => []));
+    setPlayer2GuessZones(Array.from({ length: 5 }, () => []));
+    setPlayer2Score(0);
+
+    setPlayer2DropZones(Array.from({ length: 5 }, () => []));
+    setPlayer1GuessZones(Array.from({ length: 5 }, () => []));
+    setPlayer1Score(0);
+
+    // 추가로 초기화가 필요한 상태가 있다면 여기에 추가
+  }, [session]); // session이 변경될 때마다 이 effect가 실행됩니다.
 
   const [winner, setWinner] = useState<string | null>(null);
   const [loser, setLoser] = useState<string | null>(null);
@@ -112,43 +126,50 @@ const WhatsItToYa: React.FC<{ session: Session; matchData: any }> = ({
           type: "intro",
         })
         .then(() => {
-          console.log("Intro 신호가 성공적으로 전송되었습니다.");
+          // console.log("Intro 신호가 성공적으로 전송되었습니다.");
         })
         .catch((error) => {
           console.error("Intro 신호 전송 중 오류가 발생했습니다:", error);
         });
     };
 
-    sendIntroSignal();
+    sendIntroSignal(); // Intro 신호 전송
 
     // 다른 사용자의 신호 수신 처리
     const handleIntroSignal = (event: any) => {
       const newParticipants = new Set(introParticipants);
       newParticipants.add(event.data);
-      setIntroParticipants(newParticipants);
-      console.log("현재 Intro 참가자:", newParticipants);
+      setIntroParticipants(newParticipants); // 참가자 업데이트
+      // console.log("현재 Intro 참가자:", newParticipants);
 
-      // 전체 참가자가 2명 이상일 때만 화면 전환
+      // 전체 참가자가 2명 이상일 때만 화면 전환 준비
       const totalParticipants = session.remoteConnections.size + 1; // 자신을 포함한 전체 참가자 수
       if (totalParticipants > 1 && newParticipants.size === totalParticipants) {
-        console.log(
-          "모든 참가자가 Intro에 접속했습니다. 3초 후에 화면을 전환합니다..."
-        );
-        setTimeout(() => {
-          console.log("SelectTurn 화면으로 전환합니다.");
-          isIntroCompleted.current = true; // Intro 완료 상태 설정
-          setShowIntro(false);
-          setGamePhase("SELECT_TURN");
-        }, 3000);
+        setAllParticipantsReady(true); // 모든 참가자가 준비되었음을 설정
       }
     };
 
-    session.on("signal:intro", handleIntroSignal);
+    session.on("signal:intro", handleIntroSignal); // Intro 신호 수신
 
     return () => {
       session.off("signal:intro", handleIntroSignal); // Intro 신호 처리기를 제거
     };
   }, [session, introParticipants]);
+
+  useEffect(() => {
+    if (allParticipantsReady && !isIntroCompleted.current) {
+      console.log(
+        "모든 참가자가 Intro에 접속했습니다. 5초 후에 화면을 전환합니다..."
+      );
+
+      setTimeout(() => {
+        console.log("SelectTurn 화면으로 전환합니다.");
+        isIntroCompleted.current = true; // Intro 완료 상태 설정
+        setShowIntro(false);
+        setGamePhase("SELECT_TURN");
+      }, 7000);
+    }
+  }, [allParticipantsReady, setShowIntro, setGamePhase]);
 
   // 턴 선택이 완료되었을 때 호출되는 함수
   const handleTurnSelected = (cardIndex: number) => {
@@ -549,6 +570,9 @@ const WhatsItToYa: React.FC<{ session: Session; matchData: any }> = ({
           onBackToMain={handleBackToMain}
           fromUserId={matchData.fromUser.userId}
           toUserId={matchData.toUser.userId}
+          leaveSession={leaveSession}
+          session={session}
+          myFirstPosition={myFirstPosition}
         />
       ) : null}
     </DndProvider>

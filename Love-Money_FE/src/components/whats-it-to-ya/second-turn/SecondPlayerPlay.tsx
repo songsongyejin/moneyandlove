@@ -134,9 +134,9 @@ const SecondPlayerPlay: React.FC<SecondPlayerPlayProps> = ({
           }}
         >
           <div>
-            <p className="deep-3d-text mb-3 text-4xl">당신의 차례입니다!</p>
-            <p className="deep-3d-text text-4xl">
-              다섯 개의 단어 카드를 보고 당신의 우선순위를 정해주세요
+            <p className="deep-3d-text mb-3 text-2xl">당신의 차례입니다.</p>
+            <p className="deep-3d-text text-2xl">
+              다섯 개의 단어 카드를 보고 당신의 우선순위를 정해보세요.
             </p>
           </div>
         </div>
@@ -191,7 +191,7 @@ const SecondPlayerPlay: React.FC<SecondPlayerPlayProps> = ({
         {/* 드래그 앤 드롭 영역 */}
         <div
           className="drop-table-container animate-fadeIn rounded-lg"
-          style={{ position: "fixed", bottom: "8%" }}
+          style={{ position: "fixed", bottom: "7%" }}
         >
           <div
             className="drop-card-container flex justify-center"

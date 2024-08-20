@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { cancelMatching, matching } from "../../utils/matchingAPI";
 import "./matching.css";
 import heart from "../../assets/start_heart_icon.svg";
+import GameStartModal from "../home/gameStartModal";
 
 interface MatchingProps {
   isOpen: boolean;
@@ -43,6 +44,7 @@ const Matching: React.FC<MatchingProps> = ({
       queryClient.removeQueries({
         queryKey: ["matching", token, selectedPosition, gameMode],
       });
+      cancelMatching(token, selectedPosition, gameMode);
     };
   }, [token, selectedPosition, gameMode, queryClient]);
 
@@ -64,7 +66,7 @@ const Matching: React.FC<MatchingProps> = ({
   }, [countdown, navigate, matchData]);
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} title="매칭 중">
+    <GameStartModal isOpen={isOpen} onClose={onClose} title="매칭 중">
       <div
         className="flex flex-col items-center"
         style={{
@@ -72,7 +74,8 @@ const Matching: React.FC<MatchingProps> = ({
           WebkitTextStroke: "0.01px #8B6CAC",
         }}
       >
-        <p className="mb-24 text-2xl">상대방을 찾고 있습니다</p>
+        <p className="text-2xl">상대방을 찾고 있습니다</p>
+        <p className="mb-24">우리는 진정한 사랑이 될 수 있을까요?</p>
         {!matchData && (
           <div className="spinning-coin-fall-container">
             <div className="spinning-coin-fall">
@@ -106,7 +109,7 @@ const Matching: React.FC<MatchingProps> = ({
           매칭 취소
         </button>
       </div>
-    </BaseModal>
+    </GameStartModal>
   );
 };
 

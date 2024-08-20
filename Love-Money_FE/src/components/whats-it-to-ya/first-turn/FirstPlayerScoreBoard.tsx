@@ -63,10 +63,10 @@ const Score: React.FC<ScoreProps> = ({
         }}
       >
         <div>
-          <p className="deep-3d-text mb-3 text-2xl">
+          <p className="deep-3d-text mb-3 text-4xl">
             상대방이 맞춘 나의 우선순위 개수
           </p>
-          <p className="deep-3d-text text-2xl">{score}</p>
+          <p className="deep-3d-text text-4xl">{score}개</p>
         </div>
       </div>
 

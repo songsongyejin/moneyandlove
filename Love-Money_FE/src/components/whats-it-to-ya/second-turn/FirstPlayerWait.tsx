@@ -19,8 +19,8 @@ const FirstPlayerWait: React.FC<FirstPlayerWaitProps> = ({ wordCards }) => {
           }}
         >
           <div>
-            <p className="deep-3d-text mb-3 text-4xl">상대방의 차례입니다!</p>
-            <p className="deep-3d-text mb-3 text-4xl">
+            <p className="deep-3d-text mb-3 text-2xl">상대방의 차례입니다.</p>
+            <p className="deep-3d-text mb-3 text-2xl">
               상대방이 단어카드를 보고 우선순위를 정하는 중입니다.
             </p>
           </div>
@@ -73,7 +73,7 @@ const FirstPlayerWait: React.FC<FirstPlayerWaitProps> = ({ wordCards }) => {
           </div>
         </div>
         {/* 로딩 스피너 추가 */}
-        <div className="spinner fixed bottom-20"></div>
+        <div className="spinner fixed bottom-10"></div>
       </div>
     </DndProvider>
   );

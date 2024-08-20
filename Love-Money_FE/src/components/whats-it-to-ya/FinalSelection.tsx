@@ -51,14 +51,17 @@ const FinalSelection: React.FC<FinalSelectionProps> = ({
         <>
           <div
             className="absolute flex -translate-y-1/2 transform animate-fadeIn items-center whitespace-nowrap text-center text-white"
-            style={{ fontFamily: "DungGeunMo", bottom: "30%" }}
+            style={{ fontFamily: "DungGeunMo", bottom: "70%" }}
           >
             <div>
               <p className="deep-3d-text mb-3 text-4xl">
                 최종 선택의 시간입니다.
               </p>
               <p className="deep-3d-text mb-3 text-2xl">
-                당신의 최종 포지션을 선택해주세요!
+                상대방이 자신의 마음을 변화시켰다면 새로운 포지션을 선택하고,
+              </p>
+              <p className="deep-3d-text mb-3 text-2xl">
+                그렇지 않다면 처음 선택한 포지션을 유지하세요.
               </p>
             </div>
           </div>

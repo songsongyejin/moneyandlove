@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { selectedPositionState } from "../atom/store";
+import { fetchFaceScore } from "../utils/faceScore";
+import { userToken } from "../atom/store";
 
 export const useGameLogic = () => {
   // 각 단계별 모달의 표시 여부를 관리하는 상태
@@ -16,11 +18,21 @@ export const useGameLogic = () => {
     selectedPositionState
   );
   const [gameMode, setGameMode] = useState<string | null>(null);
+  const token = useRecoilValue(userToken);
 
   // 게임 시작 버튼 클릭 시 호출되는 함수
-  const handleGameStart = () => {
-    // 일단 얼굴인증 되어있다고 가정
-    setShowPositionSelection(true); // 포지션 선택 모달 띄움
+  const handleGameStart = async () => {
+    try {
+      const score = await fetchFaceScore(token as string); // 얼굴 점수 조회
+      console.log("게임시작 후 스코어보기", score);
+      if (score === 0) {
+        setShowFaceVerification(true); // 얼굴 점수가 0이면 얼굴 인증 모달 띄움
+      } else {
+        setShowPositionSelection(true); // 얼굴 인증이 되어 있으면 포지션 선택 모달 띄움
+      }
+    } catch (err) {
+      console.error("얼굴 점수를 가져오는 중 오류가 발생했습니다:", err);
+    }
   };
 
   // 포지션 선택 시 호출되는 함수
