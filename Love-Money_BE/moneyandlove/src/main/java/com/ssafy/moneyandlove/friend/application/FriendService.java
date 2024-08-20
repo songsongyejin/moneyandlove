@@ -1,5 +1,7 @@
 package com.ssafy.moneyandlove.friend.application;
 
+import static org.springframework.transaction.annotation.Isolation.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,9 +20,11 @@ import com.ssafy.moneyandlove.user.domain.User;
 import com.ssafy.moneyandlove.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FriendService {
 
 	private final FriendRepository friendRepository;
@@ -29,6 +33,7 @@ public class FriendService {
 
 	@Transactional
 	public void addFriend(CreateFriendRequest createFriendRequest) {
+		log.info("안녕하세요 여기서 친구 추가가 돼요");
 		Long followerId = createFriendRequest.getFollowerId();
 		Long followingId = createFriendRequest.getFollowingId();
 		User follower = userRepository.findById(followerId)
@@ -47,9 +52,10 @@ public class FriendService {
 		//이미 저장된 채팅방 이름이 있다면 삭제 후 저장
 		Optional<ChatRoom> existingChatRoom = chatRoomRepository.findChatRoomByUsers(follower.getId(), following.getId());
 		if (existingChatRoom.isPresent()) {
-			chatRoomRepository.delete(existingChatRoom.orElseThrow());
+			return;
 		}
-		
+		log.info("안녕하세요 여기서 방이 추가 돼요");
+
 		chatRoomRepository.save(ChatRoom.of(follower, following));
 	}
 
