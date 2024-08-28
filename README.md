@@ -1,11 +1,11 @@
 <div align="center">
 
-<br/><br/>
-<img src="https://github.com/user-attachments/assets/aee6b2cb-6175-4e70-bf47-dbe90ffe3165" alt="logo">
-<br/><br/>
-<i> 우리도 연애 프로그램의 주인공,
-<br> 끝없는 의심 속 진짜 사랑을 찾기 위한 연애 심리 게임 </i>
-<br/><br/>
+  <br/><br/>
+  <img width="180" src="https://github.com/user-attachments/assets/43be0f17-7800-4633-b94c-6c44662519d0" alt="logo">
+  <br/>
+  <i> 우리도 연애 프로그램의 주인공,
+  <br> 끝없는 의심 속 진짜 사랑을 찾기 위한 연애 심리 게임 </i>
+  <br/><br/>
 
 </div>
 
