@@ -41,7 +41,6 @@ public class ChattingController {
 
     @MessageMapping("/send/{chatRoomId}")
     public void chat(@DestinationVariable String chatRoomId, @LoginUser User loginUser, @Payload ChatMessageRequest chatMessageRequest) {
-        log.info("{}", loginUser.getId());
         ChatMessage chatMessage = chatMessageRepository.save(chatMessageRequest.toChatMessage(loginUser.getId()));
         log.info("{}",chatMessage);
         simpMessagingTemplate.convertAndSend("/api/chat/receive/" + chatRoomId, ChatMessageResponse.from(chatMessage));
@@ -49,19 +48,16 @@ public class ChattingController {
 
     @GetMapping("/room")
     public ResponseEntity<ChatRoomIdResponse> getChatRoomId(@LoginUser User loginUser, @RequestParam Long toUserId) {
-        log.info("fromUserId {} , toUserId {}", loginUser.getId(), toUserId);
         return ResponseEntity.status(HttpStatus.OK).body(chatRoomService.findByFromUserIdAndToUserId(loginUser.getId(), toUserId));
     }
 
     @PostMapping("/room")
     public ResponseEntity<ChatRoomIdResponse> createChatRoom(@LoginUser User loginUser, @RequestBody CreateChatRoomRequest createChatRoomRequest) {
-        log.info("{}", createChatRoomRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomService.save(loginUser, createChatRoomRequest));
     }
 
     @GetMapping("room/{roomId}/message")
     public ResponseEntity<List<ChatMessage>> getChatHistory(@PathVariable Long roomId) {
-        log.info("{}", roomId);
         List<ChatMessage> messages = chatMessageRepository.findAllByRoomId(roomId);
         return ResponseEntity.status(HttpStatus.OK).body(messages);
     }

@@ -33,7 +33,6 @@ public class FriendService {
 
 	@Transactional
 	public void addFriend(CreateFriendRequest createFriendRequest) {
-		log.info("안녕하세요 여기서 친구 추가가 돼요");
 		Long followerId = createFriendRequest.getFollowerId();
 		Long followingId = createFriendRequest.getFollowingId();
 		User follower = userRepository.findById(followerId)
@@ -54,7 +53,6 @@ public class FriendService {
 		if (existingChatRoom.isPresent()) {
 			return;
 		}
-		log.info("안녕하세요 여기서 방이 추가 돼요");
 
 		chatRoomRepository.save(ChatRoom.of(follower, following));
 	}

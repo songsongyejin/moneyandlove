@@ -15,7 +15,6 @@ public class WebSocketEventListener {
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
-        log.info("헤더 정보: {}", headerAccessor);
         log.info("새로운 WebSocket 연결이 열렸습니다. 세션 ID: {}", sessionId);
     }
 
