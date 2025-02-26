@@ -14,7 +14,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.ssafy.moneyandlove.common.filter.JwtAuthenticateFilter;
+import com.ssafy.moneyandlove.common.filter.OAuthLoginFilter;
 import com.ssafy.moneyandlove.common.jwt.JwtProvider;
+import com.ssafy.moneyandlove.user.application.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final JwtProvider jwtProvider;
+	private final UserService userService;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,10 +39,12 @@ public class SecurityConfig {
 			.headers(c -> c.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable).disable())
 			.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/health", "/api/user/login", "/api/user/sign", "/api/websocket/**").permitAll()
+				.requestMatchers("/health", "/api/user/login", "/api/user/sign").permitAll()
 				.anyRequest().authenticated() // 다른 모든 요청은 인증 요구
 			)
-			.addFilterBefore(new JwtAuthenticateFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+			.addFilterBefore(new OAuthLoginFilter(userService), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new JwtAuthenticateFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+		;
 
 		return http.build();
 	}
