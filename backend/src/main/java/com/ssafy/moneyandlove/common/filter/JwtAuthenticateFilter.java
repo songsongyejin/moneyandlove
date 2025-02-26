@@ -16,6 +16,7 @@ import com.ssafy.moneyandlove.common.jwt.JwtProvider;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,20 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 	private final JwtProvider jwtProvider;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+		FilterChain filterChain) throws ServletException, IOException {
 		String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
 		String token = getAccessToken(authorizationHeader);
-		log.info("uri: {} JWT : {}",request.getRequestURI(),token);
+
+		if (token == null) {
+			for (Cookie cookie : request.getCookies()) {
+				if ("token".equals(cookie.getName())) {
+					token = cookie.getValue();
+				}
+			}
+		}
+
+		log.info("uri: {} JWT : {}", request.getRequestURI(), token);
 		try {
 			Claims claims = jwtProvider.validateToken(token);
 			log.info("loginUser: {}", claims.get("id"));
@@ -66,7 +77,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		String[] excludePath = {"/health", "/api/user/sign", "/api/user/login", "/api/websocket"};
+		String[] excludePath = {"/health", "/api/user/sign", "/api/user/login"};
 		String path = request.getRequestURI();
 		return Arrays.stream(excludePath).anyMatch(path::startsWith);
 	}
