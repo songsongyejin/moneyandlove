@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import com.ssafy.moneyandlove.common.resolver.ChattingUserArgumentResolver;
+import com.ssafy.moneyandlove.common.interceptor.AuthChannelInterceptor;
+import com.ssafy.moneyandlove.common.resolver.LoginUserArgumentResolver;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +21,8 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	private final ChattingUserArgumentResolver chattingUserArgumentResolver;
+	private final LoginUserArgumentResolver loginUserArgumentResolver;
+	private final AuthChannelInterceptor authChannelInterceptor;
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -40,10 +43,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		argumentResolvers.add(chattingUserArgumentResolver());
+		argumentResolvers.add(loginUserArgumentResolver);
 	}
 
-	HandlerMethodArgumentResolver chattingUserArgumentResolver() {
-		return chattingUserArgumentResolver;
+	@Override
+	public void configureClientInboundChannel(ChannelRegistration registration) {
+		registration.interceptors(authChannelInterceptor);
 	}
 }
